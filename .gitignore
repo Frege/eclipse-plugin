@@ -1,0 +1,62 @@
+##########################
+# those should be ignored
+##########################
+*.class
+*.jar
+src/frege/IO.java
+src/frege/Version.java
+src/frege/List.java
+src/frege/MD.java
+src/frege/Prelude.java
+src/frege/PreludeProperties.java
+src/frege/RT.java
+src/frege/compiler/
+src/frege/control/
+src/frege/data/
+src/frege/j/
+src/frege/lib/
+src/frege/prelude/
+src/frege/rt/
+src/frege/tools/
+
+
+#################
+## Eclipse
+#################
+
+*.pydevproject
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+
+############
+## Windows
+############
+
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+
