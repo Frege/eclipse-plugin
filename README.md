@@ -1,4 +1,4 @@
-ide-eclipse
-===========
+What is fregIDE?
+================
 
-Eclipse plugin for programming with frege
+*fregIDE* is an Eclipse plugin that supports the [frege programming language](https://github.com/Frege/).
