@@ -10,6 +10,7 @@ src/frege/MD.java
 src/frege/Prelude.java
 src/frege/PreludeProperties.java
 src/frege/RT.java
+src/frege/Scrap.java
 src/frege/compiler/
 src/frege/control/
 src/frege/data/
@@ -59,4 +60,4 @@ Thumbs.db
 # Folder config file
 Desktop.ini
 
-
+
