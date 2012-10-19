@@ -10,7 +10,8 @@ This assumes that one already has installed the IMP plugin's as described in the
 
   - clone the frege repository
   - clone the eclipse-plugin under that very name so that `eclipse-plugin/` and `frege/` have the same parent directory.
-  - `cd frege; mkdir build dist doc; make frege.mk; make -f frege.mk compiler sources`
+  - Follow the instructions to [recompile the compiler](https://github.com/Frege/frege/wiki/Getting-Started). 
+  - Update the eclipse plugin with the compiler sources: `make -f frege.mk compiler sources`
   - start-up eclipse and import the eclipse-plugin project from filesystem.
   - build the project (don't be scared by 100s of Java warnings - you can get rid of by turning off 4 warning options)
   - You can now make a *Run Configuration* to run the project as eclipse application. Run that.
