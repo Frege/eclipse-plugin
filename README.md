@@ -6,7 +6,7 @@ What is fregIDE?
 Currently, we do not have a download site for the ready-to-go plugin. We're working on this.
 
 Meanwhile, one can do the following to get the latest frege compiler code in the plugin. 
-This assumes that one already has installed the IMP plugin's as described in the [tutorial](https://github.com/wiki/).
+This assumes that one already has installed the IMP plugin's as described in the [tutorial](https://github.com/Frege/eclipse-plugin/wiki/).
 
   - clone the frege repository
   - clone the eclipse-plugin under that very name so that `eclipse-plugin/` and `frege/` have the same parent directory.
