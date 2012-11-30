@@ -3,20 +3,13 @@
 /******************************************/
 package frege.imp.preferences;
 
-import java.awt.Point;
 import java.util.List;
 import java.util.ArrayList;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.imp.preferences.*;
 import org.eclipse.imp.preferences.fields.*;
-import org.osgi.service.prefs.Preferences;
 
 
 /**

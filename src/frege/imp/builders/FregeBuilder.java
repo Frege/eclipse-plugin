@@ -1,46 +1,27 @@
 package frege.imp.builders;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
 import org.eclipse.imp.builder.BuilderUtils;
-import org.eclipse.imp.builder.MarkerCreator;
 import org.eclipse.imp.builder.MarkerCreatorWithBatching;
-import org.eclipse.imp.builder.BuilderBase;
 import org.eclipse.imp.builder.ProblemLimit.LimitExceededException;
-import org.eclipse.imp.language.Language;
-import org.eclipse.imp.language.LanguageRegistry;
 import org.eclipse.imp.model.ISourceProject;
 import org.eclipse.imp.model.ModelFactory;
 import org.eclipse.imp.model.ModelFactory.ModelException;
-import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.runtime.PluginBase;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
-
-
 import frege.FregePlugin;
 import frege.compiler.Data;
 import frege.compiler.Data.TGlobal;
-import frege.compiler.Data.TMessage;
 import frege.compiler.Data.TOptions;
 import frege.compiler.BaseTypes.TPosition;
 import frege.compiler.BaseTypes.TToken;
@@ -48,8 +29,6 @@ import frege.compiler.Main;
 import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TList.DCons;
-import frege.prelude.PreludeList.CEmpty;
-import frege.prelude.PreludeList;
 import frege.prelude.PreludeText;
 import frege.rt.Box;
 

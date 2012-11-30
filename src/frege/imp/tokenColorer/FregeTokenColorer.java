@@ -11,16 +11,13 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 import frege.FregePlugin;
 import frege.compiler.Data.TQName.DLocal;
-import frege.compiler.Data.TSubSt;
 import frege.compiler.BaseTypes.TToken;
 import frege.compiler.Data.TGlobal;
 import frege.compiler.BaseTypes.TTokenID;
-import frege.compiler.BaseTypes.IShow_Token;
 import frege.compiler.Data.TQName;
 import frege.imp.parser.FregeParseController;
 import frege.imp.preferences.FregePreferencesConstants;

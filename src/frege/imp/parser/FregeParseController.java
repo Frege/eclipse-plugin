@@ -1,7 +1,6 @@
 package frege.imp.parser;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.regex.Pattern;
 
 // import lpg.runtime.ILexStream;
@@ -11,14 +10,9 @@ import java.util.regex.Pattern;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectNatureDescriptor;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.jdt.core.IClasspathEntry;
@@ -28,7 +22,6 @@ import org.eclipse.jdt.core.JavaModelException;
 
 import org.eclipse.imp.builder.MarkerCreatorWithBatching;
 import org.eclipse.imp.builder.ProblemLimit.LimitExceededException;
-import org.eclipse.imp.model.IPathEntry;
 import org.eclipse.imp.model.ISourceProject;
 import org.eclipse.imp.parser.IMessageHandler;
 import org.eclipse.imp.parser.IParseController;
@@ -40,8 +33,6 @@ import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.imp.services.IAnnotationTypeInfo;
 import org.eclipse.imp.services.ILanguageSyntaxProperties;
 import org.eclipse.jface.text.IRegion;
-import org.osgi.service.prefs.BackingStoreException;
-
 import frege.FregePlugin;
 import frege.rt.Array;
 import frege.rt.Lambda;
@@ -63,12 +54,10 @@ import frege.compiler.Data.TSeverity;
 import frege.compiler.Data.TSubSt;
 import frege.compiler.BaseTypes.TToken;
 import frege.compiler.BaseTypes.TTokenID;
-import frege.compiler.Data;
 import frege.compiler.Utilities;
 import frege.compiler.EclipseUtil;
 import frege.compiler.Main;
 import frege.imp.builders.FregeBuilder;
-import frege.imp.builders.FregeBuilderBase;
 import frege.imp.preferences.FregePreferencesConstants;
 
 /**
@@ -98,7 +87,7 @@ public class FregeParseController extends ParseControllerBase implements
 
 	public static class TokensIterator implements Iterator<TToken> {
 		/** current token array */
-		final private Array<FV> toks;
+		final private Array toks;
 		private IRegion region;
 		private int  inx;
 		
@@ -109,7 +98,7 @@ public class FregeParseController extends ParseControllerBase implements
 		}
 		
 		/** construct an Iterator */
-		public TokensIterator(Array<FV> it, IRegion reg) { 
+		public TokensIterator(Array it, IRegion reg) { 
 			toks = it;
 			region = reg;
 			inx = 0;
@@ -120,7 +109,7 @@ public class FregeParseController extends ParseControllerBase implements
 			}
 		}
 		
-		public static int skipBraces(final Array<FV> toks, int j) {
+		public static int skipBraces(final Array toks, int j) {
 			while (j < toks.length()) {
 				TToken tok = (TToken) toks.getAt(j)._e();
 				if (tok.mem1 == TTokenID.CHAR.j

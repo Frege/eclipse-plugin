@@ -180,6 +180,7 @@ public abstract class FregeBuilderBase extends BuilderBase {
 
     
     @Override
+    @SuppressWarnings({ "rawtypes" })
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) {
         if (getPreferencesService().getProject() == null) {
             getPreferencesService().setProject(getProject());
