@@ -1,0 +1,6 @@
+Please make a link (or copy) the frege compiler and library jar
+under the name fregec.jar here, e.g.:
+
+	ln -s ~/Downloads/frege3.20.99.jar fregec.jar
+
+
