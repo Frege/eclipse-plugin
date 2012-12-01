@@ -41,7 +41,7 @@ public class FregePlugin extends PluginBase {
 			final ProtectionDomain pd = this.getClass().getProtectionDomain();
 			final CodeSource cs = pd.getCodeSource();
 			URL xurl = cs.getLocation();
-			fregeLib = xurl.getPath();
+			fregeLib = xurl.getPath() + "/lib/fregec.jar";
 			System.err.println(kPluginID + ": " + xurl);
 		}
 		return fregeLib;
