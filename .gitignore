@@ -18,6 +18,7 @@ src/frege/j/
 src/frege/lib/
 src/frege/prelude/
 src/frege/rt/
+src/frege/runtime/
 src/frege/tools/
 
 

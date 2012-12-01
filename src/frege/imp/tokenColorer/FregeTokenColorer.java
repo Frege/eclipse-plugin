@@ -80,7 +80,7 @@ public class FregeTokenColorer extends TokenColorerBase implements ITokenColorer
 						display.getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB()));
 		commentAttribute = new TextAttribute(commColor, null, SWT.NORMAL);
 		docuAttribute    = new TextAttribute(docuColor, null, SWT.ITALIC);
-		normalAttribute  = new TextAttribute(display.getSystemColor(SWT.COLOR_BLACK), null, SWT.NORMAL);
+		normalAttribute  = null; // new TextAttribute(display.getSystemColor(SWT.COLOR_BLACK), null, SWT.NORMAL);
 		keywordAttribute = new TextAttribute(keywdColor, null, SWT.BOLD);
 		literalAttribute = new TextAttribute(litColor, null, SWT.NORMAL);
 		errorAttribute   = new TextAttribute(errColor, null, SWT.NORMAL);
