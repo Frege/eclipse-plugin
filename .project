@@ -47,4 +47,11 @@
 		<nature>org.eclipse.imp.prefspecs.nature</nature>
 		<nature>org.eclipse.imp.smapifier.smapinature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>lib/fregec.jar</name>
+			<type>1</type>
+			<location>/home/ingo/dev/frege/fregec.jar</location>
+		</link>
+	</linkedResources>
 </projectDescription>
