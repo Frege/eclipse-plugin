@@ -237,15 +237,24 @@ public class FregeInstancePreferencesTab extends InstancePreferencesTab {
 		fields.add(decoS);
 		
 		IntegerFieldEditor parseTimeout = fPrefUtils.makeNewIntegerField(
-		page, this, fPrefService,
-		"instance", "parseTimeout", "Parser Timeout",
-		"Time in ms before the parser starts after a keystroke.",
-		parent,
-		true, true,
-		true, "250",
-		false);
+			page, this, fPrefService,
+			"instance", "parseTimeout", "Parser Timeout",
+			"Time in ms before the parser starts after a keystroke.",
+			parent,
+			true, true,
+			true, "250",
+			false);
 		fields.add(parseTimeout);
-
+		
+		StringFieldEditor prefix = fPrefUtils.makeNewStringField(
+				page, this, fPrefService, 
+				"instance", "prefix", "Prefix", 
+				"Used in compiler development", 
+				parent, 
+				true, true, 
+				true, "", 
+				false);
+		fields.add(prefix);
 		
 		return fields.toArray(new FieldEditor[fields.size()]);
 	}

@@ -18,6 +18,7 @@ public class FregePreferencesConstants {
 	public static final String P_TABWITH       = PreferenceConstants.P_TAB_WIDTH;
 	public static final String P_INLINE = "enableInline";
 	public static final String P_PARSETIMEOUT = "parseTimeout";
+	public static final String P_PREFIX       = "prefix";
 	public static final String P_DECORATESTRICT = "decorateStrict";
 	public static final String P_ITALICIMPORTS = "italicImports";
 	public static final String P_BOLDNS        = "boldNS";

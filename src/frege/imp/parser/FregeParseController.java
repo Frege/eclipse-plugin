@@ -380,6 +380,11 @@ public class FregeParseController extends ParseControllerBase implements
 								    TFlag.INLINE.j)
 						));
 			}
+			final String prefix = service.getStringPreference(FregePreferencesConstants.P_PREFIX); 
+			if (prefix != null && prefix.length() > 0) {
+				global = TGlobal.upd$options(global, TOptions.upd$prefix(
+							TGlobal.options(global), prefix));
+			}
 		}
 		else timeout = 250;
 	}

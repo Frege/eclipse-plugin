@@ -73,7 +73,7 @@ public class FregePreferencesInitializer extends PreferencesInitializer {
 		service.setStringPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_SPECIALCOLOR, magenta);
 		service.setStringPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_LITERALCOLOR, cyan);
 		service.setStringPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_ERRORCOLOR, red);
-		// service.setStringPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_FREGELIB, FregePlugin.getInstance().getFregeLib());
+		service.setStringPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_PREFIX, "");
 		
 		/*
 		System.err.println("darkYellow is " + darkYellow);

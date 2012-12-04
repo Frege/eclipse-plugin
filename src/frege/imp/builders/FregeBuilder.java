@@ -26,6 +26,7 @@ import frege.compiler.Data.TOptions;
 import frege.compiler.BaseTypes.TPosition;
 import frege.compiler.BaseTypes.TToken;
 import frege.compiler.Main;
+import frege.compiler.EclipseUtil;
 import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TList.DCons;
@@ -92,9 +93,12 @@ public class FregeBuilder extends FregeBuilderBase {
 				= new FregeParseController.FregeData(sourceProject);
 			final String[] srcs = fd.getSp().split(System.getProperty("path.separator"));
 			final String contents = BuilderUtils.getFileContents(file);
-			TList packs = (TList) frege.compiler.Scanner.dependencies(contents)._e();
+			
 			getPlugin().writeInfoMsg(
 					"Collecting dependencies from frege file: " + fromPath);
+			TList packs = (TList) frege.compiler.Scanner.dependencies(contents)._e();
+			packs = EclipseUtil.correctDependenciesFor(packs, fromPath);
+			
 			while (true) {
 				final DCons cons = packs._Cons();
 				if (cons == null) break;
