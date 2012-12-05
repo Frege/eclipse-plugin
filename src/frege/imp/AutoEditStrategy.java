@@ -18,23 +18,32 @@ public class AutoEditStrategy implements IAutoEditStrategy {
 		if (cmd.doit == false)
 			return;
 		// START_HERE
-		if (cmd.length == 0 && cmd.text != null
-				&& isLineDelimiter(doc, cmd.text)) {
-			try {
+		try {
+			if (cmd.length == 0 && cmd.text != null
+					&& isLineDelimiter(doc, cmd.text)) {
 				smartIndentAfterNewline(doc, cmd);
-			} catch (BadLocationException e) {
-				System.err.println(this.getClass().getName() + e.getMessage());
-				return;
+				
+			} else if (cmd.length == 1 && 
+						(cmd.text == null || cmd.text.length() == 0)) {
+				
+				// backspace
+				smartIndentOnKeypress(doc, cmd);
 			}
-		} else { // if (cmd.text.length() == 1) {
-			System.err.println("DocumentCommand: " + cmd.offset + ", " + cmd.length + ", '" + cmd.text + "'");
-			// smartIndentOnKeypress(doc, cmd);
+		} catch (BadLocationException e) {
+			System.err.println(this.getClass().getName() + e.getMessage());
+			return;
 		}
 	}
 
+	/**
+	 * Put as much spaces on the start of the next line as there are on the current line
+	 * 
+	 * @param doc
+	 * @param cmd
+	 * @throws BadLocationException
+	 */
 	private void smartIndentAfterNewline(IDocument doc, DocumentCommand cmd) throws BadLocationException {
-		// TODO Set fields of 'cmd' to reflect desired action,
-		// or do nothing to proceed with cmd as is
+		
 		IRegion thisLine = doc.getLineInformationOfOffset(cmd.offset);
 		String text      = doc.get(thisLine.getOffset(), thisLine.getLength());
 		int i = 0;
@@ -43,9 +52,35 @@ public class AutoEditStrategy implements IAutoEditStrategy {
 		cmd.text += text.substring(0, i);
 	}
 
-	private void smartIndentOnKeypress(IDocument doc, DocumentCommand cmd) {
-		// TODO Set fields of 'cmd' to reflect desired action,
-		// or do nothing to proceed with cmd as is
+	/**
+	 * If this is deletion of a character, it deletes all characters till
+	 * the previous tab stop if all of those characters are spaces.
+	 * @param doc the document
+	 * @param cmd the command
+	 * @throws BadLocationException
+	 */
+	private void smartIndentOnKeypress(IDocument doc, DocumentCommand cmd) throws BadLocationException {
+//		System.err.println("smartIndentOnKeypress: offset=" + cmd.offset 
+//				+ ", length=" + cmd.length 
+//				+ ", text='" + cmd.text 
+//				+ "', caret=" + cmd.caretOffset);
+		IRegion line = doc.getLineInformationOfOffset(cmd.offset);
+		String  text = doc.get(line.getOffset(), line.getLength());
+		int offsetInLine = cmd.offset - line.getOffset();
+		char charAtOffset = text.charAt(offsetInLine);
+		
+		int tab = offsetInLine;
+		while (tabWidth > 0 && tab % tabWidth != 0) tab--;
+//		System.err.println("smartIndentOnKeypress: offset=" + offsetInLine
+//				+ ", tab=" + tab
+//				+ ", char='" + charAtOffset + "'");
+		boolean allSpaces = true;
+		for (int i=tab; i <= offsetInLine; i++)
+			allSpaces = allSpaces && Character.isWhitespace(text.charAt(i));
+		if (allSpaces) {
+			cmd.offset = line.getOffset() + tab;
+			cmd.length = offsetInLine - tab + 1;
+		}
 	}
 
 	private boolean isLineDelimiter(IDocument doc, String text) {
