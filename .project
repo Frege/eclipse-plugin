@@ -51,7 +51,7 @@
 		<link>
 			<name>lib/fregec.jar</name>
 			<type>1</type>
-			<location>/home/ingo/dev/frege/fregec.jar</location>
+			<locationURI>WORKSPACE_LOC/frege/fregec.jar</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
