@@ -4,7 +4,6 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.imp.runtime.PluginBase;
 import org.osgi.framework.BundleContext;
 
@@ -42,7 +41,7 @@ public class FregePlugin extends PluginBase {
 			final ProtectionDomain pd = this.getClass().getProtectionDomain();
 			final CodeSource cs = pd.getCodeSource();
 			URL xurl = cs.getLocation();
-			fregeLib = xurl.getPath();
+			fregeLib = xurl.getPath() + "/lib/fregec.jar";
 			System.err.println(kPluginID + ": " + xurl);
 		}
 		return fregeLib;

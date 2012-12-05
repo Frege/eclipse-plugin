@@ -1,10 +1,7 @@
 package frege.imp.referenceResolvers;
 
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.imp.parser.IParseController;
-import org.eclipse.imp.parser.SimpleLPGParseController;
-import org.eclipse.imp.parser.SymbolTable;
 import org.eclipse.imp.services.IReferenceResolver;
 
 import frege.List.TTree;

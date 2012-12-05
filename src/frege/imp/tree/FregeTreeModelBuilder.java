@@ -1,7 +1,5 @@
 package frege.imp.tree;
 
-import org.eclipse.imp.editor.ModelTreeNode;
-import org.eclipse.imp.preferences.PreferenceValueParser.AbstractVisitor;
 import org.eclipse.imp.services.base.TreeModelBuilderBase;
 
 import frege.List.TTree;

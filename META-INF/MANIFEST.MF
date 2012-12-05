@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FregIDE
 Bundle-SymbolicName: frege.ide;singleton:=true
-Bundle-Version: 3.20.23
+Bundle-Version: 3.20.99.qualifier
 Bundle-Vendor: Ingo Wechsung
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.imp.runtime,
@@ -18,7 +18,6 @@ Require-Bundle: org.eclipse.imp.runtime,
 Bundle-Activator: frege.FregePlugin
 Bundle-ActivationPolicy: lazy
 Export-Package: frege;uses:="org.eclipse.imp.runtime,org.osgi.framework",
- frege.compiler,
  frege.imp.actions,
  frege.imp.builders,
  frege.imp.parser;
@@ -33,12 +32,8 @@ Export-Package: frege;uses:="org.eclipse.imp.runtime,org.osgi.framework",
    org.eclipse.imp.services.base,
    org.eclipse.imp.parser,
    org.eclipse.imp.services",
- frege.imp.tree,
- frege.j,
- frege.lib,
- frege.prelude,
- frege.rt,
- frege.tools
+ frege.imp.tree
 Eclipse-LazyStart: true
 Bundle-ClassPath: bin/,
+ lib/fregec.jar,
  .

@@ -8,11 +8,8 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.imp.editor.ModelTreeNode;
 import org.eclipse.imp.services.ILabelProvider;
-import org.eclipse.imp.language.ILanguageService;
 import frege.FregePlugin;
 import frege.IFregeResources;
-import frege.compiler.Data.TPack;
-
 import org.eclipse.imp.utils.MarkerUtils;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ILabelProviderListener;

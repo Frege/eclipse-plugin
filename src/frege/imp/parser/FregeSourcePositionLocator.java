@@ -9,23 +9,14 @@ import org.eclipse.imp.parser.ISourcePositionLocator;
 import frege.compiler.BaseTypes.IShow_Token;
 import frege.compiler.Data;
 import frege.compiler.Data.TGlobal;
-import frege.compiler.Data.TPack;
 import frege.compiler.Data.TQName;
 import frege.compiler.BaseTypes.TPosition;
 import frege.compiler.Data.TSubSt;
 import frege.compiler.BaseTypes.TToken;
-import frege.compiler.BaseTypes.TTokenID;
 import frege.compiler.Data.TSymbol;
 import frege.imp.referenceResolvers.FregeReferenceResolver;
 import frege.imp.tree.ITreeItem;
-import frege.prelude.PreludeBase.TEither;
-import frege.prelude.PreludeBase.TEither.DRight;
-import frege.prelude.PreludeBase.TMaybe;
-import frege.prelude.PreludeBase.TMaybe.DJust;
 import frege.rt.Array;
-import frege.rt.Box.Int;
-import frege.rt.FV;
-import frege.rt.Lazy;
 
 /**
  * NOTE:  This version of the ISourcePositionLocator is for use when the Source
@@ -67,7 +58,7 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 	 * @param end     end of selected range (inklusive)
 	 * @return        a Token or null if not found
 	 */
-	public static TToken binsearch(Array<FV> arr, int start, int end) {
+	public static TToken binsearch(Array arr, int start, int end) {
 		int from = 0;
 		int to = arr.length();
 		while (from < to) {
@@ -92,7 +83,7 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		if (ast != null && ast instanceof TGlobal) {
 			// find out the token we are working with
 			TGlobal global = (TGlobal) ast;
-			Array<FV> arr = TSubSt.toks( TGlobal.sub(global) );
+			Array arr  = TSubSt.toks( TGlobal.sub(global) );
 			TToken res = binsearch(arr, startOffset, endOffset);
 			if (res == null)
 				System.err.println(" no such token");

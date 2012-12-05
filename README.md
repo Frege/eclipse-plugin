@@ -3,17 +3,19 @@ What is fregIDE?
 
 *fregIDE* is an Eclipse plugin that supports the [frege programming language](https://github.com/Frege/).
 
-Currently, we do not have a download site for the ready-to-go plugin. We're working on this.
+Currently, we do not have an update site for the ready-to-go plugin. We're working on this.
+You can [download](https://github.com/Frege/eclipse-plugin/downloads/) a zip-archive and install from that.
 
-Meanwhile, one can do the following to get the latest frege compiler code in the plugin. 
+If you want to help develop the frege IDE, follow the steps below. 
 This assumes that one already has installed the IMP plugin's as described in the [tutorial](https://github.com/Frege/eclipse-plugin/wiki/).
 
-  - Clone the frege repository
-  - Clone the eclipse-plugin under that very name so that `eclipse-plugin/` and `frege/` have the same parent directory.
-  - Follow the instructions to [recompile the compiler](https://github.com/Frege/frege/wiki/Getting-Started). 
-  - Update the eclipse plugin with the compiler sources: `make -f frege.mk compiler sources`
-  - Start-up eclipse and import the eclipse-plugin project from filesystem.
-  - Build the project (don't be scared by 100s of Java warnings - you can get rid of by turning off 4 warning options)
-  - You can now make a *Run Configuration* to run the project as eclipse application. Run that.
-  - For frege projects, you may need to add `.../frege/build` to the build path.
-  - Once this works, you can easily stay up do date by polling frege changes, then make compiler sources again and re-build the eclipse-plugin project
+  1. [Download](https://github.com/Frege/frege/downloads/) frege compiler/library jar. 
+  2. Clone the eclipse-plugin repository.
+  3. Copy the compiler jar to `eclipse-plugin/lib/fregec.jar`.
+  4. Fire up eclipse and import repository `eclipse-plugin` as project from filesystem.
+  5. Build the project (don't be scared by some Java warnings)
+  6. Write code to improve the *fregIDE*, fix bugs, add features ....
+  7. You can now make a *Run Configuration* to run the project as eclipse application. Be sure the VM arguments include `-XX:MaxPermSize=256m -XX:+TieredCompilation -Xms40m -Xss4m -Xmx768m`.
+  8. Apply and Run.
+  9. Once this works, you can replace the fregec.jar and rebuild `eclipse-plugin` whenever the need arises.
+

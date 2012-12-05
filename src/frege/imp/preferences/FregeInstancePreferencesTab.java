@@ -3,20 +3,13 @@
 /******************************************/
 package frege.imp.preferences;
 
-import java.awt.Point;
 import java.util.List;
 import java.util.ArrayList;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.imp.preferences.*;
 import org.eclipse.imp.preferences.fields.*;
-import org.osgi.service.prefs.Preferences;
 
 
 /**
@@ -244,15 +237,24 @@ public class FregeInstancePreferencesTab extends InstancePreferencesTab {
 		fields.add(decoS);
 		
 		IntegerFieldEditor parseTimeout = fPrefUtils.makeNewIntegerField(
-		page, this, fPrefService,
-		"instance", "parseTimeout", "Parser Timeout",
-		"Time in ms before the parser starts after a keystroke.",
-		parent,
-		true, true,
-		true, "250",
-		false);
+			page, this, fPrefService,
+			"instance", "parseTimeout", "Parser Timeout",
+			"Time in ms before the parser starts after a keystroke.",
+			parent,
+			true, true,
+			true, "250",
+			false);
 		fields.add(parseTimeout);
-
+		
+		StringFieldEditor prefix = fPrefUtils.makeNewStringField(
+				page, this, fPrefService, 
+				"instance", "prefix", "Prefix", 
+				"Used in compiler development", 
+				parent, 
+				true, true, 
+				true, "", 
+				false);
+		fields.add(prefix);
 		
 		return fields.toArray(new FieldEditor[fields.size()]);
 	}

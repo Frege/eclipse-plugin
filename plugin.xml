@@ -127,5 +127,19 @@
             language="frege">
       </editorActionContributor>
    </extension>
+   <extension
+         point="org.eclipse.imp.runtime.autoEditStrategy">
+      <autoEditStrategy
+            class="frege.imp.AutoEditStrategy"
+            language="frege">
+      </autoEditStrategy>
+   </extension>
+   <extension
+         point="org.eclipse.imp.runtime.contentProposer">
+      <proposer
+            class="frege.imp.contentProposer.ContentProposer"
+            language="frege">
+      </proposer>
+   </extension>
 
 </plugin>
