@@ -1,6 +1,12 @@
 package frege.imp.contentProposer;
 
+import frege.compiler.BaseTypes.TToken;
+import frege.compiler.BaseTypes.TTokenID;
+import frege.compiler.BaseTypes;
+import frege.compiler.Data.TGlobal;
+import frege.compiler.Data.TSubSt;
 import frege.imp.parser.*;
+import frege.rt.Array;
 
 import java.util.*;
 
@@ -31,10 +37,24 @@ public class ContentProposer implements IContentProposer {
 	 */
 	public ICompletionProposal[] getContentProposals(IParseController ctlr,
 			int offset, ITextViewer viewer) {
+		FregeParseController parser = (FregeParseController) ctlr;
 		List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
+		final TGlobal g = parser.getCurrentAst();
+		final Array tokens = TSubSt.toks(TGlobal.sub(g));
 
-		if (ctlr.getCurrentAst() != null) {
-//			IToken token = getToken(ctlr, offset);
+		if (g != null) {
+			int inx = FregeSourcePositionLocator.previous(tokens, offset);
+			
+			TToken token = FregeSourcePositionLocator.tokenAt(tokens, inx);
+			if (token != null) {
+				boolean direct = TToken.offset(token) + TToken.length(token) == offset;
+				String id = BaseTypes.IShow_TokenID.show(TToken.tokid(token).j);
+				String v  = TToken.value(token);
+				System.err.println("getContentProposal offset=" + offset
+						+ ", tokenID=" + id
+						+ ", value=\"" + v + '"'
+						+ ", direct=" + direct);
+			}
 //			String prefix = getPrefix(token, offset);
 //			FregeParser parser = (FregeParser) ((SimpleLPGParseController) ctlr)
 //					.getParser();

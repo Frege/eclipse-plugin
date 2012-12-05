@@ -51,14 +51,48 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 	}
 
 	/**
+	 * Given an offset, find the index of the previous token.
+	 * @param arr		an Array of Tokens
+	 * @param offset	the offset in the text
+	 * @return the index of the very next previous token
+	 */
+	public static int previous(Array arr, int before) {
+		int from = 0;
+		int to = arr.length();
+		
+		while (from < to) {
+			int it = (from + to) / 2;
+			if (it==from || it == to) break;
+			System.err.println("previous: before=" + before + ", from=" + from + ", to=" + to);
+			TToken at = tokenAt(arr, it);
+			int off = TToken.offset(at);
+			System.err.println("previous: it=" + it + ", token=" + IShow_Token.show(at));
+
+			if (off >= before) {	// its more left
+				to = it; continue;
+			}
+			from = it;			
+		}
+		// linear search down
+		while (to >= from) {
+			System.err.println("previous: before=" + before + ", from=" + from + ", to=" + to);
+			TToken at = tokenAt(arr, to);
+			if (at == null) { to--; continue; }
+			System.err.println("previous: token=" + IShow_Token.show(at));
+			if (TToken.offset(at) < before) return to;
+			to--;
+		}
+		return (-1);		
+	}
+	/**
 	 * Binary search for a token that starts at start and ends not after end.
 	 * 
 	 * @param arr     an Array of Tokens
 	 * @param start   start of selected range
 	 * @param end     end of selected range (inklusive)
-	 * @return        a Token or null if not found
+	 * @return        the index of a Token or (-1) if not found
 	 */
-	public static TToken binsearch(Array arr, int start, int end) {
+	public static int binsearch(Array arr, int start, int end) {
 		int from = 0;
 		int to = arr.length();
 		while (from < to) {
@@ -72,10 +106,19 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 			if (off > end) {	// its more left
 				to = it; continue;
 			}
-			if (off + len >= start && off+len > end) return at;
-			return null;
+			if (off + len >= start && off+len > end) return it;
+			return (-1);
 		}
-		return null;
+		return (-1);
+	}
+	
+	/**
+	 * return the token at a given index or null
+	 */
+	public static TToken tokenAt(Array arr, int at) {
+		if (at < 0 || at >= arr.length())
+			return null;
+		return (TToken) arr.getAt(at)._e();
 	}
 	
 	public Object findNode(Object ast, int startOffset, int endOffset) {
@@ -84,7 +127,8 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 			// find out the token we are working with
 			TGlobal global = (TGlobal) ast;
 			Array arr  = TSubSt.toks( TGlobal.sub(global) );
-			TToken res = binsearch(arr, startOffset, endOffset);
+			int at = binsearch(arr, startOffset, endOffset);
+			TToken res = tokenAt(arr, at);
 			if (res == null)
 				System.err.println(" no such token");
 			else {
