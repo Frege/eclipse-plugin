@@ -254,7 +254,7 @@ public class FregeParseController extends ParseControllerBase implements
 	}
 
 	private int timeout;
-	private TGlobal global;
+	private TGlobal global, savedglobal;
 	private int  hash = 0;
 	private int  leng = 0;
 	private final ISourcePositionLocator   fSourcePositionLocator   
@@ -387,6 +387,7 @@ public class FregeParseController extends ParseControllerBase implements
 			}
 		}
 		else timeout = 250;
+		savedglobal = global;
 	}
 
 	/**
@@ -428,30 +429,32 @@ public class FregeParseController extends ParseControllerBase implements
 				1 + IListLike__lbrack_rbrack.length(passes));
 		
 		int index = 0;
-		while (!monitor.isCanceled()) {
-			long t1 = System.nanoTime();
-			index++;
-			final DCons pass = passes._Cons();
-			if (pass== null) break;   // done
-			passes = (TList) pass.mem2._e();
-			final TTuple3 adx = (TTuple3) pass.mem1._e();
-			final Lazy<FV> action = index == 1 ? Main.lexPassIDE(contents) : adx.mem1;
-			final String   desc   = Box.<String>box(adx.mem2._e()).j;
-			final TGlobal g = runStG(action, global);
-			long te = System.nanoTime();
-			System.err.println(desc + " took " 
-				+ (te-t1)/1000000 + "ms, cumulative "
-				+ (te-t0)/1000000 + "ms");
-			monitor.worked(1);
-			global = runStG(EclipseUtil.passDone._e(), g);
-			if (monitor.isCanceled()) {
-				System.err.println("cancelled in " + desc);
-				break;
-			}
+		synchronized (this) {
+			while (!monitor.isCanceled()) {
 			
-			if (errors(g) > 0) break;
-			if (scanOnly && desc.startsWith("type check")) break;
-		}
+				long t1 = System.nanoTime();
+				index++;
+				final DCons pass = passes._Cons();
+				if (pass== null) break;   // done
+				passes = (TList) pass.mem2._e();
+				final TTuple3 adx = (TTuple3) pass.mem1._e();
+				final Lazy<FV> action = index == 1 ? Main.lexPassIDE(contents) : adx.mem1;
+				final String   desc   = Box.<String>box(adx.mem2._e()).j;
+				final TGlobal g = runStG(action, global);
+				long te = System.nanoTime();
+				System.err.println(desc + " took " 
+					+ (te-t1)/1000000 + "ms, cumulative "
+					+ (te-t0)/1000000 + "ms");
+				monitor.worked(1);
+				global = runStG(EclipseUtil.passDone._e(), g);
+				if (monitor.isCanceled()) {
+					System.err.println("cancelled in " + desc);
+					break;
+				}
+				
+				if (errors(g) > 0) break;
+				if (scanOnly && desc.startsWith("type check")) break;
+			}}
 		
 		leng = contents.length();
 		hash = contents.hashCode();
@@ -459,7 +462,7 @@ public class FregeParseController extends ParseControllerBase implements
 	}
 
 	@Override
-	public TGlobal getCurrentAst() {
+	synchronized public TGlobal getCurrentAst() {
 		return global;
 	}
 	

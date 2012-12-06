@@ -23,12 +23,19 @@ public class AutoEditStrategy implements IAutoEditStrategy {
 					&& isLineDelimiter(doc, cmd.text)) {
 				smartIndentAfterNewline(doc, cmd);
 				
-			} else if (cmd.length == 1 && 
+			} 
+			else if (cmd.length == 1 && 
 						(cmd.text == null || cmd.text.length() == 0)) {
 				
 				// backspace
 				smartIndentOnKeypress(doc, cmd);
 			}
+//			else if (cmd.length == 0 && cmd.text != null
+//					&& cmd.text.length()==1) {
+//				if (cmd.text.equals("(")) cmd.text = "()";
+//				else if (cmd.text.equals("{")) cmd.text = "{}";
+//				else if (cmd.text.equals("[")) cmd.text = "[]";
+//			}
 		} catch (BadLocationException e) {
 			System.err.println(this.getClass().getName() + e.getMessage());
 			return;

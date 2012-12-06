@@ -5,13 +5,21 @@ import frege.compiler.BaseTypes.TTokenID;
 import frege.compiler.BaseTypes;
 import frege.compiler.Data.TGlobal;
 import frege.compiler.Data.TSubSt;
+import frege.compiler.EclipseUtil;
+import frege.compiler.EclipseUtil.IShow_Proposal;
+import frege.compiler.EclipseUtil.TProposal;
 import frege.imp.parser.*;
+import frege.prelude.PreludeBase.TList;
 import frege.rt.Array;
+import frege.rt.FV;
+import frege.rt.Lazy;
+import frege.rt.Box;
 
 import java.util.*;
 
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.Region;
 import org.eclipse.imp.services.IContentProposer;
 import org.eclipse.imp.editor.ErrorProposal;
 import org.eclipse.imp.editor.SourceProposal;
@@ -19,6 +27,36 @@ import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.parser.ISourcePositionLocator;
 
 public class ContentProposer implements IContentProposer {
+	/**
+	 * An extension of {@link SourceProposal} that computes additional information
+	 * lazily.
+	 */
+	static class Proposal extends SourceProposal {
+		Lazy<FV> additional;
+		public Proposal(String proposal, String newText, String prefix, int offset, int length, 
+				int cursor, Lazy<FV> additional) {
+			super(proposal, newText, prefix, new Region(offset, length), cursor);
+			this.additional = additional;
+		}
+		
+		public String getAdditionalProposalInfo() {
+			return Box.<String>box(additional._e()).j;
+		}
+		public static Proposal convert(final TProposal p) {
+			final String newT = TProposal.newText(p);
+			final int off     = TProposal.off(p); 
+			return new Proposal(
+					TProposal.proposal(p),
+					newT,
+					TProposal.prefix(p),
+					off,
+					TProposal.len(p),
+					TProposal.cursor(p)+off+newT.length(),
+					p.mem7
+					);
+		}
+	}
+	
 	/**
 	 * Returns an array of content proposals applicable relative to the AST of the given
 	 * parse controller at the given position.
@@ -46,26 +84,56 @@ public class ContentProposer implements IContentProposer {
 			int inx = FregeSourcePositionLocator.previous(tokens, offset);
 			
 			TToken token = FregeSourcePositionLocator.tokenAt(tokens, inx);
+			boolean direct = false;
+			boolean inside = false;
+			String  id = "none";
+			String  pref = ""; 
+			String  val = null;
 			if (token != null) {
-				boolean direct = TToken.offset(token) + TToken.length(token) == offset;
-				String id = BaseTypes.IShow_TokenID.show(TToken.tokid(token).j);
-				String v  = TToken.value(token);
-				System.err.println("getContentProposal offset=" + offset
-						+ ", tokenID=" + id
-						+ ", value=\"" + v + '"'
-						+ ", direct=" + direct);
+				direct = TToken.offset(token) + TToken.length(token) == offset;
+				inside = TToken.offset(token) + TToken.length(token) >  offset;
+				id = BaseTypes.IShow_TokenID.show(TToken.tokid(token).j);
+				val  = TToken.value(token);
+				try {
+					pref = inside ? val.substring(0, offset - TToken.offset(token)) : "";
+				} catch (IndexOutOfBoundsException e) {
+					// stay on the safe side
+					pref = "";
+				}
 			}
-//			String prefix = getPrefix(token, offset);
-//			FregeParser parser = (FregeParser) ((SimpleLPGParseController) ctlr)
-//					.getParser();
-//			ISourcePositionLocator locator = ctlr.getSourcePositionLocator();
-//			ASTNode node = (ASTNode) locator.findNode(ctlr.getCurrentAst(),
-//					token.getStartOffset(), token.getEndOffset());
-//
-//			if (node != null) {
-//				result = computeProposals(prefix, node, offset, parser);
-//			}
-			result.add(new SourceProposal("foo", "", offset));
+			System.err.println("getContentProposal offset=" + offset
+						+ ", tokenID=" + id
+						+ ", value=\"" + val + '"'
+						+ ", direct=" + direct
+						+ ", inside=" + inside);
+				
+			TList ps = EclipseUtil.proposeContent(g, offset, tokens, inx);
+			boolean first = true;
+			while (true) {
+				final TList.DCons node = ps._Cons();
+				if (node == null) break;
+				TProposal p = (TProposal) node.mem1._e();
+				if (first) {
+					first = false;
+					System.err.println("getContentProposal: " + IShow_Proposal.show(p));
+				}
+				result.add(Proposal.convert(p));
+				ps = (TList) node.mem2._e();
+			}
+			if (first) {			// empty proposal list
+				if (TGlobal.errors(g) > 0) {
+					result.add(new ErrorProposal(
+							"No proposals available, please correct syntax errors first.", offset));
+				}
+				else if (pref.length() > 0) {
+					result.add(new ErrorProposal(
+							"No proposals available, maybe prefix \"" + pref + "\" too restrictive?", offset));
+				}
+				else {
+					result.add(new ErrorProposal(
+							"No proposals available and I have no idea why not. Sorry.", offset));
+				}
+			}
 		} else {
 			result.add(new ErrorProposal(
 					"No proposals available - syntax errors", offset));
