@@ -74,7 +74,7 @@ public class AutoEditStrategy implements IAutoEditStrategy {
 		IRegion line = doc.getLineInformationOfOffset(cmd.offset);
 		String  text = doc.get(line.getOffset(), line.getLength());
 		int offsetInLine = cmd.offset - line.getOffset();
-		char charAtOffset = text.charAt(offsetInLine);
+		// char charAtOffset = text.charAt(offsetInLine);
 		
 		int tab = offsetInLine;
 		while (tabWidth > 0 && tab % tabWidth != 0) tab--;
@@ -83,7 +83,7 @@ public class AutoEditStrategy implements IAutoEditStrategy {
 //				+ ", char='" + charAtOffset + "'");
 		boolean allSpaces = true;
 		for (int i=tab; i <= offsetInLine; i++)
-			allSpaces = allSpaces && Character.isWhitespace(text.charAt(i));
+			allSpaces = allSpaces && i < text.length() && Character.isWhitespace(text.charAt(i));
 		if (allSpaces) {
 			cmd.offset = line.getOffset() + tab;
 			cmd.length = offsetInLine - tab + 1;
