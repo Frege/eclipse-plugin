@@ -254,7 +254,7 @@ public class FregeParseController extends ParseControllerBase implements
 	}
 
 	private int timeout;
-	private TGlobal global, savedglobal;
+	private TGlobal global, goodglobal;
 	private int  hash = 0;
 	private int  leng = 0;
 	private final ISourcePositionLocator   fSourcePositionLocator   
@@ -387,7 +387,7 @@ public class FregeParseController extends ParseControllerBase implements
 			}
 		}
 		else timeout = 250;
-		savedglobal = global;
+		goodglobal = global;
 	}
 
 	/**
@@ -396,65 +396,106 @@ public class FregeParseController extends ParseControllerBase implements
 	public TGlobal parse(String contents, boolean scanOnly,
 			IProgressMonitor monitor) {
 		
-		if (scanOnly && timeout > 0)
-			try { Thread.sleep(timeout); } catch (InterruptedException e) {}
-		if (monitor.isCanceled()) return global;
+		long t0 = 0;
+		long te = 0;
+		long t1 = 0;
+		TList passes = null;
+		DCons pass = null;
+		int index;
 		
-		if (contents.length() == leng && contents.hashCode() == hash)
-			return global;			// nothing really updated here
+		synchronized (this) {
+			if (scanOnly && timeout > 0)
+				try { Thread.sleep(timeout); } catch (InterruptedException e) {}
+			if (monitor.isCanceled()) return global;
+		
+			if (contents.length() == leng && contents.hashCode() == hash)
+				return global;			// nothing really updated here
 		
 		
-		msgHandler.clearMessages();
+			msgHandler.clearMessages();
 		
-		final IProgressMonitor myMonitor = monitor;
-		Lambda cancel = new frege.rt.Lam1() {			
-			public Lazy<FV> eval(Lazy<FV> realworld) {
-				return (myMonitor.isCanceled()) ? Box.Bool.t : Box.Bool.f;	
-			}
-		};
+			final IProgressMonitor myMonitor = monitor;
+			Lambda cancel = new frege.rt.Lam1() {			
+				public Lazy<FV> eval(Lazy<FV> realworld) {
+					return (myMonitor.isCanceled()) ? Box.Bool.t : Box.Bool.f;	
+				}
+			};
 		
-		global = TGlobal.upd$sub(global,  TSubSt.upd$cancelled(
+			global = TGlobal.upd$sub(global,  TSubSt.upd$cancelled(
 				TGlobal.sub(global), 
 				cancel));
-		
-//		if (!scanOnly) {
-//			System.err.println("parse for build");
-//			global = runStG(frege.compiler.Main.withOption(TFlag.WITHCP), global);
-//		}
+			global = TGlobal.upd$sub(global, TSubSt.upd$errors(TGlobal.sub(global), 0));
 		
 		
-		long t0 = System.nanoTime();
-		TList passes = (TList) frege.compiler.Main.passes._e();
-		monitor.beginTask(this.getClass().getName() + " parsing", 
-				1 + IListLike__lbrack_rbrack.length(passes));
-		
-		int index = 0;
-		synchronized (this) {
-			while (!monitor.isCanceled()) {
-			
-				long t1 = System.nanoTime();
+			t0 = System.nanoTime();
+			passes = (TList) frege.compiler.Main.passes._e();
+			;
+			monitor.beginTask(this.getClass().getName() + " parsing", 
+					1 + IListLike__lbrack_rbrack.length(passes));
+
+			index = 0;
+
+			while (!monitor.isCanceled()
+					&& (pass = passes._Cons()) != null
+					&& errors(global) == 0
+					&& index < 2) {		// do lexer and parser synchronized
+				t1 = System.nanoTime();
 				index++;
-				final DCons pass = passes._Cons();
-				if (pass== null) break;   // done
 				passes = (TList) pass.mem2._e();
 				final TTuple3 adx = (TTuple3) pass.mem1._e();
 				final Lazy<FV> action = index == 1 ? Main.lexPassIDE(contents) : adx.mem1;
 				final String   desc   = Box.<String>box(adx.mem2._e()).j;
 				final TGlobal g = runStG(action, global);
-				long te = System.nanoTime();
+				te = System.nanoTime();
 				System.err.println(desc + " took " 
 					+ (te-t1)/1000000 + "ms, cumulative "
 					+ (te-t0)/1000000 + "ms");
+				
 				monitor.worked(1);
 				global = runStG(EclipseUtil.passDone._e(), g);
-				if (monitor.isCanceled()) {
-					System.err.println("cancelled in " + desc);
-					break;
-				}
+			}
+			// update token array in goodglobal
+			Array toks = TSubSt.toks(TGlobal.sub(global));
+			goodglobal = TGlobal.upd$sub(goodglobal, TSubSt.upd$toks(
+					TGlobal.sub(goodglobal), toks));
+//			Array gtoks = TSubSt.toks(TGlobal.sub(global));
+//			System.err.println("global.toks==good.toks is " + (toks == gtoks));
+		}
+		
+		// adjust timeout
+		int needed = (int) (te-t0) / 1000000;
+		if (needed > 0) {
+			System.err.print("needed=" + needed + "ms, timeout=" + timeout + "ms, ");
+			if (needed > timeout) 
+				timeout = 5 * timeout / 4;
+			else 
+				timeout = 4 * timeout / 5;
+			System.err.println("new timeout=" + timeout + "ms");
+		}
+
+		
+		while (!monitor.isCanceled()
+					&& errors(global) == 0
+					&& (pass = passes._Cons()) != null) {			// do the rest unsynchronized
+				t1 = System.nanoTime();
+				passes = (TList) pass.mem2._e();
+				final TTuple3 adx = (TTuple3) pass.mem1._e();
+				final Lazy<FV> action = adx.mem1;
+				final String   desc   = Box.<String>box(adx.mem2._e()).j;
+				final TGlobal g = runStG(action, global);
+				te = System.nanoTime();
+				System.err.println(desc + " took " 
+					+ (te-t1)/1000000 + "ms, cumulative "
+					+ (te-t0)/1000000 + "ms");
 				
-				if (errors(g) > 0) break;
-				if (scanOnly && desc.startsWith("type check")) break;
-			}}
+				monitor.worked(1);
+				global = runStG(EclipseUtil.passDone._e(), g);
+				
+				if (achievement(global) >= achievement(goodglobal))
+					goodglobal = global;
+				if (scanOnly && desc.startsWith("type check"))
+					break;
+		}
 		
 		leng = contents.length();
 		hash = contents.hashCode();
@@ -463,7 +504,13 @@ public class FregeParseController extends ParseControllerBase implements
 
 	@Override
 	synchronized public TGlobal getCurrentAst() {
+		// System.err.println("delivered goodglobal");
 		return global;
+	}
+	
+	synchronized public TGlobal getGoodAst() {
+		// System.err.println("delivered goodglobal");
+		return goodglobal;
 	}
 	
 	@Override

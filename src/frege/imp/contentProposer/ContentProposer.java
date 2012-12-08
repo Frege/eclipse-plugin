@@ -48,7 +48,7 @@ public class ContentProposer implements IContentProposer {
 			return new Proposal(
 					TProposal.proposal(p),
 					newT,
-					TProposal.prefix(p),
+					"",			// TProposal.prefix(p),
 					off,
 					TProposal.len(p),
 					TProposal.cursor(p)+off+newT.length(),
@@ -77,7 +77,7 @@ public class ContentProposer implements IContentProposer {
 			int offset, ITextViewer viewer) {
 		FregeParseController parser = (FregeParseController) ctlr;
 		List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
-		final TGlobal g = parser.getCurrentAst();
+		final TGlobal g = parser.getGoodAst();
 		final Array tokens = TSubSt.toks(TGlobal.sub(g));
 
 		if (g != null) {
@@ -115,6 +115,7 @@ public class ContentProposer implements IContentProposer {
 				TProposal p = (TProposal) node.mem1._e();
 				if (first) {
 					first = false;
+					pref = TProposal.prefix(p);
 					System.err.println("getContentProposal: " + IShow_Proposal.show(p));
 				}
 				result.add(Proposal.convert(p));
@@ -131,7 +132,7 @@ public class ContentProposer implements IContentProposer {
 				}
 				else {
 					result.add(new ErrorProposal(
-							"No proposals available and I have no idea why not. Sorry.", offset));
+							"Can't help you here. Sorry.", offset));
 				}
 			}
 		} else {
