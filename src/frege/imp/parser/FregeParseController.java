@@ -396,7 +396,7 @@ public class FregeParseController extends ParseControllerBase implements
 	public TGlobal parse(String contents, boolean scanOnly,
 			IProgressMonitor monitor) {
 		
-		long t0 = 0;
+		long t0 = System.nanoTime();
 		long te = 0;
 		long t1 = 0;
 		TList passes = null;
@@ -404,8 +404,7 @@ public class FregeParseController extends ParseControllerBase implements
 		int index;
 		
 		synchronized (this) {
-			if (scanOnly && timeout > 0)
-				try { Thread.sleep(timeout); } catch (InterruptedException e) {}
+			
 			if (monitor.isCanceled()) return global;
 		
 			if (contents.length() == leng && contents.hashCode() == hash)
@@ -426,10 +425,8 @@ public class FregeParseController extends ParseControllerBase implements
 				cancel));
 			global = TGlobal.upd$sub(global, TSubSt.upd$errors(TGlobal.sub(global), 0));
 		
-		
-			t0 = System.nanoTime();
 			passes = (TList) frege.compiler.Main.passes._e();
-			;
+			
 			monitor.beginTask(this.getClass().getName() + " parsing", 
 					1 + IListLike__lbrack_rbrack.length(passes));
 
@@ -454,10 +451,14 @@ public class FregeParseController extends ParseControllerBase implements
 				monitor.worked(1);
 				global = runStG(EclipseUtil.passDone._e(), g);
 			}
-			// update token array in goodglobal
-			Array toks = TSubSt.toks(TGlobal.sub(global));
-			goodglobal = TGlobal.upd$sub(goodglobal, TSubSt.upd$toks(
-					TGlobal.sub(goodglobal), toks));
+			if (achievement(global) >= achievement(goodglobal))
+				goodglobal = global;			// when opening a file with errors
+			else {
+				// update token array in goodglobal
+				Array toks = TSubSt.toks(TGlobal.sub(global));
+				goodglobal = TGlobal.upd$sub(goodglobal, TSubSt.upd$toks(
+						TGlobal.sub(goodglobal), toks));
+			}
 //			Array gtoks = TSubSt.toks(TGlobal.sub(global));
 //			System.err.println("global.toks==good.toks is " + (toks == gtoks));
 		}
@@ -472,6 +473,9 @@ public class FregeParseController extends ParseControllerBase implements
 				timeout = 4 * timeout / 5;
 			System.err.println("new timeout=" + timeout + "ms");
 		}
+		
+		if (scanOnly && timeout - needed > 0 && errors(global) == 0)
+			try { Thread.sleep(timeout - needed); } catch (InterruptedException e) {}
 
 		
 		while (!monitor.isCanceled()
@@ -479,6 +483,7 @@ public class FregeParseController extends ParseControllerBase implements
 					&& (pass = passes._Cons()) != null) {			// do the rest unsynchronized
 				t1 = System.nanoTime();
 				passes = (TList) pass.mem2._e();
+				index++;
 				final TTuple3 adx = (TTuple3) pass.mem1._e();
 				final Lazy<FV> action = adx.mem1;
 				final String   desc   = Box.<String>box(adx.mem2._e()).j;
@@ -493,6 +498,13 @@ public class FregeParseController extends ParseControllerBase implements
 				
 				if (achievement(global) >= achievement(goodglobal))
 					goodglobal = global;
+				else if (index >= 6) {
+					// give token resolve table to goodglobal
+					goodglobal = TGlobal.upd$sub(goodglobal, TSubSt.upd$idKind(
+							TGlobal.sub(goodglobal), TSubSt.idKind(TGlobal.sub(global))));
+					// give locals to goodglobals
+					goodglobal = TGlobal.upd$locals(goodglobal, TGlobal.locals(global));
+				}
 				if (scanOnly && desc.startsWith("type check"))
 					break;
 		}
@@ -620,5 +632,11 @@ public class FregeParseController extends ParseControllerBase implements
 			};
 		}
 		return lsp;
+	}
+	public synchronized final int getHash() {
+		return hash;
+	}
+	public synchronized final int getLeng() {
+		return leng;
 	}
 }
