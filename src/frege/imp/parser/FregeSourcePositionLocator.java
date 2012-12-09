@@ -60,9 +60,9 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		int from = 0;
 		int to = arr.length();
 		
-		while (from < to) {
+		while (from +2 < to) {
 			int it = (from + to) / 2;
-			if (it==from || it == to) break;
+			// if (it==from || it == to) break;
 			System.err.println("previous: before=" + before + ", from=" + from + ", to=" + to);
 			TToken at = tokenAt(arr, it);
 			int off = TToken.offset(at);
@@ -74,10 +74,10 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 			from = it;			
 		}
 		// linear search down
-		while (to >= from) {
-			System.err.println("previous: before=" + before + ", from=" + from + ", to=" + to);
+		while (to >= 0) {
+			System.err.println("previous: before=" + before +  ", to=" + to);
 			TToken at = tokenAt(arr, to);
-			if (at == null) { to--; continue; }
+			if (at == null || TToken.col(at) == 0) { to--; continue; }		// no inserted ';' and '}'
 			System.err.println("previous: token=" + IShow_Token.show(at));
 			if (TToken.offset(at) < before) return to;
 			to--;
