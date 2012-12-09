@@ -17,12 +17,17 @@ import frege.rt.Box;
 
 import java.util.*;
 
+import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.jface.text.source.ContentAssistantFacade;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.imp.services.IContentProposer;
 import org.eclipse.imp.editor.ErrorProposal;
 import org.eclipse.imp.editor.SourceProposal;
+import org.eclipse.imp.editor.UniversalEditor;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.parser.ISourcePositionLocator;
 
@@ -57,6 +62,7 @@ public class ContentProposer implements IContentProposer {
 		}
 	}
 	
+		
 	/**
 	 * Returns an array of content proposals applicable relative to the AST of the given
 	 * parse controller at the given position.
@@ -76,17 +82,38 @@ public class ContentProposer implements IContentProposer {
 	public ICompletionProposal[] getContentProposals(IParseController ctlr,
 			int offset, ITextViewer viewer) {
 		FregeParseController parser = (FregeParseController) ctlr;
+		
+		
+//		SourceViewer srcViewer = viewer instanceof SourceViewer ? (SourceViewer) viewer : null ;
+//		if (srcViewer != null) {
+//			ContentAssistantFacade facade = srcViewer.getContentAssistantFacade();
+//			if (facade != null) {
+//				facade.getHandler(ContentAssistant.SELECT_NEXT_PROPOSAL_COMMAND_ID);
+//			}
+//		}
+//		String src = viewer.getDocument().get();
+//		UniversalEditor editor = (UniversalEditor) viewer;
+//		editor.getDocumentProvider();
+//		
+//		if (src.length() != parser.getLeng() 
+//					|| src.hashCode() != parser.getHash()) {
+//			return result.toArray(new ICompletionProposal[result.size()]);		// buffer dirty, return previous result
+//		}
+
 		List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
 		final TGlobal g = parser.getGoodAst();
-		final Array tokens = TSubSt.toks(TGlobal.sub(g));
-
+		final Array tokens = TSubSt.toks(TGlobal.sub(g));	
+			
 		if (g != null) {
 			int inx = FregeSourcePositionLocator.previous(tokens, offset);
 			
 			TToken token = FregeSourcePositionLocator.tokenAt(tokens, inx);
+			TToken tprev = FregeSourcePositionLocator.tokenAt(tokens, inx-1);
 			boolean direct = false;
 			boolean inside = false;
 			String  id = "none";
+			String  idprev = tprev == null ? "" 
+								: BaseTypes.IShow_TokenID.show(TToken.tokid(tprev).j) + ",";
 			String  pref = ""; 
 			String  val = null;
 			if (token != null) {
@@ -102,7 +129,7 @@ public class ContentProposer implements IContentProposer {
 				}
 			}
 			System.err.println("getContentProposal offset=" + offset
-						+ ", tokenID=" + id
+						+ ", tokenID=" + idprev + id
 						+ ", value=\"" + val + '"'
 						+ ", direct=" + direct
 						+ ", inside=" + inside);
