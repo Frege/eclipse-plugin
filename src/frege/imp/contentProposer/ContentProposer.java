@@ -136,29 +136,32 @@ public class ContentProposer implements IContentProposer {
 						+ ", direct=" + direct
 						+ ", inside=" + inside);
 				
-			TList ps = EclipseUtil.proposeContent(g, offset, tokens, inx);
+			TList ps = null; 
 			boolean first = true;
-			while (true) {
-				final TList.DCons node = ps._Cons();
-				if (node == null) break;
-				TProposal p = (TProposal) node.mem1._e();
-				if (first) {
-					first = false;
-					pref = TProposal.prefix(p);
-					System.err.println("getContentProposal: " + IShow_Proposal.show(p));
-				}
-				result.add(Proposal.convert(p));
-				ps = (TList) node.mem2._e();
-			}
-			if (first 
-					&& (TToken.tokid(token).j == TTokenID.IMPORT.j
-							|| TToken.tokid(tprev).j == TTokenID.IMPORT.j)) {
+			if (TToken.tokid(token).j == TTokenID.IMPORT.j
+					|| TToken.tokid(tprev).j == TTokenID.IMPORT.j) {
 				List<String> packs = parser.getFD().getAllSources(pref);
 				for (String p: packs) {
 					result.add(new SourceProposal(p, pref, offset));
 				}
 				first = result.size() == 0;
 			}
+			else {
+				ps = EclipseUtil.proposeContent(g, offset, tokens, inx);
+				while (true) {
+					final TList.DCons node = ps._Cons();
+					if (node == null) break;
+					TProposal p = (TProposal) node.mem1._e();
+					if (first) {
+						first = false;
+						pref = TProposal.prefix(p);
+						System.err.println("getContentProposal: " + IShow_Proposal.show(p));
+					}
+					result.add(Proposal.convert(p));
+					ps = (TList) node.mem2._e();
+				}
+			}
+			
 			if (first) {			// empty proposal list
 				if (TGlobal.errors(g) > 0) {
 					result.add(new ErrorProposal(
