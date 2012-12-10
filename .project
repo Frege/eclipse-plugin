@@ -11,11 +11,12 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.imp.smapifier.SmapieBuilder</name>
+			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+			<triggers>full,incremental,</triggers>
 			<arguments>
 				<dictionary>
-					<key>exten</key>
-					<value>prefspecs</value>
+					<key>LaunchConfigHandle</key>
+					<value>&lt;project&gt;/.externalToolBuilders/org.eclipse.imp.smapifier.SmapieBuilder.launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>
@@ -30,13 +31,23 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.imp.metatooling.sanityChecker</name>
+			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+			<triggers>full,incremental,</triggers>
 			<arguments>
+				<dictionary>
+					<key>LaunchConfigHandle</key>
+					<value>&lt;project&gt;/.externalToolBuilders/org.eclipse.imp.metatooling.sanityChecker.launch</value>
+				</dictionary>
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.eclipse.imp.prefspecs.builder</name>
+			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+			<triggers>full,incremental,</triggers>
 			<arguments>
+				<dictionary>
+					<key>LaunchConfigHandle</key>
+					<value>&lt;project&gt;/.externalToolBuilders/org.eclipse.imp.prefspecs.builder.launch</value>
+				</dictionary>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
@@ -51,7 +62,7 @@
 		<link>
 			<name>lib/fregec.jar</name>
 			<type>1</type>
-			<locationURI>WORKSPACE_LOC/frege/fregec.jar</locationURI>
+			<location>/home/ingo/x/dev/frege/fregec.jar</location>
 		</link>
 	</linkedResources>
 </projectDescription>

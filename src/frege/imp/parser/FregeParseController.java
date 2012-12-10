@@ -1,6 +1,17 @@
 package frege.imp.parser;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 // import lpg.runtime.ILexStream;
@@ -33,6 +44,8 @@ import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.imp.services.IAnnotationTypeInfo;
 import org.eclipse.imp.services.ILanguageSyntaxProperties;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.source.LineRange;
+
 import frege.FregePlugin;
 import frege.rt.Array;
 import frege.rt.Lambda;
@@ -215,6 +228,46 @@ public class FregeParseController extends ParseControllerBase implements
 		 */
 		public String getBp() {
 			return bp;
+		}
+		/**
+		 * get all frege source files in the work space
+		 */
+		public List<String> getAllSources(final String hint) {
+			final FregeBuilder builder = new FregeBuilder();
+			final Set<String> result = new HashSet<String>();
+			try {
+				project.getRawProject().getWorkspace().getRoot().accept(builder.fResourceVisitor);
+			} catch (CoreException e) {
+				// problems getting the file names
+				return new ArrayList<String>(result);
+			}
+			LineNumberReader rdr = null;
+			for (IFile file : builder.fChangedSources) try {
+				rdr = null;
+				rdr = new LineNumberReader(new InputStreamReader(file.getContents(true)));
+				String line;
+				java.util.regex.Pattern pat = Pattern.compile("\\b(package|module)\\s+(\\S+)");
+				while ((line = rdr.readLine()) != null) {
+					Matcher m = pat.matcher(line);
+					if (m.find()) {
+						String p = m.group(2);
+						if (p.startsWith(hint))
+								result.add(p);
+					}
+				}
+				rdr.close(); rdr = null;
+			} catch (Exception e) {
+				if (rdr != null)
+					try {
+						rdr.close();
+					} catch (IOException e1) {
+						rdr = null;
+					}
+				rdr = null;
+			}
+			ArrayList<String> sorted = new ArrayList<String>(result); 
+			Collections.sort(sorted);
+			return sorted;
 		}
 		/**
 		 * look for a path that contains the source code for pack

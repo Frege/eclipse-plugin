@@ -24,6 +24,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.imp.services.IContentProposer;
 import org.eclipse.imp.editor.ErrorProposal;
 import org.eclipse.imp.editor.SourceProposal;
@@ -122,7 +123,8 @@ public class ContentProposer implements IContentProposer {
 				id = BaseTypes.IShow_TokenID.show(TToken.tokid(token).j);
 				val  = TToken.value(token);
 				try {
-					pref = inside ? val.substring(0, offset - TToken.offset(token)) : "";
+					pref = inside ? val.substring(0, offset - TToken.offset(token)) 
+							: (direct ? val : "");
 				} catch (IndexOutOfBoundsException e) {
 					// stay on the safe side
 					pref = "";
@@ -147,6 +149,15 @@ public class ContentProposer implements IContentProposer {
 				}
 				result.add(Proposal.convert(p));
 				ps = (TList) node.mem2._e();
+			}
+			if (first 
+					&& (TToken.tokid(token).j == TTokenID.IMPORT.j
+							|| TToken.tokid(tprev).j == TTokenID.IMPORT.j)) {
+				List<String> packs = parser.getFD().getAllSources(pref);
+				for (String p: packs) {
+					result.add(new SourceProposal(p, pref, offset));
+				}
+				first = result.size() == 0;
 			}
 			if (first) {			// empty proposal list
 				if (TGlobal.errors(g) > 0) {
