@@ -27,6 +27,7 @@ src/frege/tools/
 #################
 
 *.pydevproject
+.project
 .metadata
 bin/
 tmp/
