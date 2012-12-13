@@ -558,8 +558,10 @@ public class FregeParseController extends ParseControllerBase implements
 					// give locals to goodglobals
 					goodglobal = TGlobal.upd$locals(goodglobal, TGlobal.locals(global));
 				}
-				if (scanOnly && desc.startsWith("type check"))
+				if (scanOnly && desc.startsWith("type check")) {
+					goodglobal = global;
 					break;
+				}
 		}
 		
 		leng = contents.length();
