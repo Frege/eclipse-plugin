@@ -59,6 +59,7 @@ import frege.prelude.PreludeBase.TTuple3;
 import frege.prelude.PreludeBase.TState;
 import frege.prelude.PreludeList.IListLike__lbrack_rbrack;
 import frege.compiler.BaseTypes.TFlag;
+import frege.compiler.BaseTypes.IEnum_Flag;
 import frege.compiler.Data.TGlobal;
 import frege.compiler.Data.TMessage;
 import frege.compiler.Data.TOptions;
@@ -429,8 +430,9 @@ public class FregeParseController extends ParseControllerBase implements
 				global = TGlobal.upd$options(global, TOptions.upd$flags(
 							TGlobal.options(global),
 							Utilities.setFlag(
-									TOptions.flags(TGlobal.options(global)), 
-								    TFlag.INLINE.j)
+									new IEnum_Flag(),
+									TOptions.flags(TGlobal.options(global)).j, 
+								    TFlag.INLINE).j
 						));
 			}
 			final String prefix = service.getStringPreference(FregePreferencesConstants.P_PREFIX); 
