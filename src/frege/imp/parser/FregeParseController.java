@@ -519,7 +519,7 @@ public class FregeParseController extends ParseControllerBase implements
 		}
 		
 		// adjust timeout
-		int needed = (int) (te-t0) / 1000000;
+		int needed = (int) ((te-t0) / 1000000);
 		if (needed > 0) {
 			System.err.print("needed=" + needed + "ms, timeout=" + timeout + "ms, ");
 			if (needed > timeout) 

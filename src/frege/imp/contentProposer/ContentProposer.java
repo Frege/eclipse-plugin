@@ -138,8 +138,8 @@ public class ContentProposer implements IContentProposer {
 				
 			TList ps = null; 
 			boolean first = true;
-			if (TToken.tokid(token).j == TTokenID.IMPORT.j
-					|| TToken.tokid(tprev).j == TTokenID.IMPORT.j) {
+			if (token != null && (TToken.tokid(token).j == TTokenID.IMPORT.j
+					|| TToken.tokid(tprev).j == TTokenID.IMPORT.j)) {
 				List<String> packs = parser.getFD().getAllSources(pref);
 				for (String p: packs) {
 					result.add(new SourceProposal(p, pref, offset));
