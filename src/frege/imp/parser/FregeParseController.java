@@ -57,6 +57,7 @@ import frege.prelude.PreludeBase.TTuple2;
 import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TTuple3;
 import frege.prelude.PreludeBase.TState;
+import frege.prelude.PreludeList;
 import frege.prelude.PreludeList.IListLike__lbrack_rbrack;
 import frege.compiler.BaseTypes.TFlag;
 import frege.compiler.BaseTypes.IEnum_Flag;
@@ -189,7 +190,7 @@ public class FregeParseController extends ParseControllerBase implements
 					try {
 						bp = wroot.append(jp.getOutputLocation()).toPortableString();
 						IClasspathEntry[] cpes = jp.getResolvedClasspath(true);
-						fp = "";
+						fp = bp;
 						sp = ".";
 						for (IClasspathEntry cpe: cpes) {
 							if (cpe.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
@@ -518,19 +519,11 @@ public class FregeParseController extends ParseControllerBase implements
 //			System.err.println("global.toks==good.toks is " + (toks == gtoks));
 		}
 		
-		// adjust timeout
 		int needed = (int) ((te-t0) / 1000000);
-		if (needed > 0) {
-			System.err.print("needed=" + needed + "ms, timeout=" + timeout + "ms, ");
-			if (needed > timeout) 
-				timeout = 5 * timeout / 4;
-			else 
-				timeout = 4 * timeout / 5;
-			System.err.println("new timeout=" + timeout + "ms");
-		}
-		
-		if (scanOnly && timeout - needed > 0 && errors(global) == 0)
+				
+		if (scanOnly && timeout - needed > 0 && errors(global) == 0 && !monitor.isCanceled())
 			try { Thread.sleep(timeout - needed); } catch (InterruptedException e) {}
+		t0 = System.nanoTime() - (te-t0);
 
 		
 		while (!monitor.isCanceled()
@@ -572,7 +565,7 @@ public class FregeParseController extends ParseControllerBase implements
 	}
 
 	@Override
-	synchronized public TGlobal getCurrentAst() {
+	public TGlobal getCurrentAst() {
 		// System.err.println("delivered goodglobal");
 		return global;
 	}
@@ -589,9 +582,11 @@ public class FregeParseController extends ParseControllerBase implements
 		// when we build, we'll get a MarkerCreatorWithBatching
 		// Hence, if we do not have one, we just scan&parse, otherwise we do a full compile
 		TGlobal g = parse(input, mcwb == null, monitor);
-		TList msgs = TSubSt.messages(TGlobal.sub(g));
+		System.err.print("frege parse: done, adding errors ");
+		TList msgs = PreludeList.reverse(TSubSt.messages(TGlobal.sub(g)));
+		int maxmsgs = 9;
 		 
-		while (true) {
+		while (!monitor.isCanceled() && maxmsgs > 0) {
 			TList.DCons node = msgs._Cons();
 			if (node == null) break;
 			msgs = (TList) node.mem2._e();
@@ -616,12 +611,17 @@ public class FregeParseController extends ParseControllerBase implements
 			}
 			// normal message handling
 			if (TMessage.level(msg).j != TSeverity.ERROR.j) continue;
+			maxmsgs--;
+			System.err.print(".");
 			msgHandler.handleSimpleMessage(TMessage.text(msg), 
 					TPosition.start(TMessage.pos(msg)), 
 					TPosition.end(TMessage.pos(msg))-1, 
 					0, 0, 0, 0);
 		}
-		if (mcwb == null) monitor.done();
+		if (mcwb == null) {
+			monitor.done();
+		}
+		System.err.println(" returning to imp framework");
 		return g;
 	}
 	
