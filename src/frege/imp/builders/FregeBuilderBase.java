@@ -367,7 +367,7 @@ public abstract class FregeBuilderBase extends BuilderBase {
 
     /**
      * Visits the project delta, if any, or the entire project, and determines the set
-     * of files needed recompilation, and adds them to <code>fChangedSources</code>.
+     * of files that need recompilation, and adds them to <code>fChangedSources</code>.
      * @param monitor
      * @throws CoreException
      */
