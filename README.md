@@ -4,7 +4,8 @@ What is fregIDE?
 *fregIDE* is an Eclipse plugin that supports the [frege programming language](https://github.com/Frege/).
 
 Currently, we do not have an update site for the ready-to-go plugin. We're working on this.
-You can [download](https://github.com/Frege/eclipse-plugin/downloads/) a zip-archive and install from that.
+You can [download](http://code.google.com/p/frege/downloads/list) a zip-archive and install from that.
+Please follow the  [tutorial](https://github.com/Frege/eclipse-plugin/wiki/) after downloading.
 
 If you want to help develop the frege IDE, follow the steps below. 
 This assumes that one already has installed the IMP plugin's as described in the [tutorial](https://github.com/Frege/eclipse-plugin/wiki/).
