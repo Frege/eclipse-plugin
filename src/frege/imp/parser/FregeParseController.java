@@ -446,6 +446,11 @@ public class FregeParseController extends ParseControllerBase implements
 		goodglobal = global;
 	}
 
+	public void resetHash() {
+		leng = 0;
+		hash = 0;
+	}
+	
 	/**
 	 * The msgHandler must be in place
 	 */
