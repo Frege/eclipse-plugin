@@ -10,7 +10,7 @@ Please follow the  [tutorial](https://github.com/Frege/eclipse-plugin/wiki/) aft
 If you want to help develop the frege IDE, follow the steps below. 
 This assumes that one already has installed the IMP plugin's as described in the [tutorial](https://github.com/Frege/eclipse-plugin/wiki/).
 
-  1. [Download](https://github.com/Frege/frege/downloads/) frege compiler/library jar. 
+  1. [Download](http://code.google.com/p/frege/downloads/list) frege compiler/library jar. 
   2. Clone the eclipse-plugin repository.
   3. Copy the compiler jar to `eclipse-plugin/lib/fregec.jar`.
   4. Fire up eclipse and import repository `eclipse-plugin` as project from filesystem.
