@@ -47,11 +47,11 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.source.LineRange;
 
 import frege.FregePlugin;
-import frege.rt.Array;
-import frege.rt.Lambda;
-import frege.rt.Box;
-import frege.rt.FV;
-import frege.rt.Lazy;
+import frege.runtime.Array;
+import frege.runtime.Delayed;
+import frege.runtime.Func1;
+import frege.runtime.Lambda;
+import frege.runtime.Lazy;
 import frege.prelude.PreludeBase.TList.DCons;
 import frege.prelude.PreludeBase.TTuple2;
 import frege.prelude.PreludeBase.TList;
@@ -118,7 +118,7 @@ public class FregeParseController extends ParseControllerBase implements
 			region = reg;
 			inx = 0;
 			while (inx < toks.length()) {
-				TToken t = (TToken) toks.getAt(inx)._e(); 
+				TToken t = Delayed.<TToken>forced(toks.getAt(inx)); 
 				if (within(t, reg)) break;
 				inx++;
 			}
@@ -126,11 +126,11 @@ public class FregeParseController extends ParseControllerBase implements
 		
 		public static int skipBraces(final Array toks, int j) {
 			while (j < toks.length()) {
-				TToken tok = (TToken) toks.getAt(j)._e();
-				if (tok.mem1 == TTokenID.CHAR.j
-						&& (tok.mem2.charAt(0) == '{'
-								|| tok.mem2.charAt(0) == '}'
-								|| tok.mem2.charAt(0) == ';')) {
+				TToken tok = Delayed.<TToken>forced(toks.getAt(j));
+				if (tok.mem$tokid == TTokenID.CHAR
+						&& (tok.mem$value.charAt(0) == '{'
+								|| tok.mem$value.charAt(0) == '}'
+								|| tok.mem$value.charAt(0) == ';')) {
 					j++;
 				}
 				else break;
@@ -144,14 +144,14 @@ public class FregeParseController extends ParseControllerBase implements
 			inx = skipBraces(toks, inx);
 			// we have a next if we are not the empty list and the token is in the region
 			return inx < toks.length()
-					&& within((TToken)toks.getAt(inx)._e(), region);
+					&& within(Delayed.<TToken>forced(toks.getAt(inx)), region);
 		}
 		
 		@Override
 		public TToken next() {
 			// give back next token
 			if (inx < toks.length()) {
-				return (TToken) toks.getAt(inx++)._e();
+				return Delayed.<TToken>forced(toks.getAt(inx++));
 			}
 			return null;
 		}
@@ -342,10 +342,10 @@ public class FregeParseController extends ParseControllerBase implements
 	 * run a {@link frege.prelude.PreludeBase.TState} action and return the new TGlobal state
 	 * @return the new state
 	 */
-	public static TGlobal runStG(Lazy<FV> action, TGlobal g) {
-		Lambda stg = (Lambda) action._e();				// State (g -> (a, g)) 
-		TTuple2 r = (TTuple2)TState.run(stg, g)._e();
-		return (TGlobal) r.mem2._e();
+	public static TGlobal runStG(Lazy action, TGlobal g) {
+		Lambda stg = Delayed.<Lambda>forced(action);				// State (g -> (a, g)) 
+		TTuple2 r = TState.run(stg, g).<TTuple2>forced();
+		return Delayed.<TGlobal>forced( r.mem2 );
 	}
 	
 	/**
@@ -353,10 +353,10 @@ public class FregeParseController extends ParseControllerBase implements
 	 * The state must not be changed by the action. 
 	 * @return the result
 	 */
-	public static FV funStG(Lazy<FV> action, TGlobal g) {
-		Lambda stg = (Lambda) action._e();				// State (g -> (a, g)) 
-		TTuple2 r = (TTuple2)TState.run(stg, g)._e();
-		return r.mem1._e();
+	public static Object funStG(Lazy action, TGlobal g) {
+		Lambda stg = action.<Lambda>forced();				// State (g -> (a, g)) 
+		TTuple2 r = TState.run(stg, g).<TTuple2>forced();
+		return r.mem1;
 	}
 
 	/**
@@ -372,9 +372,9 @@ public class FregeParseController extends ParseControllerBase implements
 				project.getRawProject().getLocation().append(filePath)
 				: filePath;
 
-		global =  (TGlobal) 
-				frege.prelude.PreludeBase.TST.performUnsafe(
-						(Lambda) frege.compiler.Main.eclipseOptions._e())._e();
+		global = Delayed.<TGlobal> forced(frege.prelude.PreludeBase.TST
+				.performUnsafe(frege.compiler.Main.eclipseOptions
+						.<Lambda> forced()));
 		fregeData = new FregeData(project);
 		createLexerAndParser(fullFilePath, project);
 
@@ -410,13 +410,13 @@ public class FregeParseController extends ParseControllerBase implements
 		global = TGlobal.upd$options(global, TOptions.upd$path(
 				TGlobal.options(global),
 				frege.prelude.Arrays.IStringSplitter_Regex.splitted(
-						((frege.rt.Box<Pattern>)frege.compiler.Utilities.pathRE._e()).j, 
+						frege.compiler.Utilities.pathRE, 
 						fp)));
 		System.err.println("SourcePath: " + sp);
 		global = TGlobal.upd$options(global, TOptions.upd$sourcePath(
 				TGlobal.options(global),
 				frege.prelude.Arrays.IStringSplitter_Regex.splitted(
-						((frege.rt.Box<Pattern>)frege.compiler.Utilities.pathRE._e()).j, 
+						frege.compiler.Utilities.pathRE, 
 						sp)));
 		System.err.println("Destination: " + bp);
 		global = TGlobal.upd$options(global, TOptions.upd$dir(
@@ -432,8 +432,8 @@ public class FregeParseController extends ParseControllerBase implements
 							TGlobal.options(global),
 							Utilities.setFlag(
 									new IEnum_Flag(),
-									TOptions.flags(TGlobal.options(global)).j, 
-								    TFlag.INLINE).j
+									TOptions.flags(TGlobal.options(global)), 
+								    TFlag.INLINE)
 						));
 			}
 			final String prefix = service.getStringPreference(FregePreferencesConstants.P_PREFIX); 
@@ -470,9 +470,9 @@ public class FregeParseController extends ParseControllerBase implements
 			msgHandler.clearMessages();
 		
 			final IProgressMonitor myMonitor = monitor;
-			Lambda cancel = new frege.rt.Lam1() {			
-				public Lazy<FV> eval(Lazy<FV> realworld) {
-					return (myMonitor.isCanceled()) ? Box.Bool.t : Box.Bool.f;	
+			Lambda cancel = new Func1() {			
+				public Boolean eval(Object realworld) {
+					return myMonitor.isCanceled();	
 				}
 			};
 		
@@ -481,7 +481,7 @@ public class FregeParseController extends ParseControllerBase implements
 				cancel));
 			global = TGlobal.upd$sub(global, TSubSt.upd$errors(TGlobal.sub(global), 0));
 		
-			passes = (TList) frege.compiler.Main.passes._e();
+			passes = frege.compiler.Main.passes.<TList>forced();
 			
 			monitor.beginTask(this.getClass().getName() + " parsing", 
 					1 + IListLike__lbrack_rbrack.length(passes));
@@ -494,10 +494,10 @@ public class FregeParseController extends ParseControllerBase implements
 					&& index < 2) {		// do lexer and parser synchronized
 				t1 = System.nanoTime();
 				index++;
-				passes = (TList) pass.mem2._e();
-				final TTuple3 adx = (TTuple3) pass.mem1._e();
-				final Lazy<FV> action = index == 1 ? Main.lexPassIDE(contents) : adx.mem1;
-				final String   desc   = Box.<String>box(adx.mem2._e()).j;
+				passes = pass.mem2.<TList>forced();
+				final TTuple3 adx = Delayed.<TTuple3>forced( pass.mem1 );
+				final Lazy action = index == 1 ? Main.lexPassIDE(contents) : Delayed.delayed(adx.mem1);
+				final String   desc   = Delayed.<String>forced(adx.mem2);
 				final TGlobal g = runStG(action, global);
 				te = System.nanoTime();
 				System.err.println(desc + " took " 
@@ -505,7 +505,7 @@ public class FregeParseController extends ParseControllerBase implements
 					+ (te-t0)/1000000 + "ms");
 				
 				monitor.worked(1);
-				global = runStG(EclipseUtil.passDone._e(), g);
+				global = runStG(EclipseUtil.passDone, g);
 			}
 			if (achievement(global) >= achievement(goodglobal))
 				goodglobal = global;			// when opening a file with errors
@@ -530,11 +530,11 @@ public class FregeParseController extends ParseControllerBase implements
 					&& errors(global) == 0
 					&& (pass = passes._Cons()) != null) {			// do the rest unsynchronized
 				t1 = System.nanoTime();
-				passes = (TList) pass.mem2._e();
+				passes = pass.mem2.<TList>forced();
 				index++;
-				final TTuple3 adx = (TTuple3) pass.mem1._e();
-				final Lazy<FV> action = adx.mem1;
-				final String   desc   = Box.<String>box(adx.mem2._e()).j;
+				final TTuple3 adx = Delayed.<TTuple3>forced( pass.mem1 );
+				final Lazy action = Delayed.delayed(adx.mem1);
+				final String   desc   = Delayed.<String>forced(adx.mem2);
 				final TGlobal g = runStG(action, global);
 				te = System.nanoTime();
 				System.err.println(desc + " took " 
@@ -542,7 +542,7 @@ public class FregeParseController extends ParseControllerBase implements
 					+ (te-t0)/1000000 + "ms");
 				
 				monitor.worked(1);
-				global = runStG(EclipseUtil.passDone._e(), g);
+				global = runStG(EclipseUtil.passDone, g);
 				
 				if (achievement(global) >= achievement(goodglobal))
 					goodglobal = global;
@@ -589,13 +589,13 @@ public class FregeParseController extends ParseControllerBase implements
 		while (!monitor.isCanceled() && maxmsgs > 0) {
 			TList.DCons node = msgs._Cons();
 			if (node == null) break;
-			msgs = (TList) node.mem2._e();
-			TMessage msg = (TMessage) node.mem1._e();
+			msgs = node.mem2.<TList>forced();
+			TMessage msg = Delayed.<TMessage>forced( node.mem1 );
 			if (mcwb != null) {
 				// do also warnings and hints
 				int sev = IMarker.SEVERITY_ERROR;
-				if (TMessage.level(msg).j == TSeverity.HINT.j) sev = IMarker.SEVERITY_INFO;
-				else if (TMessage.level(msg).j == TSeverity.WARNING.j)
+				if (TMessage.level(msg) == TSeverity.HINT) sev = IMarker.SEVERITY_INFO;
+				else if (TMessage.level(msg) == TSeverity.WARNING)
 					sev = IMarker.SEVERITY_WARNING;
 				try {
 					mcwb.addMarker(sev, 
@@ -610,7 +610,7 @@ public class FregeParseController extends ParseControllerBase implements
 				continue;
 			}
 			// normal message handling
-			if (TMessage.level(msg).j != TSeverity.ERROR.j) continue;
+			if (TMessage.level(msg) != TSeverity.ERROR) continue;
 			maxmsgs--;
 			System.err.print(".");
 			msgHandler.handleSimpleMessage(TMessage.text(msg), 

@@ -10,10 +10,10 @@ import frege.compiler.EclipseUtil.IShow_Proposal;
 import frege.compiler.EclipseUtil.TProposal;
 import frege.imp.parser.*;
 import frege.prelude.PreludeBase.TList;
-import frege.rt.Array;
-import frege.rt.FV;
-import frege.rt.Lazy;
-import frege.rt.Box;
+import frege.runtime.Array;
+import frege.runtime.Delayed;
+import frege.runtime.Lazy;
+
 
 import java.util.*;
 
@@ -39,15 +39,17 @@ public class ContentProposer implements IContentProposer {
 	 * lazily.
 	 */
 	static class Proposal extends SourceProposal {
-		Lazy<FV> additional;
+		Object additional;
 		public Proposal(String proposal, String newText, String prefix, int offset, int length, 
-				int cursor, Lazy<FV> additional) {
+				int cursor, Object additional) {
 			super(proposal, newText, prefix, new Region(offset, length), cursor);
 			this.additional = additional;
 		}
 		
 		public String getAdditionalProposalInfo() {
-			return Box.<String>box(additional._e()).j;
+			String res = Delayed.<String>forced(additional);
+			additional = res;
+			return res;
 		}
 		public static Proposal convert(final TProposal p) {
 			final String newT = TProposal.newText(p);
@@ -59,7 +61,7 @@ public class ContentProposer implements IContentProposer {
 					off,
 					TProposal.len(p),
 					TProposal.cursor(p)+off+newT.length(),
-					p.mem7
+					p.mem$additional
 					);
 		}
 	}
@@ -115,13 +117,13 @@ public class ContentProposer implements IContentProposer {
 			boolean inside = false;
 			String  id = "none";
 			String  idprev = tprev == null ? "" 
-								: BaseTypes.IShow_TokenID.show(TToken.tokid(tprev).j) + ",";
+								: BaseTypes.IShow_TokenID.show(TToken.tokid(tprev)) + ",";
 			String  pref = ""; 
 			String  val = null;
 			if (token != null) {
 				direct = TToken.offset(token) + TToken.length(token) == offset;
 				inside = TToken.offset(token) + TToken.length(token) >  offset;
-				id = BaseTypes.IShow_TokenID.show(TToken.tokid(token).j);
+				id = BaseTypes.IShow_TokenID.show(TToken.tokid(token));
 				val  = TToken.value(token);
 				try {
 					pref = inside ? val.substring(0, offset - TToken.offset(token)) 
@@ -139,8 +141,8 @@ public class ContentProposer implements IContentProposer {
 				
 			TList ps = null; 
 			boolean first = true;
-			if (token != null && (TToken.tokid(token).j == TTokenID.IMPORT.j
-					|| TToken.tokid(tprev).j == TTokenID.IMPORT.j)) {
+			if (token != null && (TToken.tokid(token) == TTokenID.IMPORT
+					|| TToken.tokid(tprev) == TTokenID.IMPORT)) {
 				List<String> packs = parser.getFD().getAllSources(pref);
 				for (String p: packs) {
 					result.add(new SourceProposal(p, pref, offset));
@@ -152,14 +154,14 @@ public class ContentProposer implements IContentProposer {
 				while (true) {
 					final TList.DCons node = ps._Cons();
 					if (node == null) break;
-					TProposal p = (TProposal) node.mem1._e();
+					TProposal p = Delayed.<TProposal>forced(node.mem1);
 					if (first) {
 						first = false;
 						pref = TProposal.prefix(p);
 						System.err.println("getContentProposal: " + IShow_Proposal.show(p));
 					}
 					result.add(Proposal.convert(p));
-					ps = (TList) node.mem2._e();
+					ps = Delayed.<TList>forced(node.mem2);
 				}
 			}
 			

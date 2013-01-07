@@ -24,6 +24,7 @@ import frege.imp.preferences.FregePreferencesConstants;
 import frege.prelude.PreludeBase.TEither;
 import frege.prelude.PreludeBase.TEither.DRight;
 import frege.prelude.PreludeBase.TMaybe;
+import frege.runtime.Delayed;
 
 
 
@@ -98,20 +99,20 @@ public class FregeTokenColorer extends TokenColorerBase implements ITokenColorer
 	
 	public TextAttribute getKind(FregeParseController controller, TToken tok, TextAttribute normalAttribute) {
 		TGlobal g = controller.getCurrentAst();
-		final TMaybe mb = (TMaybe) TGlobal.resolved(g, tok)._e();
+		final TMaybe mb = TGlobal.resolved(g, tok);
 		final TMaybe.DJust just = mb._Just();
 		if (just == null) return normalAttribute;
-		final TEither et = (TEither) just.mem1._e();
+		final TEither et = Delayed.<TEither>forced( just.mem1 );
 		final DRight right = et._Right();
 		if (right == null) return nsAttribute;			// since it is Left ()
-		final TQName qname = (TQName) right.mem1._e();
+		final TQName qname = Delayed.<TQName>forced( right.mem1 );
 		final DLocal local = qname._Local();
 		if (local != null) return normalAttribute;		// local var
 		final boolean our = TQName.M.our(qname, g);
 		final TQName.DTName tname = qname._TName();
 		if (tname != null) return our? typeAttribute : itypeAttribute;
 		final TQName.DMName mname = qname._MName();
-		if (mname != null && TToken.tokid(tok).j == TTokenID.CONID.j)
+		if (mname != null && TToken.tokid(tok) == TTokenID.CONID)
 			return our ? conAttribute : iconAttribute;
 		final String b = TQName.M.base(qname);
 		final boolean op = pattern.matcher(b).find();
@@ -126,25 +127,25 @@ public class FregeTokenColorer extends TokenColorerBase implements ITokenColorer
 	}
 	
 	public TextAttribute getColoring(final FregeParseController controller, final TToken token) {
-		final int tid = TToken.tokid(token).j;
+		final int tid = TToken.tokid(token);
 		
-		if (tid >= TTokenID.PACKAGE.j && tid <= TTokenID.INFIXR.j) 	return keywordAttribute;
-		if (tid == TTokenID.DOCUMENTATION.j)						return docuAttribute;
-		if (tid == TTokenID.COMMENT.j)								return commentAttribute;
-		if (tid == TTokenID.CONID.j 
-				|| tid == TTokenID.QUALIFIER.j
-				|| tid == TTokenID.VARID.j) {
+		if (tid >= TTokenID.PACKAGE && tid <= TTokenID.INFIXR) 	return keywordAttribute;
+		if (tid == TTokenID.DOCUMENTATION)						return docuAttribute;
+		if (tid == TTokenID.COMMENT)							return commentAttribute;
+		if (tid == TTokenID.CONID 
+				|| tid == TTokenID.QUALIFIER
+				|| tid == TTokenID.VARID) {
 			return  getKind(controller, token, normalAttribute);
 		}
 			
 		// if (tid == TTokenID.VARID.j || tid == TTokenID.QVARID.j)	return identAttribute;
-		if (tid >= TTokenID.INTCONST.j && tid <= TTokenID.REGEXP.j) return literalAttribute;
-		if (tid == TTokenID.LEXERROR.j) 							return errorAttribute;
+		if (tid >= TTokenID.INTCONST && tid <= TTokenID.REGEXP) return literalAttribute;
+		if (tid == TTokenID.LEXERROR) 							return errorAttribute;
 
-		if (tid >= TTokenID.DCOLON.j && tid <= TTokenID.EARROW.j)	return specialAttribute;
-		if (tid >= TTokenID.LOP0.j && tid <= TTokenID.SOMEOP.j) 	
+		if (tid >= TTokenID.DCOLON && tid <= TTokenID.EARROW)	return specialAttribute;
+		if (tid >= TTokenID.LOP0 && tid <= TTokenID.SOMEOP) 	
 			return getKind(controller, token, normalAttribute);
-		if (tid == TTokenID.CHAR.j && TToken.value(token).length() > 0) 
+		if (tid == TTokenID.CHAR && TToken.value(token).length() > 0) 
 			switch (TToken.value(token).charAt(0)) {
 				case '_': return  specialAttribute;
 				case '=': return  specialAttribute;

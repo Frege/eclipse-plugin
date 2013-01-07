@@ -19,7 +19,7 @@ import frege.prelude.PreludeBase.TEither.DLeft;
 import frege.prelude.PreludeBase.TEither.DRight;
 import frege.prelude.PreludeBase.TMaybe;
 import frege.prelude.PreludeBase.TMaybe.DJust;
-import frege.rt.Box;
+import frege.runtime.Delayed;
 
 
 public class FregeReferenceResolver implements IReferenceResolver {
@@ -29,7 +29,8 @@ public class FregeReferenceResolver implements IReferenceResolver {
 		public final TSymbol sym;
 		public Symbol(TGlobal g, TSymbol sym) { this.g = g; this.sym = sym; }
 		public String toString() {
-			String s = Box.<String>box(FregeParseController.funStG(EclipseUtil.symbolDocumentation(sym), g)).j;
+			String s = Delayed.<String> forced(FregeParseController.funStG(
+					EclipseUtil.symbolDocumentation(sym), g));
 			return s; // Data.INice_QName.nicer(TSymbol.M.name(sym), g);
 		}
 	}
@@ -44,8 +45,8 @@ public class FregeReferenceResolver implements IReferenceResolver {
 			this.pack = p;
 		}
 		public String toString() {
-			String s = Box.<String>box(FregeParseController.funStG(
-						EclipseUtil.packDocumentation(Box.mk(pack)), g)).j;
+			String s = Delayed.<String>forced(FregeParseController.funStG(
+						EclipseUtil.packDocumentation(pack), g));
 			return s;
 		}
 	}
@@ -79,23 +80,23 @@ public class FregeReferenceResolver implements IReferenceResolver {
 		if (g != null && node != null && node instanceof TToken) {
 			TToken tok = (TToken) node;
 			System.err.println("getLinkTarget: " + IShow_Token.show(tok));
-			final int tid = TToken.tokid(tok).j;
-			if (tid != TTokenID.VARID.j 
-					&& tid != TTokenID.CONID.j
-					&& tid != TTokenID.QUALIFIER.j
-					&& (tid < TTokenID.LOP0.j ||  tid > TTokenID.SOMEOP.j)) return null;
-			final TMaybe mb = (TMaybe) TGlobal.resolved(g, tok)._e();
+			final int tid = TToken.tokid(tok);
+			if (tid != TTokenID.VARID 
+					&& tid != TTokenID.CONID
+					&& tid != TTokenID.QUALIFIER
+					&& (tid < TTokenID.LOP0 ||  tid > TTokenID.SOMEOP)) return null;
+			final TMaybe mb = TGlobal.resolved(g, tok);
 			final DJust just = mb._Just();
 			if (just == null) return null;
-			final TEither lr = (TEither) just.mem1._e();
+			final TEither lr = Delayed.<TEither>forced( just.mem1 );
 			final DRight right = lr._Right();
 			if (right != null) {
 				// this is a QName
-				TQName q = (TQName) right.mem1._e();
-				final TMaybe mbsym = (TMaybe) TQName.M.findit(q, g)._e();
+				TQName q = Delayed.<TQName>forced( right.mem1 );
+				final TMaybe mbsym = TQName.M.findit(q, g).<TMaybe>forced();
 				final DJust  jsym  = mbsym._Just();
 				if (jsym == null)	return null; 	// not found?
-				final TSymbol sym = (TSymbol) jsym.mem1._e();
+				final TSymbol sym = Delayed.<TSymbol>forced( jsym.mem1 );
 				System.err.println("getLinkTarget: " + Data.IShow_QName.show(q));
 				return new Symbol(g, sym);
 			}
@@ -107,7 +108,7 @@ public class FregeReferenceResolver implements IReferenceResolver {
 				final TMaybe mbpack = TTree.M.lookupS(tree, ns);
 				final DJust jpack = mbpack._Just();
 				if (jpack == null) return null;
-				String pack = Box.<java.lang.String>box(jpack.mem1._e()).j;
+				String pack = Delayed.<java.lang.String>forced(jpack.mem1);
 				return new Namespace(g, ns, pack);
 			}
 		}

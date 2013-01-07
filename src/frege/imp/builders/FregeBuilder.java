@@ -31,7 +31,7 @@ import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TList.DCons;
 import frege.prelude.PreludeText;
-import frege.rt.Box;
+import frege.runtime.Delayed;
 
 /**
  * A builder may be activated on a file containing frege code every time it
@@ -96,14 +96,14 @@ public class FregeBuilder extends FregeBuilderBase {
 			
 			getPlugin().writeInfoMsg(
 					"Collecting dependencies from frege file: " + fromPath);
-			TList packs = (TList) frege.compiler.Scanner.dependencies(contents)._e();
+			TList packs = frege.compiler.Scanner.dependencies(contents);
 			packs = EclipseUtil.correctDependenciesFor(packs, fromPath);
 			
 			while (true) {
 				final DCons cons = packs._Cons();
 				if (cons == null) break;
-				packs = (TList) cons.mem2._e();
-				final String pack = Box.<String>box(cons.mem1._e()).j;
+				packs = cons.mem2.<TList>forced();
+				final String pack = Delayed.<String>forced(cons.mem1);
 				final String fr = pack.replaceAll("\\.", "/") + ".fr";
 				for (String sf: srcs) {
 					final IPath p = new Path(sf + "/" + fr);
@@ -232,19 +232,18 @@ public class FregeBuilder extends FregeBuilderBase {
 			final TGlobal result = parseController.parse(contents, new CompProgress());
 			if (FregeParseController.errors(result) == 0) {
 				// run the eclipse java compiler
-				final String target = Box.<String>box(
-						FregeParseController.funStG(Main.targetPath(
-									Box.mk(".java")),
-								result)).j;
+				final String target = Delayed
+						.<String> forced(FregeParseController.funStG(
+								Main.targetPath(".java"), result));
 				getPlugin().writeInfoMsg("built: " + target);
 				// get the frege path and build path
 				final String bp = TOptions.dir( TGlobal.options(result) );
 				final TList ourPath = frege.compiler.Utilities.ourPath(TGlobal.options(result));
-				final String fp = Box.<String>box(
+				final String fp = Delayed.<String>forced(
 						PreludeText.joined(
-				                		  Box.mk(System.getProperty("path.separator")),
+				                		  System.getProperty("path.separator"),
 				                		  ourPath
-								)._e()).j;
+								));
 				// construct the commandline
 				final String cmdline = "-cp " + "\"" + fp + "\"" 
 						+ " -d " + "\"" + bp + "\"" 
@@ -270,7 +269,7 @@ public class FregeBuilder extends FregeBuilderBase {
 				*/
 				
 				if (!success) {
-					TPosition pos = (TPosition) Data.packageStart(result)._e();
+					TPosition pos = Data.packageStart(result).<TPosition>forced();
 					TToken module = TPosition.first(pos);
 					int line = TToken.line(module);
 					int chStart = TToken.offset(module);

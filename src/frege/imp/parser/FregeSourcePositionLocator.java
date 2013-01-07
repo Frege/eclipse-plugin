@@ -16,7 +16,8 @@ import frege.compiler.BaseTypes.TToken;
 import frege.compiler.Data.TSymbol;
 import frege.imp.referenceResolvers.FregeReferenceResolver;
 import frege.imp.tree.ITreeItem;
-import frege.rt.Array;
+import frege.runtime.Array;
+import frege.runtime.Delayed;
 
 /**
  * NOTE:  This version of the ISourcePositionLocator is for use when the Source
@@ -97,7 +98,7 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		int to = arr.length();
 		while (from < to) {
 			int it = (from + to) / 2;
-			TToken at = (TToken) arr.getAt(it)._e();
+			TToken at = Delayed.<TToken>forced(arr.getAt(it));
 			int off = TToken.offset(at);
 			int len = TToken.length(at);
 			if (off + len <= start) {	// the searched token is more right
@@ -118,7 +119,7 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 	public static TToken tokenAt(Array arr, int at) {
 		if (at < 0 || at >= arr.length())
 			return null;
-		return (TToken) arr.getAt(at)._e();
+		return Delayed.<TToken>forced(arr.getAt(at));
 	}
 	
 	public Object findNode(Object ast, int startOffset, int endOffset) {
@@ -154,8 +155,8 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		
 		if (node != null && node instanceof FregeReferenceResolver.Namespace) {
 			final FregeReferenceResolver.Namespace nmsp = (FregeReferenceResolver.Namespace) node;
-			if (nmsp.pack.equals(TGlobal.thisPack(nmsp.g).j))
-				return TToken.offset(TPosition.first((TPosition)Data.packageStart(nmsp.g)._e()));
+			if (nmsp.pack.equals(TGlobal.thisPack(nmsp.g)))
+				return TToken.offset(TPosition.first(Data.packageStart(nmsp.g).<TPosition>forced()));
 			return -1;	// different package
 		}
 		
@@ -196,7 +197,7 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		
 		if (node != null && node instanceof FregeReferenceResolver.Symbol) {
 			final FregeReferenceResolver.Symbol sym = (FregeReferenceResolver.Symbol) node;
-			final TQName  qname = TSymbol.M.name(sym.sym);
+			// final TQName  qname = TSymbol.M.name(sym.sym);
 			// final boolean our = TQName.M.our(qname, sym.g);
 			return getLength(TSymbol.M.pos(sym.sym));
 			// return -1;	// different package
@@ -217,7 +218,7 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 			final FregeReferenceResolver.Symbol sym = (FregeReferenceResolver.Symbol) node;
 			final TQName  qname = TSymbol.M.name(sym.sym);
 			final boolean our = TQName.M.our(qname, sym.g);
-			final String  pack  = our ? TGlobal.thisPack(sym.g).j : TQName.M.getpack(qname).j;
+			final String  pack  = our ? TGlobal.thisPack(sym.g) : TQName.M.getpack(qname);
 			IPath p = parser.getFD().getSource(pack);
 			System.err.println("getPath( " + Data.IShow_QName.show(qname) 
 					+ " ), our=" + our + ", pack=" + pack + ", path=" + p);

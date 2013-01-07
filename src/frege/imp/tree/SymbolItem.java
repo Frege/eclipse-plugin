@@ -17,11 +17,11 @@ public class SymbolItem implements ITreeItem {
 
 	@Override
 	public Image getImage() {
-		final int c = symbol.constructor();
+		final int c = symbol._constructor();
 		if (c >= 0 && c < FregeLabelProvider.SYMBOL_IMAGES.length) {
 			Image image = FregeLabelProvider.SYMBOL_IMAGES[c];
 			if (image == FregeLabelProvider.VAR_IMAGE 
-					&& (TSymbol.M.vis(symbol).j != TVisibility.Public.j
+					&& (TSymbol.M.vis(symbol) != TVisibility.Public
 						|| TQName.M.isLocal(TSymbol.M.name(symbol))))
 				image = FregeLabelProvider.LOCAL_IMAGE;
 			return image;
