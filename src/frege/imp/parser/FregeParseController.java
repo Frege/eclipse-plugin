@@ -248,7 +248,7 @@ public class FregeParseController extends ParseControllerBase implements
 				rdr = null;
 				rdr = new LineNumberReader(new InputStreamReader(file.getContents(true)));
 				String line;
-				java.util.regex.Pattern pat = Pattern.compile("\\b(package|module)\\s+(\\S+)");
+				java.util.regex.Pattern pat = Pattern.compile("\\b(package|module)\\s+((\\w|\\.)+)");
 				while ((line = rdr.readLine()) != null) {
 					Matcher m = pat.matcher(line);
 					if (m.find()) {
@@ -430,10 +430,10 @@ public class FregeParseController extends ParseControllerBase implements
 			if (service.getBooleanPreference(FregePreferencesConstants.P_INLINE)) {
 				global = TGlobal.upd$options(global, TOptions.upd$flags(
 							TGlobal.options(global),
-							Utilities.setFlag(
-									new IEnum_Flag(),
-									TOptions.flags(TGlobal.options(global)), 
-								    TFlag.INLINE)
+							Delayed.<Long> forced(
+								Utilities.setFlag(new IEnum_Flag(),
+									TOptions.flags(TGlobal.options(global)),
+									TFlag.INLINE))
 						));
 			}
 			final String prefix = service.getStringPreference(FregePreferencesConstants.P_PREFIX); 

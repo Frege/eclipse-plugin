@@ -55,7 +55,7 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 	public class FregeModelVisitor /* extends AbstractVisitor */ {		
 		
 		public boolean visit(TGlobal g, TTree env, boolean top) {
-			final TList syms = EclipseUtil.symbols(env);
+			final TList syms = EclipseUtil.symbols(env).<TList>forced();
 			// do one category after the other according to the predefined order
 			for (int cat : order) {
 				if (!top) { // avoid unneeded list traversals

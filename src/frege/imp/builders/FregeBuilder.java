@@ -96,7 +96,7 @@ public class FregeBuilder extends FregeBuilderBase {
 			
 			getPlugin().writeInfoMsg(
 					"Collecting dependencies from frege file: " + fromPath);
-			TList packs = frege.compiler.Scanner.dependencies(contents);
+			TList packs = frege.compiler.Scanner.dependencies(contents).<TList>forced();
 			packs = EclipseUtil.correctDependenciesFor(packs, fromPath);
 			
 			while (true) {
