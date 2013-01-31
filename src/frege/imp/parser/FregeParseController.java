@@ -409,14 +409,14 @@ public class FregeParseController extends ParseControllerBase implements
 		System.err.println("FregePath: " + fp);
 		global = TGlobal.upd$options(global, TOptions.upd$path(
 				TGlobal.options(global),
-				frege.prelude.Arrays.IStringSplitter_Regex.splitted(
-						frege.compiler.Utilities.pathRE, 
+				frege.prelude.PreludeNative.TRegex.splitted(
+						Delayed.<Pattern>forced(frege.compiler.Utilities.pathRE), 
 						fp)));
 		System.err.println("SourcePath: " + sp);
 		global = TGlobal.upd$options(global, TOptions.upd$sourcePath(
 				TGlobal.options(global),
-				frege.prelude.Arrays.IStringSplitter_Regex.splitted(
-						frege.compiler.Utilities.pathRE, 
+				frege.prelude.PreludeNative.TRegex.splitted(
+						Delayed.<Pattern>forced(frege.compiler.Utilities.pathRE), 
 						sp)));
 		System.err.println("Destination: " + bp);
 		global = TGlobal.upd$options(global, TOptions.upd$dir(
