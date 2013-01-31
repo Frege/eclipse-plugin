@@ -23,7 +23,7 @@ This assumes that one already has installed the IMP plugin's as described in the
 How does it look like?
 =======================
 
-![Here is a Screenshot](https://github.com/Frege/frege/wiki/FregIDE-Snapshot.PNG]
+![Here is a Screenshot](https://github.com/Frege/frege/wiki/FregIDE-Snapshot.png)
 
 
 
