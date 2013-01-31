@@ -20,3 +20,10 @@ This assumes that one already has installed the IMP plugin's as described in the
   8. Apply and Run.
   9. Once this works, you can replace the fregec.jar and rebuild `eclipse-plugin` whenever the need arises.
 
+How does it look like?
+=======================
+
+![Here is a Screenshot](https://github.com/Frege/frege/wiki/FregIDE-Snapshot.PNG]
+
+
+
