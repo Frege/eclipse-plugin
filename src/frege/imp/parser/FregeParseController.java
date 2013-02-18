@@ -124,6 +124,7 @@ public class FregeParseController extends ParseControllerBase implements
 			}
 		}
 		
+		/*
 		public static int skipBraces(final Array toks, int j) {
 			while (j < toks.length()) {
 				TToken tok = Delayed.<TToken>forced(toks.getAt(j));
@@ -133,15 +134,20 @@ public class FregeParseController extends ParseControllerBase implements
 								|| tok.mem$value.charAt(0) == ';')) {
 					j++;
 				}
+				else if (tok.mem$tokid == TTokenID.PURE
+						&& !tok.mem$value.equals("pure")) {
+					j++;
+				}
 				else break;
 			}
 			return j;
 		}
+		*/
 		
 		@Override
 		public boolean hasNext() {
 			// skip { ; }
-			inx = skipBraces(toks, inx);
+			// inx = skipBraces(toks, inx);
 			// we have a next if we are not the empty list and the token is in the region
 			return inx < toks.length()
 					&& within(Delayed.<TToken>forced(toks.getAt(inx)), region);
