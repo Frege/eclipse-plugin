@@ -246,6 +246,7 @@ public abstract class FregeBuilderBase extends BuilderBase {
     	if (thisDeps != null) for (IFile depFile : thisDeps) {
     		// IFile depFile = getProject().getWorkspace().getRoot().getFile(new Path(depPath));
     		if (isSourceFile(depFile) && toCompile.contains(depFile)) {
+    			System.err.println("addafterdeps: source=" + source + ", dep=" + depFile);
     			acc = addAfterDeps(depFile, acc, toCompile);
     		}
     	}
