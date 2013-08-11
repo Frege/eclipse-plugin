@@ -172,11 +172,13 @@ public class FregeParseController extends ParseControllerBase implements
 		private String sp = ".";
 		private String fp = ".";
 		private String bp = ".";
+		private IPath  projectPath = null;
 		private ISourceProject project = null;
 		public FregeData(ISourceProject sourceProject) {
 			project = sourceProject;
 			if (project != null) {
 				IProject rp = project.getRawProject();
+				
 				// System.out.println("The raw project has type: " + jp.getClass());
 				IWorkspace workspace = ResourcesPlugin.getWorkspace();
 				IPath wroot = workspace.getRoot().getLocation();
@@ -193,6 +195,7 @@ public class FregeParseController extends ParseControllerBase implements
 
 				if (isJava) {
 					IJavaProject jp = JavaCore.create(rp);
+					projectPath = jp.getPath();
 					try {
 						bp = wroot.append(jp.getOutputLocation()).toPortableString();
 						IClasspathEntry[] cpes = jp.getResolvedClasspath(true);
@@ -216,6 +219,7 @@ public class FregeParseController extends ParseControllerBase implements
 			if (fp.equals("")) fp=".";
 			if (sp.equals("")) sp=".";
 		}
+		public IPath getProjectPath() { return projectPath; }
 		/**
 		 * The source path always includes the project directory, as otherwise source resolution in
 		 * linked directories will work only if one links below a source directory, which may not be
@@ -402,15 +406,27 @@ public class FregeParseController extends ParseControllerBase implements
 	private void createLexerAndParser(IPath filePath, ISourceProject project) {
 		System.err.println("createLexerAndParser: " + filePath.toPortableString());
 		System.err.println("classpath: " + System.getProperty("java.class.path"));
-		global = TGlobal.upd$options(global, TOptions.upd$source(
-				TGlobal.options(global), 
-				filePath.toPortableString()));
+		
 
 		final FregeData data = fregeData;
 		final String fp = data.getFp();   
 		final String bp = data.getBp(); 
 		final String sp = data.getSp();
-		
+		final IPath  pp = data.getProjectPath();
+		final IPath  wk = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+
+		// set source file into global
+		global = TGlobal.upd$options(global, TOptions.upd$source(
+				TGlobal.options(global), 
+				filePath.makeRelativeTo(wk)
+						.makeAbsolute()
+						.makeRelativeTo(pp).toString()));
+
+		System.err.println("project Path: " + pp);
+		System.err.println("source File: " + filePath
+								.makeRelativeTo(wk)
+								.makeAbsolute()
+								.makeRelativeTo(pp));
 				
 		System.err.println("FregePath: " + fp);
 		global = TGlobal.upd$options(global, TOptions.upd$path(
@@ -429,7 +445,7 @@ public class FregeParseController extends ParseControllerBase implements
 				TGlobal.options(global), 
 				bp));
 		global = runStG(frege.compiler.Main.newLoader, global);
-		
+			
 		IPreferencesService service = FregePlugin.getInstance().getPreferencesService();
 		if (service != null) {
 			timeout = service.getIntPreference(FregePreferencesConstants.P_PARSETIMEOUT);
