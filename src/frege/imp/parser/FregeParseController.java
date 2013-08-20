@@ -74,6 +74,7 @@ import frege.compiler.EclipseUtil;
 import frege.compiler.Main;
 import frege.imp.builders.FregeBuilder;
 import frege.imp.preferences.FregePreferencesConstants;
+import frege.data.Bits.TBitSet;
 
 /**
  * NOTE:  This version of the Parse Controller is for use when the Parse
@@ -453,7 +454,7 @@ public class FregeParseController extends ParseControllerBase implements
 				global = TGlobal.upd$options(global, TOptions.upd$flags(
 							TGlobal.options(global),
 							Delayed.<Long> forced(
-								Utilities.setFlag(new IEnum_Flag(),
+								TBitSet.unionE(new IEnum_Flag(),
 									TOptions.flags(TGlobal.options(global)),
 									TFlag.INLINE))
 						));
