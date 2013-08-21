@@ -458,6 +458,31 @@ public class FregeParseController extends ParseControllerBase implements
 									TOptions.flags(TGlobal.options(global)),
 									TFlag.INLINE))
 						));
+			} else {
+				global = TGlobal.upd$options(global, TOptions.upd$flags(
+						TGlobal.options(global),
+						Delayed.<Long> forced(
+							TBitSet.differenceE(new IEnum_Flag(),
+								TOptions.flags(TGlobal.options(global)),
+								TFlag.INLINE))
+					));
+			}
+			if (service.getBooleanPreference(FregePreferencesConstants.P_COMMENTS)) {
+				global = TGlobal.upd$options(global, TOptions.upd$flags(
+							TGlobal.options(global),
+							Delayed.<Long> forced(
+								TBitSet.unionE(new IEnum_Flag(),
+									TOptions.flags(TGlobal.options(global)),
+									TFlag.COMMENTS))
+						));
+			} else {
+				global = TGlobal.upd$options(global, TOptions.upd$flags(
+						TGlobal.options(global),
+						Delayed.<Long> forced(
+							TBitSet.differenceE(new IEnum_Flag(),
+								TOptions.flags(TGlobal.options(global)),
+								TFlag.COMMENTS))
+					));
 			}
 			final String prefix = service.getStringPreference(FregePreferencesConstants.P_PREFIX); 
 			if (prefix != null && prefix.length() > 0) {

@@ -76,13 +76,23 @@ public class FregeInstancePreferencesTab extends InstancePreferencesTab {
 		BooleanFieldEditor enableInline = fPrefUtils.makeNewBooleanField(
 				page, this, fPrefService,
 				"instance", "enableInline", "Enable Inline",
-				"Passes the -inline option to the compiler. (experimental)",
+				"Optimize by inlining functions option to the compiler.",
 				parent,
 				true, true,
 				true, false,
 				false);
 		fields.add(enableInline);
 
+		
+		BooleanFieldEditor enableComments = fPrefUtils.makeNewBooleanField(
+				page, this, fPrefService,
+				"instance", "enableComments", "Enable Comments",
+				"Create commented source code. Builds will take much longer.",
+				parent,
+				true, true,
+				true, false,
+				false);
+		fields.add(enableComments);
 //
 //		Link spacesForTabsDetailsLink = fPrefUtils.createDetailsLink(parent, spacesForTabs, spacesForTabs.getChangeControl().getParent(), "Details ...");
 //
