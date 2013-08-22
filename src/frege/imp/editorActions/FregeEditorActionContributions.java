@@ -25,6 +25,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 
 import frege.compiler.Data.TGlobal;
+import frege.data.TreeMap.TTree;
 import frege.imp.builders.FregeBuilder;
 import frege.imp.parser.FregeParseController;
 // import org.eclipse.ui.IFileEditorInput;
@@ -167,7 +168,7 @@ public class FregeEditorActionContributions implements
 					final FregeParseController fpc = (FregeParseController) pc;
 					TGlobal global = fpc.getCurrentAst();
 			        if (global == null) return;
-			        global.mem$sub.mem$cache.put(frege.List.TTree.DNil.it);
+			        global.mem$sub.mem$cache.put(TTree.DNil.it);
 			        final IDocument document= editor.
 			        		getDocumentProvider().
 			        		getDocument(editor.getEditorInput());

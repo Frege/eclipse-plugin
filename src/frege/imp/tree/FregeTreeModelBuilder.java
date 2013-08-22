@@ -2,7 +2,7 @@ package frege.imp.tree;
 
 import org.eclipse.imp.services.base.TreeModelBuilderBase;
 
-import frege.List.TTree;
+import frege.data.TreeMap.TTree;
 import frege.compiler.Data.TExprT;
 import frege.compiler.Data.TGlobal;
 import frege.compiler.BaseTypes.TPosition;
@@ -133,7 +133,9 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 			popSubItem();
 			
 			if  (! "".equals(pack)) 
-				return visit(g, EclipseUtil.thisTab(g), true);
+				return visit(g, 
+						EclipseUtil.thisTab(g).<TTree>forced(), 
+						true);
 			return true;
 		}
 	}

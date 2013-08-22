@@ -4,7 +4,7 @@ package frege.imp.referenceResolvers;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.services.IReferenceResolver;
 
-import frege.List.TTree;
+import frege.data.TreeMap.TTree;
 import frege.compiler.BaseTypes.IShow_Token;
 import frege.compiler.BaseTypes.TToken;
 import frege.compiler.BaseTypes.TTokenID;
