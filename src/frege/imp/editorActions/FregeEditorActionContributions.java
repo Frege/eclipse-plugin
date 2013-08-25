@@ -1,6 +1,7 @@
 package frege.imp.editorActions;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -160,6 +161,7 @@ public class FregeEditorActionContributions implements
 						editor = (UniversalEditor) ed;
 					else return;
 				}
+				final UniversalEditor theEditor = editor; 
 				// editor is not null
 				try {
 					if (!editor.isEditable()) return;
@@ -176,14 +178,16 @@ public class FregeEditorActionContributions implements
 						@Override
 						protected IStatus run(IProgressMonitor monitor) {
 							fpc.resetHash();
+							fpc.msgHandler.clearMessages();
+							theEditor.removeParserAnnotations();
 							fpc.parse(document.get(), true, monitor);
 							return Status.OK_STATUS;
 						}
 			        };
-			        
+			        job.schedule();
+			        System.err.println("Job " + job.getName() + " scheduled.");			        
 				} 
 			    catch (Exception e) {
-					// TODO Auto-generated catch block
 					// e.printStackTrace();
 				}
 			}
@@ -232,7 +236,6 @@ public class FregeEditorActionContributions implements
 			        System.err.println("Job " + job.getName() + " scheduled.");
 				} 
 			    catch (Exception e) {
-					// TODO Auto-generated catch block
 					// e.printStackTrace();
 				}
 			}
@@ -251,7 +254,7 @@ public class FregeEditorActionContributions implements
 		languageMenu.add(rgxAction(editor));
 		languageMenu.add(opAction(editor));
 		languageMenu.add(compAction(editor));
-//		languageMenu.add(refreshAction(editor));
+		languageMenu.add(refreshAction(editor));
 	}
 
 	public void contributeToMenuBar(UniversalEditor editor, IMenuManager menu) {
@@ -279,8 +282,8 @@ public class FregeEditorActionContributions implements
 		Action comp = compAction(null);
 		if (toolbarManager.find(comp.getId()) == null)
 			toolbarManager.add(comp);
-//		Action refresh = refreshAction(null);
-//		if (toolbarManager.find(refresh.getId()) == null)
-//			toolbarManager.add(refresh);
+		Action refresh = refreshAction(null);
+		if (toolbarManager.find(refresh.getId()) == null)
+			toolbarManager.add(refresh);
 	}
 }

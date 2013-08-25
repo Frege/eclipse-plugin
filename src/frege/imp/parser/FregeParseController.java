@@ -323,11 +323,12 @@ public class FregeParseController extends ParseControllerBase implements
 	private TGlobal global, goodglobal;
 	private int  hash = 0;
 	private int  leng = 0;
+	private boolean tokensIteratorDone = false;
 	private final ISourcePositionLocator   fSourcePositionLocator   
 					= new FregeSourcePositionLocator(this);
     private final SimpleAnnotationTypeInfo fSimpleAnnotationTypeInfo
     				= new SimpleAnnotationTypeInfo();
-	private IMessageHandler msgHandler = null;
+	public IMessageHandler msgHandler = null;
 	private FregeData fregeData = null;
 	
 	/**
@@ -497,12 +498,13 @@ public class FregeParseController extends ParseControllerBase implements
 	public void resetHash() {
 		leng = 0;
 		hash = 0;
+		tokensIteratorDone = false;
 	}
 	
 	/**
 	 * The msgHandler must be in place
 	 */
-	public TGlobal parse(String contents, boolean scanOnly,
+	synchronized public TGlobal parse(String contents, boolean scanOnly,
 			IProgressMonitor monitor) {
 		
 		long t0 = System.nanoTime();
@@ -512,7 +514,7 @@ public class FregeParseController extends ParseControllerBase implements
 		DCons pass = null;
 		int index;
 		
-		synchronized (this) {
+		{
 			
 			if (monitor.isCanceled()) return global;
 		
@@ -636,6 +638,7 @@ public class FregeParseController extends ParseControllerBase implements
 		// Hence, if we do not have one, we just scan&parse, otherwise we do a full compile
 		TGlobal g = parse(input, mcwb == null, monitor);
 		System.err.print("frege parse: done, adding errors ");
+		tokensIteratorDone = false;
 		TList msgs = PreludeList.reverse(TSubSt.messages(TGlobal.sub(g)));
 		int maxmsgs = 9;
 		 
@@ -679,10 +682,18 @@ public class FregeParseController extends ParseControllerBase implements
 	}
 	
 	@Override
-	public Iterator<TToken> getTokenIterator(IRegion region) {
-		System.err.println("getTokenIterator(): ");
-		return new TokensIterator(TSubSt.toks(TGlobal.sub(global)), region);
-		
+	synchronized public Iterator<TToken> getTokenIterator(IRegion region) {
+		System.err.print("getTokenIterator(): " + 
+				(global != null ? TGlobal.thisPack(global) : "???"));
+		if (!tokensIteratorDone) {
+			System.err.println("  some");
+			tokensIteratorDone = true;
+			return new TokensIterator(TSubSt.toks(TGlobal.sub(global)), region);
+		}
+		else {
+			System.err.println("  none");
+			return null; // new TokensIterator(new frege.runtime.Array(0), region);
+		}
 	}
 
 	@Override
