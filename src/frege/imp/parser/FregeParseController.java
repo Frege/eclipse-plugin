@@ -18,19 +18,20 @@ import java.util.regex.Pattern;
 // import lpg.runtime.IPrsStream;
 // import lpg.runtime.Monitor;
 
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-
 import org.eclipse.imp.builder.MarkerCreatorWithBatching;
 import org.eclipse.imp.builder.ProblemLimit.LimitExceededException;
 import org.eclipse.imp.model.ISourceProject;
@@ -198,7 +199,10 @@ public class FregeParseController extends ParseControllerBase implements
 					IJavaProject jp = JavaCore.create(rp);
 					projectPath = jp.getPath();
 					try {
-						bp = wroot.append(jp.getOutputLocation()).toPortableString();
+						IResource bpres = workspace.getRoot().findMember(jp.getOutputLocation());
+						bp = bpres != null 
+									? bpres.getLocation().toString() 
+									: wroot.append(jp.getOutputLocation()).toPortableString();
 						IClasspathEntry[] cpes = jp.getResolvedClasspath(true);
 						fp = bp;
 						sp = ".";
@@ -209,7 +213,26 @@ public class FregeParseController extends ParseControllerBase implements
 							}
 							else {
 								if (fp.length() > 0) fp += System.getProperty("path.separator");
-								fp += cpe.getPath().toString();
+								
+								IResource res = workspace.getRoot().findMember(cpe.getPath());
+								String lib = res != null ? res.getLocation().toString() : "no res";
+								String lib1 =  cpe.getPath().toString();
+								String lib2 =  cpe.getPath().makeRelativeTo(jp.getPath()).toString();
+								String lib3 =  cpe.getPath().makeRelativeTo(wroot).makeRelative().toString();
+								String lib4 =  cpe.getPath().makeRelativeTo(wroot).toString();
+								String lib5 =  cpe.getPath().makeRelativeTo(wroot).makeAbsolute().toString();
+								if (new java.io.File(lib).exists()) fp += lib;
+								else if (new java.io.File(lib1).exists()) fp += lib1;
+								else if (new java.io.File(lib2).exists()) fp += lib2;
+								else if (new java.io.File(lib3).exists()) fp += lib3;
+								else if (new java.io.File(lib4).exists()) fp += lib4;
+								else if (new java.io.File(lib5).exists()) fp += lib5;
+								else {
+									System.err.println("WHOA!!! Neither of the following do exist: "
+											+ lib + ", " + lib1 + ", " + lib2 + ", " + lib3
+											+ ", " + lib4 + ", " + lib5);
+									System.err.println("JavaProject.getPath: " + jp.getPath());
+								}
 							}
 						}
 					} catch (JavaModelException e) {
