@@ -50,14 +50,14 @@ import org.eclipse.jface.text.source.LineRange;
 import frege.FregePlugin;
 import frege.runtime.Array;
 import frege.runtime.Delayed;
-import frege.runtime.Func1;
+import frege.runtime.Fun1;
 import frege.runtime.Lambda;
 import frege.runtime.Lazy;
 import frege.prelude.PreludeBase.TList.DCons;
 import frege.prelude.PreludeBase.TTuple2;
 import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TTuple3;
-import frege.prelude.PreludeBase.TState;
+import frege.control.monad.State.TState;
 import frege.prelude.PreludeList;
 import frege.prelude.PreludeList.IListLike__lbrack_rbrack;
 import frege.compiler.BaseTypes.TFlag;
@@ -548,7 +548,7 @@ public class FregeParseController extends ParseControllerBase implements
 			msgHandler.clearMessages();
 		
 			final IProgressMonitor myMonitor = monitor;
-			Lambda cancel = new Func1() {			
+			Lambda cancel = new Fun1<Boolean>() {			
 				public Boolean eval(Object realworld) {
 					return myMonitor.isCanceled();	
 				}
