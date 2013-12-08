@@ -292,7 +292,7 @@ public class FregeBuilder extends FregeBuilderBase {
 					markerCreator.addMarker(IMarker.SEVERITY_INFO, 
 							"Java compiler errors are almost always caused by bad native declarations. "
 								+ "When you're sure this is out of the question you've found a compiler bug, "
-								+ "please report under http://code.google.com/p/frege/issues/list and attach a copy of "
+								+ "please report under https://github.com/frege/frege/issues and attach a copy of "
 								+ target, 
 							line, chStart, chEnd);
 				}
