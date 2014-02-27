@@ -106,7 +106,7 @@ public class ContentProposer implements IContentProposer {
 
 		List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
 		final TGlobal g = parser.getGoodAst();
-		final Array tokens = TSubSt.toks(TGlobal.sub(g));	
+		final TToken[] tokens = TSubSt.toks(TGlobal.sub(g));	
 			
 		if (g != null) {
 			int inx = FregeSourcePositionLocator.previous(tokens, offset);
