@@ -336,6 +336,7 @@ public abstract class FregeBuilderBase extends BuilderBase {
     	Set<IFile> failed = new HashSet<IFile>();
     	
         for(IFile srcFile : ord) {
+        	if (monitor.isCanceled()) break;
         	monitor.subTask("building " + srcFile.getName());
             boolean usesFailed = false;
             for (IFile f: failed) {

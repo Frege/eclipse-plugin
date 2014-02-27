@@ -138,6 +138,7 @@ public class FregeBuilder extends FregeBuilderBase {
 	 */
 	@Override public boolean compiled(final IFile file, IProgressMonitor monitor) {
 		boolean succ = false;
+		if (monitor.isCanceled()) return false;
 		try {
 			getPlugin().writeInfoMsg("Building frege file: " + file.getName());
 			succ = runParserForCompiler(file, monitor);
@@ -244,9 +245,16 @@ public class FregeBuilder extends FregeBuilderBase {
 				                		  System.getProperty("path.separator"),
 				                		  ourPath
 								));
+				final TList srcPath = TOptions.sourcePath(TGlobal.options(result));
+				final String sp = Delayed.<String>forced(
+						PreludeText.joined(
+		                		  System.getProperty("path.separator"),
+		                		  srcPath
+						));
 				// construct the commandline
 				final String cmdline = "-cp " + "\"" + fp + "\"" 
-						+ " -d " + "\"" + bp + "\"" 
+						+ " -d " + "\"" + bp + "\""
+						+ " -sourcepath " + "\"" + sp + "\""
 						+ " -Xemacs -1.7 -encoding UTF-8 "
 						+ "\"" + target + "\"";
 				getPlugin().writeInfoMsg("batch-compile " + cmdline);
