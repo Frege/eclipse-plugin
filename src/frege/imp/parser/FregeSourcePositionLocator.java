@@ -16,8 +16,7 @@ import frege.compiler.BaseTypes.TToken;
 import frege.compiler.Data.TSymbol;
 import frege.imp.referenceResolvers.FregeReferenceResolver;
 import frege.imp.tree.ITreeItem;
-import frege.runtime.Array;
-import frege.runtime.Delayed;
+
 
 /**
  * NOTE:  This version of the ISourcePositionLocator is for use when the Source
@@ -57,9 +56,9 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 	 * @param offset	the offset in the text
 	 * @return the index of the very next previous token
 	 */
-	public static int previous(Array arr, int before) {
+	public static int previous(TToken[] arr, int before) {
 		int from = 0;
-		int to = arr.length();
+		int to = arr.length;
 		
 		while (from +2 < to) {
 			int it = (from + to) / 2;
@@ -93,12 +92,12 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 	 * @param end     end of selected range (inklusive)
 	 * @return        the index of a Token or (-1) if not found
 	 */
-	public static int binsearch(Array arr, int start, int end) {
+	public static int binsearch(TToken[] arr, int start, int end) {
 		int from = 0;
-		int to = arr.length();
+		int to = arr.length;
 		while (from < to) {
 			int it = (from + to) / 2;
-			TToken at = Delayed.<TToken>forced(arr.getAt(it));
+			TToken at = arr[it];
 			int off = TToken.offset(at);
 			int len = TToken.length(at);
 			if (off + len <= start) {	// the searched token is more right
@@ -116,10 +115,10 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 	/**
 	 * return the token at a given index or null
 	 */
-	public static TToken tokenAt(Array arr, int at) {
-		if (at < 0 || at >= arr.length())
+	public static TToken tokenAt(TToken[] arr, int at) {
+		if (at < 0 || at >= arr.length)
 			return null;
-		return Delayed.<TToken>forced(arr.getAt(at));
+		return arr[at];
 	}
 	
 	public Object findNode(Object ast, int startOffset, int endOffset) {
@@ -127,7 +126,7 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		if (ast != null && ast instanceof TGlobal) {
 			// find out the token we are working with
 			TGlobal global = (TGlobal) ast;
-			Array arr  = TSubSt.toks( TGlobal.sub(global) );
+			TToken[] arr  = TSubSt.toks( TGlobal.sub(global) );
 			int at = binsearch(arr, startOffset, endOffset);
 			TToken res = tokenAt(arr, at);
 			if (res == null)
@@ -211,7 +210,9 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 	public IPath getPath(Object node) {
 		if (node != null && node instanceof FregeReferenceResolver.Namespace) {
 			final FregeReferenceResolver.Namespace nmsp = (FregeReferenceResolver.Namespace) node;
-			final IPath p = parser.getFD().getSource(nmsp.pack);
+			final IPath p = parser.getSource(nmsp.pack);
+			System.err.println("getPath( " + nmsp.pack + " ), path=" + p);
+
 			return p;
 		}
 		if (node != null && node instanceof FregeReferenceResolver.Symbol) {
@@ -219,13 +220,11 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 			final TQName  qname = TSymbol.M.name(sym.sym);
 			final boolean our = TQName.M.our(qname, sym.g);
 			final String  pack  = our ? TGlobal.thisPack(sym.g) : TQName.M.getpack(qname);
-			IPath p = parser.getFD().getSource(pack);
+			IPath p = parser.getSource(pack);
 			System.err.println("getPath( " + Data.IShow_QName.show(qname) 
 					+ " ), our=" + our + ", pack=" + pack + ", path=" + p);
 			return p;
 		}
-		System.err.println("getPath( " + node + " )  called");
-		// TODO Determine path of compilation unit containing this node
 		return new Path("");
 	}
 }

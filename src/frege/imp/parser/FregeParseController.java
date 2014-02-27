@@ -1,8 +1,10 @@
 package frege.imp.parser;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,9 +21,13 @@ import java.util.regex.Pattern;
 // import lpg.runtime.Monitor;
 
 
+
+
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -48,7 +54,6 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.source.LineRange;
 
 import frege.FregePlugin;
-import frege.runtime.Array;
 import frege.runtime.Delayed;
 import frege.runtime.Fun1;
 import frege.runtime.Lambda;
@@ -104,7 +109,7 @@ public class FregeParseController extends ParseControllerBase implements
 
 	public static class TokensIterator implements Iterator<TToken> {
 		/** current token array */
-		final private Array toks;
+		final private TToken[] toks;
 		private IRegion region;
 		private int  inx;
 		
@@ -115,12 +120,12 @@ public class FregeParseController extends ParseControllerBase implements
 		}
 		
 		/** construct an Iterator */
-		public TokensIterator(Array it, IRegion reg) { 
+		public TokensIterator(TToken[] it, IRegion reg) { 
 			toks = it;
 			region = reg;
 			inx = 0;
-			while (inx < toks.length()) {
-				TToken t = Delayed.<TToken>forced(toks.getAt(inx)); 
+			while (inx < toks.length) {
+				TToken t = toks[inx]; 
 				if (within(t, reg)) break;
 				inx++;
 			}
@@ -151,15 +156,15 @@ public class FregeParseController extends ParseControllerBase implements
 			// skip { ; }
 			// inx = skipBraces(toks, inx);
 			// we have a next if we are not the empty list and the token is in the region
-			return inx < toks.length()
-					&& within(Delayed.<TToken>forced(toks.getAt(inx)), region);
+			return inx < toks.length
+					&& within(toks[inx], region);
 		}
 		
 		@Override
 		public TToken next() {
 			// give back next token
-			if (inx < toks.length()) {
-				return Delayed.<TToken>forced(toks.getAt(inx++));
+			if (inx < toks.length) {
+				return toks[inx++];
 			}
 			return null;
 		}
@@ -272,7 +277,9 @@ public class FregeParseController extends ParseControllerBase implements
 			final FregeBuilder builder = new FregeBuilder();
 			final Set<String> result = new HashSet<String>();
 			try {
-				project.getRawProject().getWorkspace().getRoot().accept(builder.fResourceVisitor);
+				project.getRawProject()
+					.getWorkspace().getRoot()
+					.accept(builder.fResourceVisitor);
 			} catch (CoreException e) {
 				// problems getting the file names
 				return new ArrayList<String>(result);
@@ -313,7 +320,9 @@ public class FregeParseController extends ParseControllerBase implements
 			// final String[] srcs = getSp().split(System.getProperty("path.separator"));
 			final FregeBuilder builder = new FregeBuilder();
 			try {
-				project.getRawProject().getWorkspace().getRoot().accept(builder.fResourceVisitor);
+				project.getRawProject()
+					// .getWorkspace().getRoot()
+					.accept(builder.fResourceVisitor);
 			} catch (CoreException e) {
 				// problems getting the file names
 				return null;
@@ -439,30 +448,29 @@ public class FregeParseController extends ParseControllerBase implements
 		final String sp = data.getSp();
 		final IPath  pp = data.getProjectPath();
 		final IPath  wk = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+		final String src = pp != null ? filePath
+				.makeRelativeTo(wk)
+				.makeAbsolute()
+				.makeRelativeTo(pp).toString() : filePath.toString();
 
 		// set source file into global
 		global = TGlobal.upd$options(global, TOptions.upd$source(
 				TGlobal.options(global), 
-				filePath.makeRelativeTo(wk)
-						.makeAbsolute()
-						.makeRelativeTo(pp).toString()));
+				src));
 
 		System.err.println("project Path: " + pp);
-		System.err.println("source File: " + filePath
-								.makeRelativeTo(wk)
-								.makeAbsolute()
-								.makeRelativeTo(pp));
+		System.err.println("source File: " + src);
 				
 		System.err.println("FregePath: " + fp);
 		global = TGlobal.upd$options(global, TOptions.upd$path(
 				TGlobal.options(global),
-				frege.prelude.PreludeNative.TRegex.splitted(
+				frege.java.util.Regex.TRegex.splitted(
 						Delayed.<Pattern>forced(frege.compiler.Utilities.pathRE), 
 						fp)));
 		System.err.println("SourcePath: " + sp);
 		global = TGlobal.upd$options(global, TOptions.upd$sourcePath(
 				TGlobal.options(global),
-				frege.prelude.PreludeNative.TRegex.splitted(
+				frege.java.util.Regex.TRegex.splitted(
 						Delayed.<Pattern>forced(frege.compiler.Utilities.pathRE), 
 						sp)));
 		System.err.println("Destination: " + bp);
@@ -589,7 +597,7 @@ public class FregeParseController extends ParseControllerBase implements
 				goodglobal = global;			// when opening a file with errors
 			else {
 				// update token array in goodglobal
-				Array toks = TSubSt.toks(TGlobal.sub(global));
+				TToken[] toks = TSubSt.toks(TGlobal.sub(global));
 				goodglobal = TGlobal.upd$sub(goodglobal, TSubSt.upd$toks(
 						TGlobal.sub(goodglobal), toks));
 			}
@@ -782,5 +790,56 @@ public class FregeParseController extends ParseControllerBase implements
 	}
 	public synchronized final int getLeng() {
 		return leng;
+	}
+	
+	/**
+	 * look for a path that contains the source code for pack in the context of this parser
+	 */
+	public IPath getSource(final String pack) {
+		// get the sources of this project
+		final IPath psrc = getFD().getSource(pack);
+		if (psrc != null) return psrc;
+		// get it via classloader
+		final String fr = pack.replaceAll("\\.", "/") + ".fr";		// the file name
+		final TSubSt subst = TGlobal.sub(this.global);
+		final URLClassLoader loader = TSubSt.loader(subst);
+		final InputStream stream = loader.getResourceAsStream(fr);
+		if (stream == null) return null;							// not here :-(
+		// final String inbin = getFD().getBp() ++ "/" ++ fr;
+		if (this.fProject == null) return null;                     // too bad, doesn't work with project. 
+		final IProject rp = this.fProject.getRawProject();
+		
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IPath wroot = workspace.getRoot().getLocation();
+		boolean isJava = false;
+		
+		try {
+				isJava = rp.hasNature("org.eclipse.jdt.core.javanature");
+				
+		} catch (CoreException e) {
+			return null;		// no java project
+		}
+		if (!isJava) return null;  // no java project
+		final IJavaProject jp = JavaCore.create(rp);
+		IFile newsrc = null;
+		IPath srcpath = null;
+		try {
+			srcpath = jp.getOutputLocation().append(pack + ".fr");
+			newsrc = workspace.getRoot().getFile(srcpath);
+		} catch (JavaModelException e) {
+			return null;
+		}
+		if (newsrc == null) return null;	// couldn't get file handle here
+		try {
+			if (!newsrc.exists())
+				newsrc.create(stream, IResource.DERIVED, new NullProgressMonitor());
+			stream.close();
+		} catch (CoreException e) {
+			System.err.println(e.getMessage());
+			return null;
+		} catch (IOException e) {
+				// don't care if the input stream can be closed.
+		}
+		return srcpath;
 	}
 }
