@@ -16,22 +16,16 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// import lpg.runtime.ILexStream;
-// import lpg.runtime.IPrsStream;
-// import lpg.runtime.Monitor;
-
-
-
-
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.jdt.core.IClasspathEntry;
@@ -180,6 +174,7 @@ public class FregeParseController extends ParseControllerBase implements
 		private String fp = ".";
 		private String bp = ".";
 		private IPath  projectPath = null;
+		private IJavaProject javaProject = null;
 		private ISourceProject project = null;
 		public FregeData(ISourceProject sourceProject) {
 			project = sourceProject;
@@ -202,6 +197,7 @@ public class FregeParseController extends ParseControllerBase implements
 
 				if (isJava) {
 					IJavaProject jp = JavaCore.create(rp);
+					javaProject = jp; 
 					projectPath = jp.getPath();
 					try {
 						IResource bpres = workspace.getRoot().findMember(jp.getOutputLocation());
@@ -270,6 +266,11 @@ public class FregeParseController extends ParseControllerBase implements
 		public String getBp() {
 			return bp;
 		}
+		
+		/**
+		 * @return the java project
+		 */
+		public IJavaProject getJp() { return javaProject; }
 		/**
 		 * get all frege source files in the work space
 		 */
@@ -796,50 +797,63 @@ public class FregeParseController extends ParseControllerBase implements
 	 * look for a path that contains the source code for pack in the context of this parser
 	 */
 	public IPath getSource(final String pack) {
-		// get the sources of this project
+		// find it in the sources of this project
 		final IPath psrc = getFD().getSource(pack);
 		if (psrc != null) return psrc;
 		// get it via classloader
 		final String fr = pack.replaceAll("\\.", "/") + ".fr";		// the file name
-		final TSubSt subst = TGlobal.sub(this.global);
-		final URLClassLoader loader = TSubSt.loader(subst);
-		final InputStream stream = loader.getResourceAsStream(fr);
-		if (stream == null) return null;							// not here :-(
-		// final String inbin = getFD().getBp() ++ "/" ++ fr;
+		final String segments[] = pack.split("\\.");
 		if (this.fProject == null) return null;                     // too bad, doesn't work with project. 
 		final IProject rp = this.fProject.getRawProject();
-		
+		final IJavaProject jp = getFD().getJp();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IPath wroot = workspace.getRoot().getLocation();
-		boolean isJava = false;
 		
-		try {
-				isJava = rp.hasNature("org.eclipse.jdt.core.javanature");
-				
-		} catch (CoreException e) {
-			return null;		// no java project
-		}
-		if (!isJava) return null;  // no java project
-		final IJavaProject jp = JavaCore.create(rp);
 		IFile newsrc = null;
 		IPath srcpath = null;
+		IPath binPath = null;
 		try {
-			srcpath = jp.getOutputLocation().append(pack + ".fr");
-			newsrc = workspace.getRoot().getFile(srcpath);
+			binPath = jp.getOutputLocation();
 		} catch (JavaModelException e) {
 			return null;
 		}
+
+		srcpath = binPath.append(fr);
+		newsrc = workspace.getRoot().getFile(srcpath);
 		if (newsrc == null) return null;	// couldn't get file handle here
+		if (newsrc.exists()) return srcpath;
+		
+		IFolder folder = workspace.getRoot().getFolder(binPath);
+		// System.err.println("Parser.getSource start in folder " + folder.getLocation());
+		InputStream stream = null;
+		
 		try {
-			if (!newsrc.exists())
-				newsrc.create(stream, IResource.DERIVED, new NullProgressMonitor());
-			stream.close();
+			// create the intermediate directories
+			for (int i=0; i < segments.length-1; i++) {
+				binPath = binPath.append(segments[i]);
+				folder = workspace.getRoot().getFolder(binPath);
+				// System.err.println("Parser.getSource continue in folder " + folder.getLocation());
+				if (folder.exists()) {
+					// System.err.println("Parser.getSource exists " + folder.getLocation());
+				}
+				else {
+					// System.err.println("Parser.getSource creating " + folder.getLocation());
+					folder.create(true, true, null);
+				}
+			}
+
+			final TSubSt subst = TGlobal.sub(this.global);
+			final URLClassLoader loader = TSubSt.loader(subst);
+			stream = loader.getResourceAsStream(fr);
+			if (stream == null) return null;				// not here :-(
+			newsrc.create(stream, IResource.FORCE | IResource.DERIVED, new NullProgressMonitor());
 		} catch (CoreException e) {
 			System.err.println(e.getMessage());
 			return null;
-		} catch (IOException e) {
-				// don't care if the input stream can be closed.
+		} finally {
+			try { if (stream != null) stream.close(); } catch (IOException ioe) {}
 		}
 		return srcpath;
 	}
+	
 }
