@@ -65,6 +65,7 @@ public abstract class FregeBuilderBase extends BuilderBase {
     // protected final Set<IFile> fSourcesForDeps= new HashSet<IFile>();
     
     protected Map<IFile, Set<IFile>> fDependencies = new HashMap<IFile, Set<IFile>>();
+    protected Map<String, IFile> fPackages = new HashMap<String, IFile>();
     final protected String fDependencyInfo = "not here";	// make base class item invisible
     
     protected boolean buildStatus = false;
@@ -192,7 +193,8 @@ public abstract class FregeBuilderBase extends BuilderBase {
         List<IFile> allSources= new LinkedList<IFile>();
 
         if (fDependencies.isEmpty() || kind == FULL_BUILD || kind == CLEAN_BUILD) {
-            // get all sources
+            fDependencies.clear();
+            fPackages.clear();
             try {
                 getProject().accept(new AllSourcesVisitor(allSources));
             } catch (CoreException e) {
@@ -263,6 +265,7 @@ public abstract class FregeBuilderBase extends BuilderBase {
     public void addDependency(IFile from, IFile to) {
     	if (fDependencies.get(from) == null)
     		fDependencies.put(from, new HashSet<IFile>());
+    	if (from.equals(to)) return;
     	fDependencies.get(from).add(to);
     }
     
@@ -274,12 +277,24 @@ public abstract class FregeBuilderBase extends BuilderBase {
      */
     protected boolean usesTransitive(IFile a, IFile b) {
     	if (a.equals(b)) return false;
-    	final Set<IFile> direct = fDependencies.get(a);
-    	if (direct == null) return false;
-    	if (direct.contains(b)) return true;
-    	for (IFile d : direct)
-    		if (usesTransitive(d, b)) return true;
-    	return false;
+    	final Set<IFile> deps = new HashSet<IFile>();
+    	transDep(a, deps);
+    	return deps.contains(b);
+    }
+    
+    /**
+     * Determine transitive dependencies
+     */
+    public void transDep(IFile cc, Set<IFile> ccs) {
+    	if (ccs.contains(cc)) return; 	// save work
+    	ccs.add(cc);
+    	// add the direct dependencies recursively
+    	Set<IFile> deps = fDependencies.get(cc);
+    	if (deps != null)
+    		for (IFile k : deps) {
+    			transDep(k, ccs);
+    		}
+    	return;
     }
     
     /**

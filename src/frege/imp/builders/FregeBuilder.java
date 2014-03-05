@@ -104,6 +104,11 @@ public class FregeBuilder extends FregeBuilderBase {
 				if (cons == null) break;
 				packs = cons.mem2.<TList>forced();
 				final String pack = Delayed.<String>forced(cons.mem1);
+				final IFile known = fPackages.get(pack);
+				if (known != null) {
+					this.addDependency(file, known);
+					continue;
+				}
 				final String fr = pack.replaceAll("\\.", "/") + ".fr";
 				for (String sf: srcs) {
 					final IPath p = new Path(sf + "/" + fr);
@@ -114,7 +119,8 @@ public class FregeBuilder extends FregeBuilderBase {
 					if (toRes != null && toRes instanceof IFile) {
 						final IFile to = (IFile) toRes;
 						// avoid endless recursion for frege.prelude.Base -> frege.prelude.Base
-						if (!file.equals(to))	{ 
+						if (!file.equals(to))	{
+							this.fPackages.put(pack, to);
 							this.addDependency(file, to);
 							getPlugin().writeInfoMsg(
 									"DependenciesCollector found: " + to.getFullPath());
