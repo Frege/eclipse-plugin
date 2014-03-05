@@ -68,8 +68,6 @@ public class FregeReferenceResolver implements IReferenceResolver {
 	 * given Parse Controller.
 	 */
 	public Object getLinkTarget(Object node, IParseController controller) {
-		// START_HERE
-		// TODO Replace the following with an implementation suitable for your language and reference types
 		TGlobal g = null;
 		
 		if (controller != null) {
@@ -80,7 +78,12 @@ public class FregeReferenceResolver implements IReferenceResolver {
 		if (g != null && node != null && node instanceof TToken) {
 			TToken tok = (TToken) node;
 			System.err.println("getLinkTarget: " + IShow_Token.show(tok));
-			final int tid = TToken.tokid(tok);
+			int tid = TToken.tokid(tok);
+			if (tid == TTokenID.CHAR && "_".equals(TToken.value(tok))) {
+				tid = TTokenID.VARID;
+				tok = TToken.upd$tokid(tok, TTokenID.VARID);
+				tok = TToken.upd$value(tok, "it");
+			}
 			if (tid != TTokenID.VARID 
 					&& tid != TTokenID.CONID
 					&& tid != TTokenID.QUALIFIER
