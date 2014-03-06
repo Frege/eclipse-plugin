@@ -566,7 +566,8 @@ public class FregeParseController extends ParseControllerBase implements
 			global = TGlobal.upd$sub(global,  TSubSt.upd$cancelled(
 				TGlobal.sub(global), 
 				cancel));
-			global = TGlobal.upd$sub(global, TSubSt.upd$errors(TGlobal.sub(global), 0));
+			global = TGlobal.upd$sub(global, TSubSt.upd$numErrors(TGlobal.sub(global), 0));
+			global = TGlobal.upd$sub(global, TSubSt.upd$resErrors(TGlobal.sub(global), 0));
 		
 			passes = frege.compiler.Main.passes.<TList>forced();
 			
