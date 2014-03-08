@@ -9,9 +9,11 @@ it is unclear at the moment if and how new users can install.
 It looks like the [IMP runtime](https://github.com/impulse-org/imp.runtime) is now hosted on GitHub, 
 we'll need to find a way to bundle and install it.
 
-*Update (Mar 2)* I asked the people there if it would be possible to make a new update site for IMP, and they said it was possible. o please stay tuned, maybe 1 week or two and we'll have it going again.
+*Update (Mar 2)* I asked the people there if it would be possible to make a new update site for IMP, and they said it was possible. So please stay tuned, maybe 1 week or two and we'll have it going again.
 
-However, if you had installed fregIDE earlier, you can still upgrade from the 
+*Update (Mar 8)* Meanwhile, Nicolas Noullet has found out how to install the IMP plugin without update site and has posted detailed instructions in the [discussion group](https://groups.google.com/forum/#!forum/frege-programming-language). Merci bien, Nicolas! Despite this, we're still looking for an easier solution.
+
+If you had installed fregIDE earlier, you can upgrade from the 
 [upgrade site](http://www.frege-lang.org/fregide/), as you should have all necessary prerequisites already.
 
 
