@@ -10,7 +10,6 @@ import frege.compiler.EclipseUtil.IShow_Proposal;
 import frege.compiler.EclipseUtil.TProposal;
 import frege.imp.parser.*;
 import frege.prelude.PreludeBase.TList;
-import frege.runtime.Array;
 import frege.runtime.Delayed;
 import frege.runtime.Lazy;
 
