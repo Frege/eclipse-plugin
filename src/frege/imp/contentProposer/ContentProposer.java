@@ -140,6 +140,7 @@ public class ContentProposer implements IContentProposer {
 				
 			TList ps = null; 
 			boolean first = true;
+			/*
 			if (token != null && (TToken.tokid(token) == TTokenID.IMPORT
 					|| TToken.tokid(tprev) == TTokenID.IMPORT)) {
 				pref = token != null && TToken.tokid(token) != TTokenID.IMPORT 
@@ -152,8 +153,8 @@ public class ContentProposer implements IContentProposer {
 				}
 				first = result.size() == 0;
 			}
-			else {
-				ps = EclipseUtil.proposeContent(g, offset, tokens, inx);
+			else */ {
+				ps = EclipseUtil.proposeContent(g, parser.ourRoot(), offset, tokens, inx);
 				while (true) {
 					final TList.DCons node = ps._Cons();
 					if (node == null) break;

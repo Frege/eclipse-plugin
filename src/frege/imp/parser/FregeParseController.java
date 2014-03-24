@@ -8,6 +8,8 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -19,7 +21,10 @@ import java.util.regex.Pattern;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -52,6 +57,7 @@ import frege.runtime.Delayed;
 import frege.runtime.Fun1;
 import frege.runtime.Lambda;
 import frege.runtime.Lazy;
+import frege.prelude.PreludeBase;
 import frege.prelude.PreludeBase.TList.DCons;
 import frege.prelude.PreludeBase.TTuple2;
 import frege.prelude.PreludeBase.TList;
@@ -75,6 +81,7 @@ import frege.compiler.Main;
 import frege.imp.builders.FregeBuilder;
 import frege.imp.preferences.FregePreferencesConstants;
 import frege.data.Bits.TBitSet;
+
 
 /**
  * NOTE:  This version of the Parse Controller is for use when the Parse
@@ -363,6 +370,49 @@ public class FregeParseController extends ParseControllerBase implements
     				= new SimpleAnnotationTypeInfo();
 	public IMessageHandler msgHandler = null;
 	private FregeData fregeData = null;
+	private static Map<String, Lazy> packs = new HashMap<>();
+	
+	void initPacks() {
+		boolean make = false;
+		synchronized (packs) {
+			make = packs.get(fregeData.getBp()) == null;
+			if (make) {
+				// Object value = PreludeBase.TST.performUnsafe(EclipseUtil.getpacks());
+				packs.put(fregeData.getBp(), frege.lib.Modules.noPacks);
+			}
+		}
+		if (make) {
+			Job job = new Job("Getting Modules") {
+				public IStatus run(IProgressMonitor moni) {
+					moni.worked(10);
+					Lazy value = Delayed.<Lazy>forced(
+							PreludeBase.TST.performUnsafe(
+									frege.compiler.EclipseUtil.initRoot(
+											fregeData.getFp()
+											) // .<Lambda>forced()
+											));
+					moni.worked(75);
+					synchronized (packs) {
+						packs.put(fregeData.getBp(),value);
+					}
+					System.err.println("Job done, value=" + value);
+					moni.done();
+					return Status.OK_STATUS;
+				}
+			};
+			job.schedule();
+		}
+	}
+	
+	public Lazy ourRoot() {
+		synchronized (packs) {
+			return packs.get(fregeData.getBp());
+		}
+	}
+	
+	public static Lazy ourRoot(FregeParseController parser) {
+		return parser.ourRoot();
+	}
 	
 	/**
 	 * @author ingo
@@ -421,6 +471,7 @@ public class FregeParseController extends ParseControllerBase implements
 				.performUnsafe(frege.compiler.Main.eclipseOptions
 						.<Lambda> forced()));
 		fregeData = new FregeData(project);
+		initPacks();
 		createLexerAndParser(fullFilePath, project);
 
 		msgHandler = handler;
