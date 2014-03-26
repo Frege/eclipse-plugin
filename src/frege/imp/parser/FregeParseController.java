@@ -64,7 +64,7 @@ import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TTuple3;
 import frege.control.monad.State.TState;
 import frege.prelude.PreludeList;
-import frege.prelude.PreludeList.IListLike__lbrack_rbrack;
+import frege.prelude.PreludeList.IListView__lbrack_rbrack;
 import frege.compiler.types.Flags.TFlag;
 import frege.compiler.types.Flags.IEnum_Flag;
 import frege.compiler.Data.TGlobal;
@@ -623,7 +623,7 @@ public class FregeParseController extends ParseControllerBase implements
 			passes = frege.compiler.Main.passes.<TList>forced();
 			
 			monitor.beginTask(this.getClass().getName() + " parsing", 
-					1 + IListLike__lbrack_rbrack.length(passes));
+					1 + IListView__lbrack_rbrack.length(passes));
 
 			index = 0;
 
