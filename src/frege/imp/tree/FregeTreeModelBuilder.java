@@ -3,7 +3,7 @@ package frege.imp.tree;
 import org.eclipse.imp.services.base.TreeModelBuilderBase;
 
 import frege.data.TreeMap.TTree;
-import frege.compiler.Data.TExprT;
+import frege.compiler.types.Definitions.TExprT;
 import frege.compiler.Data.TGlobal;
 import frege.compiler.types.Positions.TPosition;
 // import frege.compiler.types.QNames.TQName;
