@@ -14,11 +14,11 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
 import frege.FregePlugin;
-import frege.compiler.Data.TQName.DLocal;
-import frege.compiler.BaseTypes.TToken;
+import frege.compiler.types.QNames.TQName.DLocal;
+import frege.compiler.types.Tokens.TToken;
 import frege.compiler.Data.TGlobal;
-import frege.compiler.BaseTypes.TTokenID;
-import frege.compiler.Data.TQName;
+import frege.compiler.enums.TokenID.TTokenID;
+import frege.compiler.types.QNames.TQName;
 import frege.imp.parser.FregeParseController;
 import frege.imp.preferences.FregePreferencesConstants;
 import frege.prelude.PreludeBase.TEither;
@@ -108,7 +108,7 @@ public class FregeTokenColorer extends TokenColorerBase implements ITokenColorer
 		final TQName qname = Delayed.<TQName>forced( right.mem1 );
 		final DLocal local = qname._Local();
 		if (local != null) return normalAttribute;		// local var
-		final boolean our = TQName.M.our(qname, g);
+		final boolean our = TGlobal.our(g, qname);
 		final TQName.DTName tname = qname._TName();
 		if (tname != null) return our? typeAttribute : itypeAttribute;
 		final TQName.DMName mname = qname._MName();

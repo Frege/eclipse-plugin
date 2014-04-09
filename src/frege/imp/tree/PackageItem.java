@@ -5,7 +5,7 @@ package frege.imp.tree;
 
 import org.eclipse.swt.graphics.Image;
 
-import frege.compiler.BaseTypes.TPosition;
+import frege.compiler.types.Positions.TPosition;
 
 /**
  * @author ingo

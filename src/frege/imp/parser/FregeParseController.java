@@ -65,18 +65,16 @@ import frege.prelude.PreludeBase.TTuple3;
 import frege.control.monad.State.TState;
 import frege.prelude.PreludeList;
 import frege.prelude.PreludeList.IListView__lbrack_rbrack;
-import frege.compiler.types.Flags.TFlag;
-import frege.compiler.types.Flags.IEnum_Flag;
+import frege.compiler.enums.Flags.TFlag;
+import frege.compiler.enums.Flags.IEnum_Flag;
 import frege.compiler.Data.TGlobal;
 import frege.compiler.Data.TMessage;
 import frege.compiler.Data.TOptions;
-import frege.compiler.BaseTypes.TPosition;
+import frege.compiler.types.Positions.TPosition;
 import frege.compiler.Data.TSeverity;
 import frege.compiler.Data.TSubSt;
-import frege.compiler.BaseTypes.TToken;
-import frege.compiler.BaseTypes.TTokenID;
-import frege.compiler.Utilities;
-import frege.compiler.EclipseUtil;
+import frege.compiler.types.Tokens.TToken;
+import frege.ide.Utilities;
 import frege.compiler.Main;
 import frege.imp.builders.FregeBuilder;
 import frege.imp.preferences.FregePreferencesConstants;
@@ -387,7 +385,7 @@ public class FregeParseController extends ParseControllerBase implements
 					moni.worked(10);
 					Lazy value = Delayed.<Lazy>forced(
 							PreludeBase.TST.performUnsafe(
-									frege.compiler.EclipseUtil.initRoot(
+									Utilities.initRoot(
 											fregeData.getFp()
 											) // .<Lambda>forced()
 											));
@@ -412,6 +410,16 @@ public class FregeParseController extends ParseControllerBase implements
 	
 	public static Lazy ourRoot(FregeParseController parser) {
 		return parser.ourRoot();
+	}
+	
+	public void justCompiled() {
+		synchronized (packs) {
+			Lazy x = ourRoot();
+			Lazy y = Delayed.<Lazy>forced(
+				PreludeBase.TST.performUnsafe(Utilities.justCompiled(global, x))
+			);
+			packs.put(fregeData.getBp(), y);
+		}
 	}
 	
 	/**
@@ -644,7 +652,7 @@ public class FregeParseController extends ParseControllerBase implements
 					+ (te-t0)/1000000 + "ms");
 				
 				monitor.worked(1);
-				global = runStG(EclipseUtil.passDone, g);
+				global = runStG(Utilities.passDone, g);
 			}
 			if (achievement(global) >= achievement(goodglobal))
 				goodglobal = global;			// when opening a file with errors
@@ -681,7 +689,7 @@ public class FregeParseController extends ParseControllerBase implements
 					+ (te-t0)/1000000 + "ms");
 				
 				monitor.worked(1);
-				global = runStG(EclipseUtil.passDone, g);
+				global = runStG(Utilities.passDone, g);
 				
 				if (achievement(global) >= achievement(goodglobal))
 					goodglobal = global;

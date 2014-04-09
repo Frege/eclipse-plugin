@@ -3,11 +3,11 @@ package frege.imp.tree;
 import org.eclipse.swt.graphics.Image;
 
 import frege.compiler.Data.TGlobal;
-import frege.compiler.Data.TQName;
-import frege.compiler.Data.TVisibility;
-import frege.compiler.BaseTypes.TPosition;
+import frege.compiler.types.QNames.TQName;
+import frege.compiler.enums.Visibility.TVisibility;
+import frege.compiler.types.Positions.TPosition;
 import frege.compiler.Data.TSymbol;
-import frege.compiler.EclipseUtil;
+import frege.ide.Utilities;
 
 public class SymbolItem implements ITreeItem {
 	final TSymbol symbol;
@@ -31,7 +31,7 @@ public class SymbolItem implements ITreeItem {
 
 	@Override
 	public String getLabel() {
-		return EclipseUtil.label(global, symbol);
+		return Utilities.label(global, symbol);
 	}
 
 	@Override

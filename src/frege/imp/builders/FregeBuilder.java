@@ -23,10 +23,10 @@ import frege.FregePlugin;
 import frege.compiler.Data;
 import frege.compiler.Data.TGlobal;
 import frege.compiler.Data.TOptions;
-import frege.compiler.BaseTypes.TPosition;
-import frege.compiler.BaseTypes.TToken;
+import frege.compiler.types.Positions.TPosition;
+import frege.compiler.types.Tokens.TToken;
 import frege.compiler.Main;
-import frege.compiler.EclipseUtil;
+import frege.ide.Utilities;
 import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TList.DCons;
@@ -97,7 +97,7 @@ public class FregeBuilder extends FregeBuilderBase {
 			getPlugin().writeInfoMsg(
 					"Collecting dependencies from frege file: " + fromPath);
 			TList packs = frege.compiler.Scanner.dependencies(contents).<TList>forced();
-			packs = EclipseUtil.correctDependenciesFor(packs, fromPath);
+			packs = Utilities.correctDependenciesFor(packs, fromPath);
 			
 			while (true) {
 				final DCons cons = packs._Cons();
@@ -242,6 +242,7 @@ public class FregeBuilder extends FregeBuilderBase {
 				final String target = Delayed
 						.<String> forced(FregeParseController.funStG(
 								Main.targetPath(".java"), result));
+				
 				getPlugin().writeInfoMsg("built: " + target);
 				// get the frege path and build path
 				final String bp = TOptions.dir( TGlobal.options(result) );
@@ -309,6 +310,10 @@ public class FregeBuilder extends FregeBuilderBase {
 								+ "please report under https://github.com/frege/frege/issues and attach a copy of "
 								+ target, 
 							line, chStart, chEnd);
+				}
+				else {
+					// notify that we have a new module
+					parseController.justCompiled();
 				}
 			}
 

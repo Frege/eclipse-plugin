@@ -5,14 +5,14 @@ import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.services.IReferenceResolver;
 
 import frege.data.TreeMap.TTree;
-import frege.compiler.BaseTypes.IShow_Token;
-import frege.compiler.BaseTypes.TToken;
-import frege.compiler.BaseTypes.TTokenID;
-import frege.compiler.Data;
+import frege.compiler.types.Tokens.IShow_Token;
+import frege.compiler.types.Tokens.TToken;
+import frege.compiler.enums.TokenID.TTokenID;
 import frege.compiler.Data.TGlobal;
-import frege.compiler.Data.TQName;
+import frege.compiler.types.QNames;
+import frege.compiler.types.QNames.TQName;
 import frege.compiler.Data.TSymbol;
-import frege.compiler.EclipseUtil;
+import frege.ide.Utilities;
 import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TEither;
 import frege.prelude.PreludeBase.TEither.DLeft;
@@ -30,7 +30,7 @@ public class FregeReferenceResolver implements IReferenceResolver {
 		public Symbol(TGlobal g, TSymbol sym) { this.g = g; this.sym = sym; }
 		public String toString() {
 			String s = Delayed.<String> forced(FregeParseController.funStG(
-					EclipseUtil.symbolDocumentation(sym), g));
+					Utilities.symbolDocumentation(sym), g));
 			return s; // Data.INice_QName.nicer(TSymbol.M.name(sym), g);
 		}
 	}
@@ -46,7 +46,7 @@ public class FregeReferenceResolver implements IReferenceResolver {
 		}
 		public String toString() {
 			String s = Delayed.<String>forced(FregeParseController.funStG(
-						EclipseUtil.packDocumentation(pack), g));
+						Utilities.packDocumentation(pack), g));
 			return s;
 		}
 	}
@@ -96,11 +96,11 @@ public class FregeReferenceResolver implements IReferenceResolver {
 			if (right != null) {
 				// this is a QName
 				TQName q = Delayed.<TQName>forced( right.mem1 );
-				final TMaybe mbsym = TQName.M.findit(q, g).<TMaybe>forced();
+				final TMaybe mbsym = TGlobal.findit(g, q).<TMaybe>forced();
 				final DJust  jsym  = mbsym._Just();
 				if (jsym == null)	return null; 	// not found?
 				final TSymbol sym = Delayed.<TSymbol>forced( jsym.mem1 );
-				System.err.println("getLinkTarget: " + Data.IShow_QName.show(q));
+				System.err.println("getLinkTarget: " + QNames.IShow_QName.show(q));
 				return new Symbol(g, sym);
 			}
 			final DLeft  left = lr._Left();

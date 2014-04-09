@@ -6,13 +6,14 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.imp.editor.ModelTreeNode;
 import org.eclipse.imp.parser.ISourcePositionLocator;
 
-import frege.compiler.BaseTypes.IShow_Token;
+import frege.compiler.types.Tokens.IShow_Token;
 import frege.compiler.Data;
 import frege.compiler.Data.TGlobal;
-import frege.compiler.Data.TQName;
-import frege.compiler.BaseTypes.TPosition;
+import frege.compiler.types.QNames;
+import frege.compiler.types.QNames.TQName;
+import frege.compiler.types.Positions.TPosition;
 import frege.compiler.Data.TSubSt;
-import frege.compiler.BaseTypes.TToken;
+import frege.compiler.types.Tokens.TToken;
 import frege.compiler.Data.TSymbol;
 import frege.imp.referenceResolvers.FregeReferenceResolver;
 import frege.imp.tree.ITreeItem;
@@ -162,9 +163,9 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		if (node != null && node instanceof FregeReferenceResolver.Symbol) {
 			final FregeReferenceResolver.Symbol sym = (FregeReferenceResolver.Symbol) node;
 			final TQName  qname = TSymbol.M.name(sym.sym);
-			final boolean our = TQName.M.our(qname, sym.g);
+			final boolean our = TGlobal.our(sym.g, qname);
 			final int off = getStartOffset(TSymbol.M.pos(sym.sym)); 
-			System.err.println("getStartOffSet( " + Data.IShow_QName.show(qname) 
+			System.err.println("getStartOffSet( " + QNames.IShow_QName.show(qname) 
 					+ " ), our=" + our
 					+ " ), off=" + off);
 			return off; 
@@ -218,10 +219,10 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		if (node != null && node instanceof FregeReferenceResolver.Symbol) {
 			final FregeReferenceResolver.Symbol sym = (FregeReferenceResolver.Symbol) node;
 			final TQName  qname = TSymbol.M.name(sym.sym);
-			final boolean our = TQName.M.our(qname, sym.g);
+			final boolean our = TGlobal.our(sym.g, qname);
 			final String  pack  = our ? TGlobal.thisPack(sym.g) : TQName.M.getpack(qname);
 			IPath p = parser.getSource(pack);
-			System.err.println("getPath( " + Data.IShow_QName.show(qname) 
+			System.err.println("getPath( " + QNames.IShow_QName.show(qname) 
 					+ " ), our=" + our + ", pack=" + pack + ", path=" + p);
 			return p;
 		}

@@ -5,11 +5,11 @@ import org.eclipse.imp.services.base.TreeModelBuilderBase;
 import frege.data.TreeMap.TTree;
 import frege.compiler.Data.TExprT;
 import frege.compiler.Data.TGlobal;
-import frege.compiler.BaseTypes.TPosition;
-import frege.compiler.Data.TQName;
+import frege.compiler.types.Positions.TPosition;
+// import frege.compiler.types.QNames.TQName;
 import frege.compiler.Data.TSubSt;
 import frege.compiler.Data.TSymbol;
-import frege.compiler.EclipseUtil;
+import frege.ide.Utilities;
 import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TList.DCons;
@@ -55,7 +55,7 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 	public class FregeModelVisitor /* extends AbstractVisitor */ {		
 		
 		public boolean visit(TGlobal g, TTree env, boolean top) {
-			final TList syms = EclipseUtil.symbols(env).<TList>forced();
+			final TList syms = Utilities.symbols(env).<TList>forced();
 			// do one category after the other according to the predefined order
 			for (int cat : order) {
 				if (!top) { // avoid unneeded list traversals
@@ -70,7 +70,7 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 					final TSymbol sym = Delayed.<TSymbol>forced( elem.mem1 );
 					elem = (elem.mem2.<TList>forced())._Cons();
 					if (sym._constructor() != cat) continue;
-					if (sym._constructor() == link && TQName.M.our(TSymbol.M.alias(sym), g)) continue;
+					if (sym._constructor() == link && TGlobal.our(g, TSymbol.M.alias(sym))) continue;
 					if (top) {            // category labels at the top only before first item
 						if (!found) {
 							pushSubItem(new CategoryItem(categories[cat], TSymbol.M.pos(sym)));
@@ -103,7 +103,7 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 		public boolean visit(TGlobal g, TExprT expr) {
 			// System.err.println("visiting: " + g.toString() + ", " + expr.toString());
 			TList symbols = (TList) FregeParseController.funStG(
-					frege.compiler.EclipseUtil.exprSymbols(expr), g);
+					Utilities.exprSymbols(expr), g);
 			TList.DCons node = symbols._Cons();
 			while (node != null) {
 				TSymbol sym = Delayed.<TSymbol>forced( node.mem1);
@@ -119,7 +119,7 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 			
 			pushSubItem(new PackageItem(pack, TSubSt.thisPos(sub)));
 			if  (! "".equals(pack)) {
-				final TList pnps =  EclipseUtil.imports(g).<TList>forced();
+				final TList pnps =  Utilities.imports(g).<TList>forced();
 				DCons elem = pnps._Cons();
 				while (elem != null) {
 					final TTuple3 tuple = Delayed.<TTuple3>forced( elem.mem1 );
@@ -134,7 +134,7 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 			
 			if  (! "".equals(pack)) 
 				return visit(g, 
-						EclipseUtil.thisTab(g).<TTree>forced(), 
+						Utilities.thisTab(g).<TTree>forced(), 
 						true);
 			return true;
 		}

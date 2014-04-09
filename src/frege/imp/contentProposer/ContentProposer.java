@@ -1,17 +1,17 @@
 package frege.imp.contentProposer;
 
-import frege.compiler.BaseTypes.TToken;
-import frege.compiler.BaseTypes.TTokenID;
-import frege.compiler.BaseTypes;
+import frege.compiler.types.Tokens.TToken;
+
+
 import frege.compiler.Data.TGlobal;
 import frege.compiler.Data.TSubSt;
-import frege.compiler.EclipseUtil;
-import frege.compiler.EclipseUtil.IShow_Proposal;
-import frege.compiler.EclipseUtil.TProposal;
+import frege.ide.Utilities;
+import frege.ide.Utilities.IShow_Proposal;
+import frege.ide.Utilities.TProposal;
+import frege.compiler.enums.TokenID;
 import frege.imp.parser.*;
 import frege.prelude.PreludeBase.TList;
 import frege.runtime.Delayed;
-import frege.runtime.Lazy;
 
 
 import java.util.*;
@@ -116,13 +116,13 @@ public class ContentProposer implements IContentProposer {
 			boolean inside = false;
 			String  id = "none";
 			String  idprev = tprev == null ? "" 
-								: BaseTypes.IShow_TokenID.show(TToken.tokid(tprev)) + ",";
+								: TokenID.IShow_TokenID.show(TToken.tokid(tprev)) + ",";
 			String  pref = ""; 
 			String  val = null;
 			if (token != null) {
 				direct = TToken.offset(token) + TToken.length(token) == offset;
 				inside = TToken.offset(token) + TToken.length(token) >  offset;
-				id = BaseTypes.IShow_TokenID.show(TToken.tokid(token));
+				id = TokenID.IShow_TokenID.show(TToken.tokid(token));
 				val  = TToken.value(token);
 				try {
 					pref = inside ? val.substring(0, offset - TToken.offset(token)) 
@@ -154,7 +154,7 @@ public class ContentProposer implements IContentProposer {
 				first = result.size() == 0;
 			}
 			else */ {
-				ps = EclipseUtil.proposeContent(g, parser.ourRoot(), offset, tokens, inx);
+				ps = Utilities.proposeContent(g, parser.ourRoot(), offset, tokens, inx);
 				while (true) {
 					final TList.DCons node = ps._Cons();
 					if (node == null) break;
