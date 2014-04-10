@@ -8,7 +8,7 @@ import frege.compiler.Data.TGlobal;
 import frege.compiler.types.Positions.TPosition;
 // import frege.compiler.types.QNames.TQName;
 import frege.compiler.Data.TSubSt;
-import frege.compiler.Data.TSymbol;
+import frege.compiler.types.Symbols.TSymbol;
 import frege.ide.Utilities;
 import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TList;

@@ -11,7 +11,7 @@ import frege.compiler.enums.TokenID.TTokenID;
 import frege.compiler.Data.TGlobal;
 import frege.compiler.types.QNames;
 import frege.compiler.types.QNames.TQName;
-import frege.compiler.Data.TSymbol;
+import frege.compiler.types.Symbols.TSymbol;
 import frege.ide.Utilities;
 import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TEither;

@@ -14,7 +14,7 @@ import frege.compiler.types.QNames.TQName;
 import frege.compiler.types.Positions.TPosition;
 import frege.compiler.Data.TSubSt;
 import frege.compiler.types.Tokens.TToken;
-import frege.compiler.Data.TSymbol;
+import frege.compiler.types.Symbols.TSymbol;
 import frege.imp.referenceResolvers.FregeReferenceResolver;
 import frege.imp.tree.ITreeItem;
 

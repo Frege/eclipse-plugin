@@ -6,7 +6,7 @@ import frege.compiler.Data.TGlobal;
 import frege.compiler.types.QNames.TQName;
 import frege.compiler.enums.Visibility.TVisibility;
 import frege.compiler.types.Positions.TPosition;
-import frege.compiler.Data.TSymbol;
+import frege.compiler.types.Symbols.TSymbol;
 import frege.ide.Utilities;
 
 public class SymbolItem implements ITreeItem {
