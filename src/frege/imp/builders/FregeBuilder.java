@@ -20,9 +20,9 @@ import org.eclipse.imp.model.ModelFactory;
 import org.eclipse.imp.model.ModelFactory.ModelException;
 import org.eclipse.imp.runtime.PluginBase;
 import frege.FregePlugin;
-import frege.compiler.Data;
-import frege.compiler.Data.TGlobal;
-import frege.compiler.Data.TOptions;
+import frege.compiler.types.Global;
+import frege.compiler.types.Global.TGlobal;
+import frege.compiler.types.Global.TOptions;
 import frege.compiler.types.Positions.TPosition;
 import frege.compiler.types.Tokens.TToken;
 import frege.compiler.Main;
@@ -284,7 +284,7 @@ public class FregeBuilder extends FregeBuilderBase {
 				*/
 				
 				if (!success) {
-					TPosition pos = Data.packageStart(result).<TPosition>forced();
+					TPosition pos = Global.packageStart(result).<TPosition>forced();
 					TToken module = TPosition.first(pos);
 					int line = TToken.line(module);
 					int chStart = TToken.offset(module);

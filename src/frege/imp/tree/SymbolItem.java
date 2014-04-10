@@ -2,7 +2,7 @@ package frege.imp.tree;
 
 import org.eclipse.swt.graphics.Image;
 
-import frege.compiler.Data.TGlobal;
+import frege.compiler.types.Global.TGlobal;
 import frege.compiler.types.QNames.TQName;
 import frege.compiler.enums.Visibility.TVisibility;
 import frege.compiler.types.Positions.TPosition;

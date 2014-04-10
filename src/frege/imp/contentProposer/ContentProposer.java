@@ -3,8 +3,8 @@ package frege.imp.contentProposer;
 import frege.compiler.types.Tokens.TToken;
 
 
-import frege.compiler.Data.TGlobal;
-import frege.compiler.Data.TSubSt;
+import frege.compiler.types.Global.TGlobal;
+import frege.compiler.types.Global.TSubSt;
 import frege.ide.Utilities;
 import frege.ide.Utilities.IShow_Proposal;
 import frege.ide.Utilities.TProposal;

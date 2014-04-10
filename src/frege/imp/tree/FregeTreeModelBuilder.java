@@ -4,10 +4,9 @@ import org.eclipse.imp.services.base.TreeModelBuilderBase;
 
 import frege.data.TreeMap.TTree;
 import frege.compiler.types.Definitions.TExprT;
-import frege.compiler.Data.TGlobal;
+import frege.compiler.types.Global.TGlobal;
 import frege.compiler.types.Positions.TPosition;
-// import frege.compiler.types.QNames.TQName;
-import frege.compiler.Data.TSubSt;
+import frege.compiler.types.Global.TSubSt;
 import frege.compiler.types.Symbols.TSymbol;
 import frege.ide.Utilities;
 import frege.imp.parser.FregeParseController;

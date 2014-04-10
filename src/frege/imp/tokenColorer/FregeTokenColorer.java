@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Display;
 import frege.FregePlugin;
 import frege.compiler.types.QNames.TQName.DLocal;
 import frege.compiler.types.Tokens.TToken;
-import frege.compiler.Data.TGlobal;
+import frege.compiler.types.Global.TGlobal;
 import frege.compiler.enums.TokenID.TTokenID;
 import frege.compiler.types.QNames.TQName;
 import frege.imp.parser.FregeParseController;

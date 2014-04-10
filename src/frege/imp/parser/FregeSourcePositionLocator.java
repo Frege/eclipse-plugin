@@ -7,12 +7,12 @@ import org.eclipse.imp.editor.ModelTreeNode;
 import org.eclipse.imp.parser.ISourcePositionLocator;
 
 import frege.compiler.types.Tokens.IShow_Token;
-import frege.compiler.Data;
-import frege.compiler.Data.TGlobal;
+import frege.compiler.types.Global;
+import frege.compiler.types.Global.TGlobal;
 import frege.compiler.types.QNames;
 import frege.compiler.types.QNames.TQName;
 import frege.compiler.types.Positions.TPosition;
-import frege.compiler.Data.TSubSt;
+import frege.compiler.types.Global.TSubSt;
 import frege.compiler.types.Tokens.TToken;
 import frege.compiler.types.Symbols.TSymbol;
 import frege.imp.referenceResolvers.FregeReferenceResolver;
@@ -156,7 +156,7 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		if (node != null && node instanceof FregeReferenceResolver.Namespace) {
 			final FregeReferenceResolver.Namespace nmsp = (FregeReferenceResolver.Namespace) node;
 			if (nmsp.pack.equals(TGlobal.thisPack(nmsp.g)))
-				return TToken.offset(TPosition.first(Data.packageStart(nmsp.g).<TPosition>forced()));
+				return TToken.offset(TPosition.first(Global.packageStart(nmsp.g).<TPosition>forced()));
 			return -1;	// different package
 		}
 		

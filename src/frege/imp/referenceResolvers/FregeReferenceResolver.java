@@ -8,7 +8,7 @@ import frege.data.TreeMap.TTree;
 import frege.compiler.types.Tokens.IShow_Token;
 import frege.compiler.types.Tokens.TToken;
 import frege.compiler.enums.TokenID.TTokenID;
-import frege.compiler.Data.TGlobal;
+import frege.compiler.types.Global.TGlobal;
 import frege.compiler.types.QNames;
 import frege.compiler.types.QNames.TQName;
 import frege.compiler.types.Symbols.TSymbol;

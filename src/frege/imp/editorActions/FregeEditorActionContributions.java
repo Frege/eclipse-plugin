@@ -1,7 +1,6 @@
 package frege.imp.editorActions;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -25,7 +24,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 
-import frege.compiler.Data.TGlobal;
+import frege.compiler.types.Global.TGlobal;
 import frege.data.TreeMap.TTree;
 import frege.imp.builders.FregeBuilder;
 import frege.imp.parser.FregeParseController;
