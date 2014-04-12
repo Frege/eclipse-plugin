@@ -1,8 +1,6 @@
 package frege.imp.contentProposer;
 
 import frege.compiler.types.Tokens.TToken;
-
-
 import frege.compiler.types.Global.TGlobal;
 import frege.compiler.types.Global.TSubSt;
 import frege.ide.Utilities;
@@ -12,7 +10,7 @@ import frege.compiler.enums.TokenID;
 import frege.imp.parser.*;
 import frege.prelude.PreludeBase.TList;
 import frege.runtime.Delayed;
-
+import frege.runtime.Lambda;
 
 import java.util.*;
 
@@ -27,7 +25,6 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.imp.services.IContentProposer;
 import org.eclipse.imp.editor.ErrorProposal;
 import org.eclipse.imp.editor.SourceProposal;
-import org.eclipse.imp.editor.UniversalEditor;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.parser.ISourcePositionLocator;
 
@@ -37,18 +34,22 @@ public class ContentProposer implements IContentProposer {
 	 * lazily.
 	 */
 	static class Proposal extends SourceProposal {
-		Object additional;
+		Lambda additional;	// IO String!
+		String info;
 		public Proposal(String proposal, String newText, String prefix, int offset, int length, 
-				int cursor, Object additional) {
+				int cursor, Lambda additional) {
 			super(proposal, newText, prefix, new Region(offset, length), cursor);
 			this.additional = additional;
+			info = null;
 		}
 		
 		public String getAdditionalProposalInfo() {
-			String res = Delayed.<String>forced(additional);
-			additional = res;
-			return res;
+			if (info == null) {
+				info = Delayed.<String>forced(additional.apply(42).result());
+			}
+			return info;
 		}
+		
 		public static Proposal convert(final TProposal p) {
 			final String newT = TProposal.newText(p);
 			final int off     = TProposal.off(p); 
@@ -59,7 +60,7 @@ public class ContentProposer implements IContentProposer {
 					off,
 					TProposal.len(p),
 					TProposal.cursor(p)+off+newT.length(),
-					p.mem$additional
+					p.mem$additional.<Lambda>forced()
 					);
 		}
 	}

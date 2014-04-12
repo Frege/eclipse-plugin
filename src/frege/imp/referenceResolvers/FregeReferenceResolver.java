@@ -29,7 +29,7 @@ public class FregeReferenceResolver implements IReferenceResolver {
 		public final TSymbol sym;
 		public Symbol(TGlobal g, TSymbol sym) { this.g = g; this.sym = sym; }
 		public String toString() {
-			String s = Delayed.<String> forced(FregeParseController.funStG(
+			String s = Delayed.<String> forced(FregeParseController.funSTIO(
 					Utilities.symbolDocumentation(sym), g));
 			return s; // Data.INice_QName.nicer(TSymbol.M.name(sym), g);
 		}
@@ -45,7 +45,7 @@ public class FregeReferenceResolver implements IReferenceResolver {
 			this.pack = p;
 		}
 		public String toString() {
-			String s = Delayed.<String>forced(FregeParseController.funStG(
+			String s = Delayed.<String>forced(FregeParseController.funSTIO(
 						Utilities.packDocumentation(pack), g));
 			return s;
 		}

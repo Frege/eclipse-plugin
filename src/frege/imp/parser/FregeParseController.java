@@ -63,6 +63,7 @@ import frege.prelude.PreludeBase.TTuple2;
 import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TTuple3;
 import frege.control.monad.State.TState;
+import frege.control.monad.State.TStateT;
 import frege.prelude.PreludeList;
 import frege.prelude.PreludeList.IListView__lbrack_rbrack;
 import frege.compiler.enums.Flags.TFlag;
@@ -445,7 +446,7 @@ public class FregeParseController extends ParseControllerBase implements
 	 * run a {@link frege.prelude.PreludeBase.TState} action and return the new TGlobal state
 	 * @return the new state
 	 */
-	public static TGlobal runStG(Lazy action, TGlobal g) {
+	public static TGlobal runSTG(Lazy action, TGlobal g) {
 		Lambda stg = Delayed.<Lambda>forced(action);				// State (g -> (a, g)) 
 		TTuple2 r = TState.run(stg, g).<TTuple2>forced();
 		return Delayed.<TGlobal>forced( r.mem2 );
@@ -456,10 +457,33 @@ public class FregeParseController extends ParseControllerBase implements
 	 * The state must not be changed by the action. 
 	 * @return the result
 	 */
-	public static Object funStG(Lazy action, TGlobal g) {
+	public static Object funSTG(Lazy action, TGlobal g) {
 		Lambda stg = action.<Lambda>forced();				// State (g -> (a, g)) 
 		TTuple2 r = TState.run(stg, g).<TTuple2>forced();
 		return r.mem1;
+	}
+	
+	/**
+	 * run a {@link frege.prelude.PreludeBase.TStateT TGlobal IO} action and return the new TGlobal state
+	 * @return the new state
+	 */
+	public static TGlobal runSTIO(Lazy action, TGlobal g) {
+		Lambda stg = Delayed.<Lambda>forced(action);				// StateT (g -> IO (a, g)) 
+		Lambda r   = Delayed.<Lambda>forced( TStateT.run(stg, g));
+		TTuple2 t  = r.apply(42).result().<TTuple2>forced();
+		return Delayed.<TGlobal>forced(t.mem2);
+	}
+	
+	/**
+	 * Run a {@link frege.prelude.PreludeBase.TState} action and return the result.
+	 * The state must not be changed by the action. 
+	 * @return the result
+	 */
+	public static Object funSTIO(Lazy action, TGlobal g) {
+		Lambda stg = Delayed.<Lambda>forced(action);				// StateT (g -> IO (a, g)) 
+		Lambda r   = Delayed.<Lambda>forced( TStateT.run(stg, g));
+		TTuple2 t  = r.apply(42).result().<TTuple2>forced();
+		return t.mem1;
 	}
 
 	/**
@@ -537,7 +561,7 @@ public class FregeParseController extends ParseControllerBase implements
 		global = TGlobal.upd$options(global, TOptions.upd$dir(
 				TGlobal.options(global), 
 				bp));
-		global = runStG(frege.compiler.Main.newLoader, global);
+		global = runSTIO(frege.compiler.Main.newLoader, global);
 			
 		IPreferencesService service = FregePlugin.getInstance().getPreferencesService();
 		if (service != null) {
@@ -642,17 +666,17 @@ public class FregeParseController extends ParseControllerBase implements
 				t1 = System.nanoTime();
 				index++;
 				passes = pass.mem2.<TList>forced();
-				final TTuple3 adx = Delayed.<TTuple3>forced( pass.mem1 );
+				final TTuple2 adx = Delayed.<TTuple2>forced( pass.mem1 );
 				final Lazy action = index == 1 ? Main.lexPassIDE(contents) : Delayed.delayed(adx.mem1);
 				final String   desc   = Delayed.<String>forced(adx.mem2);
-				final TGlobal g = runStG(action, global);
+				final TGlobal g = runSTIO(action, global);
 				te = System.nanoTime();
 				System.err.println(desc + " took " 
 					+ (te-t1)/1000000 + "ms, cumulative "
 					+ (te-t0)/1000000 + "ms");
 				
 				monitor.worked(1);
-				global = runStG(Utilities.passDone, g);
+				global = runSTG(Utilities.passDone, g);
 			}
 			if (achievement(global) >= achievement(goodglobal))
 				goodglobal = global;			// when opening a file with errors
@@ -679,17 +703,17 @@ public class FregeParseController extends ParseControllerBase implements
 				t1 = System.nanoTime();
 				passes = pass.mem2.<TList>forced();
 				index++;
-				final TTuple3 adx = Delayed.<TTuple3>forced( pass.mem1 );
+				final TTuple2 adx = Delayed.<TTuple2>forced( pass.mem1 );
 				final Lazy action = Delayed.delayed(adx.mem1);
 				final String   desc   = Delayed.<String>forced(adx.mem2);
-				final TGlobal g = runStG(action, global);
+				final TGlobal g = runSTIO(action, global);
 				te = System.nanoTime();
 				System.err.println(desc + " took " 
 					+ (te-t1)/1000000 + "ms, cumulative "
 					+ (te-t0)/1000000 + "ms");
 				
 				monitor.worked(1);
-				global = runStG(Utilities.passDone, g);
+				global = runSTG(Utilities.passDone, g);
 				
 				if (achievement(global) >= achievement(goodglobal))
 					goodglobal = global;
@@ -864,7 +888,7 @@ public class FregeParseController extends ParseControllerBase implements
 		final String fr = pack.replaceAll("\\.", "/") + ".fr";		// the file name
 		final String segments[] = pack.split("\\.");
 		if (this.fProject == null) return null;                     // too bad, doesn't work with project. 
-		final IProject rp = this.fProject.getRawProject();
+		// final IProject rp = this.fProject.getRawProject();
 		final IJavaProject jp = getFD().getJp();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IPath wroot = workspace.getRoot().getLocation();

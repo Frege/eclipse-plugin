@@ -239,9 +239,7 @@ public class FregeBuilder extends FregeBuilderBase {
 			final TGlobal result = parseController.parse(contents, new CompProgress());
 			if (FregeParseController.errors(result) == 0) {
 				// run the eclipse java compiler
-				final String target = Delayed
-						.<String> forced(FregeParseController.funStG(
-								Main.targetPath(".java"), result));
+				final String target = Main.targetPath(result, ".java");
 				
 				getPlugin().writeInfoMsg("built: " + target);
 				// get the frege path and build path
