@@ -24,7 +24,6 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.imp.services.IContentProposer;
 import org.eclipse.imp.editor.ErrorProposal;
 import org.eclipse.imp.editor.SourceProposal;

@@ -390,7 +390,7 @@ public abstract class FregeBuilderBase extends BuilderBase {
      */
     private void collectSourcesToCompile(IProgressMonitor monitor) throws CoreException {
         IResourceDelta delta= getDelta(getProject());
-        boolean emitDiags= getDiagPreference();
+        // boolean emitDiags= getDiagPreference();
 
         if (delta != null) {
             delta.accept(fDeltaVisitor);
