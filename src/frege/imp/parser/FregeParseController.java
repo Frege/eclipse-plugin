@@ -30,7 +30,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.jdt.core.IClasspathEntry;
@@ -80,6 +79,7 @@ import frege.compiler.Main;
 import frege.imp.builders.FregeBuilder;
 import frege.imp.preferences.FregePreferencesConstants;
 import frege.data.Bits.TBitSet;
+import frege.data.TreeMap.TTree;
 
 
 /**
@@ -561,7 +561,7 @@ public class FregeParseController extends ParseControllerBase implements
 		global = TGlobal.upd$options(global, TOptions.upd$dir(
 				TGlobal.options(global), 
 				bp));
-		global = runSTIO(frege.compiler.Main.newLoader, global);
+		global = runSTIO(Utilities.newLoader, global);
 			
 		IPreferencesService service = FregePlugin.getInstance().getPreferencesService();
 		if (service != null) {
@@ -614,6 +614,9 @@ public class FregeParseController extends ParseControllerBase implements
 		leng = 0;
 		hash = 0;
 		tokensIteratorDone = false;
+		global.mem$sub.mem$cache.put(TTree.DNil.it);
+		global = runSTIO(Utilities.refreshPackages, global);
+		System.err.println("packages cleared");
 	}
 	
 	/**
@@ -633,8 +636,9 @@ public class FregeParseController extends ParseControllerBase implements
 			
 			if (monitor.isCanceled()) return global;
 		
-			if (contents.length() == leng && contents.hashCode() == hash)
+			if (contents.length() == leng && contents.hashCode() == hash) {
 				return global;			// nothing really updated here
+			}
 		
 		
 			msgHandler.clearMessages();
@@ -753,7 +757,8 @@ public class FregeParseController extends ParseControllerBase implements
 		// when we build, we'll get a MarkerCreatorWithBatching
 		// Hence, if we do not have one, we just scan&parse, otherwise we do a full compile
 		TGlobal g = parse(input, mcwb == null, monitor);
-		System.err.print("frege parse: done, adding errors ");
+		int u = TGlobal.unique(g);
+		System.err.printf("frege parse: done, unique=%d, adding errors ", u);
 		tokensIteratorDone = false;
 		TList msgs = PreludeList.reverse(TSubSt.messages(TGlobal.sub(g)));
 		int maxmsgs = 9;

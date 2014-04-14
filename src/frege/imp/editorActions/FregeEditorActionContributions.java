@@ -169,22 +169,17 @@ public class FregeEditorActionContributions implements
 					final FregeParseController fpc = (FregeParseController) pc;
 					TGlobal global = fpc.getCurrentAst();
 			        if (global == null) return;
-			        global.mem$sub.mem$cache.put(TTree.DNil.it);
+			        // global.mem$sub.mem$cache.put(TTree.DNil.it);
+			        // fpc.global = FregeParseController.runSTG(action, global);
+			        
 			        final IDocument document= editor.
 			        		getDocumentProvider().
 			        		getDocument(editor.getEditorInput());
-			        Job job = new Job("Parsing") {
-						@Override
-						protected IStatus run(IProgressMonitor monitor) {
-							fpc.resetHash();
-							fpc.msgHandler.clearMessages();
-							theEditor.removeParserAnnotations();
-							fpc.parse(document.get(), true, monitor);
-							return Status.OK_STATUS;
-						}
-			        };
-			        job.schedule();
-			        System.err.println("Job " + job.getName() + " scheduled.");			        
+			        
+			        fpc.resetHash();
+			        fpc.msgHandler.clearMessages();
+					theEditor.removeParserAnnotations();
+					document.replace(0,1, document.get(0, 1));			        
 				} 
 			    catch (Exception e) {
 					// e.printStackTrace();
