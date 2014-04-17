@@ -11,7 +11,7 @@ import frege.compiler.enums.TokenID.TTokenID;
 import frege.compiler.types.Global.TGlobal;
 import frege.compiler.types.QNames;
 import frege.compiler.types.QNames.TQName;
-import frege.compiler.types.Symbols.TSymbol;
+import frege.compiler.types.Symbols.TSymbolT;
 import frege.ide.Utilities;
 import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TEither;
@@ -26,8 +26,8 @@ public class FregeReferenceResolver implements IReferenceResolver {
 
 	public static class Symbol {
 		public final TGlobal g;
-		public final TSymbol sym;
-		public Symbol(TGlobal g, TSymbol sym) { this.g = g; this.sym = sym; }
+		public final TSymbolT sym;
+		public Symbol(TGlobal g, TSymbolT sym) { this.g = g; this.sym = sym; }
 		public String toString() {
 			String s = Delayed.<String> forced(FregeParseController.funSTIO(
 					Utilities.symbolDocumentation(sym), g));
@@ -99,7 +99,7 @@ public class FregeReferenceResolver implements IReferenceResolver {
 				final TMaybe mbsym = TGlobal.findit(g, q).<TMaybe>forced();
 				final DJust  jsym  = mbsym._Just();
 				if (jsym == null)	return null; 	// not found?
-				final TSymbol sym = Delayed.<TSymbol>forced( jsym.mem1 );
+				final TSymbolT sym = Delayed.<TSymbolT>forced( jsym.mem1 );
 				System.err.println("getLinkTarget: " + QNames.IShow_QName.show(q));
 				return new Symbol(g, sym);
 			}

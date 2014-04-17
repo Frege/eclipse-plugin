@@ -14,7 +14,7 @@ import frege.compiler.types.QNames.TQName;
 import frege.compiler.types.Positions.TPosition;
 import frege.compiler.types.Global.TSubSt;
 import frege.compiler.types.Tokens.TToken;
-import frege.compiler.types.Symbols.TSymbol;
+import frege.compiler.types.Symbols.TSymbolT;
 import frege.imp.referenceResolvers.FregeReferenceResolver;
 import frege.imp.tree.ITreeItem;
 
@@ -162,9 +162,9 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		
 		if (node != null && node instanceof FregeReferenceResolver.Symbol) {
 			final FregeReferenceResolver.Symbol sym = (FregeReferenceResolver.Symbol) node;
-			final TQName  qname = TSymbol.M.name(sym.sym);
+			final TQName  qname = TSymbolT.M.name(sym.sym);
 			final boolean our = TGlobal.our(sym.g, qname);
-			final int off = getStartOffset(TSymbol.M.pos(sym.sym)); 
+			final int off = getStartOffset(TSymbolT.M.pos(sym.sym)); 
 			System.err.println("getStartOffSet( " + QNames.IShow_QName.show(qname) 
 					+ " ), our=" + our
 					+ " ), off=" + off);
@@ -199,7 +199,7 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 			final FregeReferenceResolver.Symbol sym = (FregeReferenceResolver.Symbol) node;
 			// final TQName  qname = TSymbol.M.name(sym.sym);
 			// final boolean our = TQName.M.our(qname, sym.g);
-			return getLength(TSymbol.M.pos(sym.sym));
+			return getLength(TSymbolT.M.pos(sym.sym));
 			// return -1;	// different package
 		}
 		
@@ -218,7 +218,7 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		}
 		if (node != null && node instanceof FregeReferenceResolver.Symbol) {
 			final FregeReferenceResolver.Symbol sym = (FregeReferenceResolver.Symbol) node;
-			final TQName  qname = TSymbol.M.name(sym.sym);
+			final TQName  qname = TSymbolT.M.name(sym.sym);
 			final boolean our = TGlobal.our(sym.g, qname);
 			final String  pack  = our ? TGlobal.thisPack(sym.g) : TQName.M.getpack(qname);
 			IPath p = parser.getSource(pack);

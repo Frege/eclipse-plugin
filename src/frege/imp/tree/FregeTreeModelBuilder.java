@@ -7,7 +7,8 @@ import frege.compiler.types.Definitions.TExprT;
 import frege.compiler.types.Global.TGlobal;
 import frege.compiler.types.Positions.TPosition;
 import frege.compiler.types.Global.TSubSt;
-import frege.compiler.types.Symbols.TSymbol;
+import frege.compiler.types.Symbols.TSymbolT;
+import frege.control.monad.State;
 import frege.ide.Utilities;
 import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TList;
@@ -15,6 +16,7 @@ import frege.prelude.PreludeBase.TList.DCons;
 import frege.prelude.PreludeBase.TMaybe;
 import frege.prelude.PreludeBase.TTuple3;
 import frege.runtime.Delayed;
+import frege.runtime.Lambda;
 
 public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 	private TGlobal prev = null;
@@ -66,13 +68,13 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 				TList.DCons elem = syms._Cons();
 				boolean found = false;
 				while (elem != null) {
-					final TSymbol sym = Delayed.<TSymbol>forced( elem.mem1 );
+					final TSymbolT sym = Delayed.<TSymbolT>forced( elem.mem1 );
 					elem = (elem.mem2.<TList>forced())._Cons();
 					if (sym._constructor() != cat) continue;
-					if (sym._constructor() == link && TGlobal.our(g, TSymbol.M.alias(sym))) continue;
+					if (sym._constructor() == link && TGlobal.our(g, TSymbolT.M.alias(sym))) continue;
 					if (top) {            // category labels at the top only before first item
 						if (!found) {
-							pushSubItem(new CategoryItem(categories[cat], TSymbol.M.pos(sym)));
+							pushSubItem(new CategoryItem(categories[cat], TSymbolT.M.pos(sym)));
 							found = true;
 						}
 					}
@@ -84,14 +86,15 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 			return true;
 		}
 		
-		public boolean visit(TGlobal g, TSymbol sym) {
+		public boolean visit(TGlobal g, TSymbolT sym) {
 			pushSubItem(new SymbolItem(g, sym));
-			if (TSymbol.M.has$env(sym))  visit(g, TSymbol.M.env(sym), false);
-			else if (TSymbol.M.has$expr(sym)) {
-				final TMaybe mbex       = TSymbol.M.expr(sym);
+			if (TSymbolT.M.has$env(sym))  visit(g, TSymbolT.M.env(sym), false);
+			else if (TSymbolT.M.has$expr(sym)) {
+				final TMaybe mbex       = TSymbolT.M.expr(sym);
 				final TMaybe.DJust just = mbex._Just();
 				if (just != null) {
-					final TExprT expr = Delayed.<TExprT>forced( just.mem1 );
+					Lambda lam = Delayed.<Lambda>forced(just.mem1);
+					final TExprT expr = Delayed.<TExprT>forced(State.evalState(lam, g));
 					visit(g, expr);
 				}
 			}
@@ -105,7 +108,7 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 					Utilities.exprSymbols(expr), g);
 			TList.DCons node = symbols._Cons();
 			while (node != null) {
-				TSymbol sym = Delayed.<TSymbol>forced( node.mem1);
+				TSymbolT sym = Delayed.<TSymbolT>forced( node.mem1);
 				visit(g, sym);
 				node = (node.mem2.<TList>forced())._Cons();
 			}

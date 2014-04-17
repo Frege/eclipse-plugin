@@ -6,14 +6,14 @@ import frege.compiler.types.Global.TGlobal;
 import frege.compiler.types.QNames.TQName;
 import frege.compiler.enums.Visibility.TVisibility;
 import frege.compiler.types.Positions.TPosition;
-import frege.compiler.types.Symbols.TSymbol;
+import frege.compiler.types.Symbols.TSymbolT;
 import frege.ide.Utilities;
 
 public class SymbolItem implements ITreeItem {
-	final TSymbol symbol;
+	final TSymbolT symbol;
 	final TGlobal global;
 	
-	public SymbolItem(TGlobal g, TSymbol sy) { global = g; symbol = sy; }
+	public SymbolItem(TGlobal g, TSymbolT sy) { global = g; symbol = sy; }
 
 	@Override
 	public Image getImage() {
@@ -21,8 +21,8 @@ public class SymbolItem implements ITreeItem {
 		if (c >= 0 && c < FregeLabelProvider.SYMBOL_IMAGES.length) {
 			Image image = FregeLabelProvider.SYMBOL_IMAGES[c];
 			if (image == FregeLabelProvider.VAR_IMAGE 
-					&& (TSymbol.M.vis(symbol) != TVisibility.Public
-						|| TQName.M.isLocal(TSymbol.M.name(symbol))))
+					&& (TSymbolT.M.vis(symbol) != TVisibility.Public
+						|| TQName.M.isLocal(TSymbolT.M.name(symbol))))
 				image = FregeLabelProvider.LOCAL_IMAGE;
 			return image;
 		}
@@ -36,7 +36,7 @@ public class SymbolItem implements ITreeItem {
 
 	@Override
 	public TPosition getPosition() {
-		return TSymbol.M.pos(symbol);
+		return TSymbolT.M.pos(symbol);
 	}
 
 }
