@@ -74,6 +74,7 @@ import frege.compiler.types.Positions.TPosition;
 import frege.compiler.types.Global.TSeverity;
 import frege.compiler.types.Global.TSubSt;
 import frege.compiler.types.Tokens.TToken;
+import frege.compiler.common.CompilerOptions;
 import frege.ide.Utilities;
 import frege.compiler.Main;
 import frege.imp.builders.FregeBuilder;
@@ -500,7 +501,7 @@ public class FregeParseController extends ParseControllerBase implements
 				: filePath;
 
 		global = Delayed.<TGlobal> forced(frege.prelude.PreludeBase.TST
-				.performUnsafe(frege.compiler.Main.eclipseOptions
+				.performUnsafe(CompilerOptions.eclipseOptions
 						.<Lambda> forced()));
 		fregeData = new FregeData(project);
 		initPacks();
