@@ -56,7 +56,9 @@ public class AutoEditStrategy implements IAutoEditStrategy {
 		int i = 0;
 		for (i = 0; i < text.length() 
 				&& Character.isSpaceChar(text.charAt(i)); i++);
-		cmd.text += text.substring(0, i);
+		// if this was all space, do NOT indent
+		if (i+1 == text.length())
+			cmd.text += text.substring(0, i);
 	}
 
 	/**
