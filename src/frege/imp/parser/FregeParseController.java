@@ -601,6 +601,57 @@ public class FregeParseController extends ParseControllerBase implements
 								TFlag.COMMENTS))
 					));
 			}
+			if (service.getBooleanPreference(FregePreferencesConstants.P_USEUNICODE)) {
+				global = TGlobal.upd$options(global, TOptions.upd$flags(
+							TGlobal.options(global),
+							Delayed.<Long> forced(
+								TBitSet.unionE(new IEnum_Flag(),
+									TOptions.flags(TGlobal.options(global)),
+									TFlag.USEUNICODE))
+						));
+			} else {
+				global = TGlobal.upd$options(global, TOptions.upd$flags(
+						TGlobal.options(global),
+						Delayed.<Long> forced(
+							TBitSet.differenceE(new IEnum_Flag(),
+								TOptions.flags(TGlobal.options(global)),
+								TFlag.USEUNICODE))
+					));
+			}
+			if (service.getBooleanPreference(FregePreferencesConstants.P_USEGREEK)) {
+				global = TGlobal.upd$options(global, TOptions.upd$flags(
+							TGlobal.options(global),
+							Delayed.<Long> forced(
+								TBitSet.unionE(new IEnum_Flag(),
+									TOptions.flags(TGlobal.options(global)),
+									TFlag.USEGREEK))
+						));
+			} else {
+				global = TGlobal.upd$options(global, TOptions.upd$flags(
+						TGlobal.options(global),
+						Delayed.<Long> forced(
+							TBitSet.differenceE(new IEnum_Flag(),
+								TOptions.flags(TGlobal.options(global)),
+								TFlag.USEGREEK))
+					));
+			}
+			if (service.getBooleanPreference(FregePreferencesConstants.P_USEFRAKTUR)) {
+				global = TGlobal.upd$options(global, TOptions.upd$flags(
+							TGlobal.options(global),
+							Delayed.<Long> forced(
+								TBitSet.unionE(new IEnum_Flag(),
+									TOptions.flags(TGlobal.options(global)),
+									TFlag.USEFRAKTUR))
+						));
+			} else {
+				global = TGlobal.upd$options(global, TOptions.upd$flags(
+						TGlobal.options(global),
+						Delayed.<Long> forced(
+							TBitSet.differenceE(new IEnum_Flag(),
+								TOptions.flags(TGlobal.options(global)),
+								TFlag.USEFRAKTUR))
+					));
+			}
 			final String prefix = service.getStringPreference(FregePreferencesConstants.P_PREFIX); 
 			if (prefix != null && prefix.length() > 0) {
 				global = TGlobal.upd$options(global, TOptions.upd$prefix(
