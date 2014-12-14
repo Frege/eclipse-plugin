@@ -3,7 +3,12 @@
 /******************************************/
 package frege.imp.preferences;
 
-import org.eclipse.swt.widgets.TabFolder;import org.eclipse.imp.preferences.IPreferencesService;import org.eclipse.imp.preferences.PreferencesInitializer;import org.eclipse.imp.preferences.PreferencesTab;import org.eclipse.imp.preferences.TabbedPreferencesPage;import frege.FregePlugin;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.imp.preferences.IPreferencesService;
+import org.eclipse.imp.preferences.PreferencesInitializer;
+import org.eclipse.imp.preferences.PreferencesTab;
+import org.eclipse.imp.preferences.TabbedPreferencesPage;
+import frege.FregePlugin;
 
 /**
  * A preference page class.

@@ -6,9 +6,7 @@ package frege.imp.preferences;
 import org.eclipse.imp.preferences.PreferencesInitializer;
 import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.jface.resource.StringConverter;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Display;
 
 import frege.FregePlugin;
 
@@ -31,16 +29,6 @@ public class FregePreferencesInitializer extends PreferencesInitializer {
 	 */
 	public void initializeDefaultPreferences() {
 		IPreferencesService service = FregePlugin.getInstance().getPreferencesService();
-		Display display = Display.getDefault();
-//		String darkYellow = StringConverter.asString(display.getSystemColor(SWT.COLOR_DARK_YELLOW).getRGB());
-//		String darkRed    = StringConverter.asString(display.getSystemColor(SWT.COLOR_DARK_RED).getRGB());
-//		String black      = StringConverter.asString(display.getSystemColor(SWT.COLOR_BLACK).getRGB());
-//		String red        = StringConverter.asString(display.getSystemColor(SWT.COLOR_RED).getRGB());
-//		String blue       = StringConverter.asString(display.getSystemColor(SWT.COLOR_BLUE).getRGB());
-//		String darkBlue   = StringConverter.asString(display.getSystemColor(SWT.COLOR_DARK_BLUE).getRGB());
-//		String darkMagenta= StringConverter.asString(display.getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
-//		String darkGreen  = StringConverter.asString(display.getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
-//		String darkCyan   = StringConverter.asString(display.getSystemColor(SWT.COLOR_DARK_CYAN).getRGB());
 
 		// in the following, we set some "light solarized colours as defaults"
 		String base01  = StringConverter.asString(hexRGB(0x586e75));
@@ -61,7 +49,9 @@ public class FregePreferencesInitializer extends PreferencesInitializer {
 		service.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_SPACESFORTABS, true);
 		service.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_INLINE, true);
 		service.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_INLINE, false);
-		service.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_DECORATESTRICT, true);
+		service.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_USEUNICODE, false);
+		service.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_USEGREEK, false);
+		service.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_USEFRAKTUR, false);
 		service.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_ITALICIMPORTS, true);
 		service.setBooleanPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_BOLDNS, true);
 		service.setStringPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_DOCUCOLOR, brgreen);
@@ -75,7 +65,7 @@ public class FregePreferencesInitializer extends PreferencesInitializer {
 		service.setStringPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_LITERALCOLOR, cyan);
 		service.setStringPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_ERRORCOLOR, red);
 		service.setStringPreference(IPreferencesService.DEFAULT_LEVEL, FregePreferencesConstants.P_PREFIX, "");
-		
+				
 		/*
 		System.err.println("darkYellow is " + darkYellow);
 		System.err.println("darkRed is " + darkRed);

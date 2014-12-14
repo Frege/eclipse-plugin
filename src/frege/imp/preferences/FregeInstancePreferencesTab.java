@@ -1,6 +1,4 @@
-/******************************************/
-/* WARNING: GENERATED FILE - DO NOT EDIT! */
-/******************************************/
+
 package frege.imp.preferences;
 
 import java.util.List;
@@ -34,6 +32,7 @@ public class FregeInstancePreferencesTab extends InstancePreferencesTab {
 	{
 		List<FieldEditor> fields = new ArrayList<FieldEditor>();
 
+		
 		FontFieldEditor sourceFont = fPrefUtils.makeNewFontField(
 			page, this, fPrefService,
 			"instance", "sourceFont", "Editor Font",
@@ -43,25 +42,20 @@ public class FregeInstancePreferencesTab extends InstancePreferencesTab {
 			false);
 		fields.add(sourceFont);
 
-		// Link sourceFontDetailsLink = fPrefUtils.createDetailsLink(parent, sourceFont, sourceFont.getChangeControl().getParent(), "Details ...");
-
-		// sourceFontDetailsLink.setEnabled(true);
-		// fDetailsLinks.add(sourceFontDetailsLink);
+		IntegerFieldEditor tabWidth = fPrefUtils.makeNewIntegerField(
+				page, this, fPrefService,
+				"instance", "tabWidth", "Tabulator Width",
+				"Tells how many spaces the tab key will insert.",
+				parent,
+				true, true,
+				true, "4",
+				false);
+		fields.add(tabWidth);
 		
 		GridData data = new GridData();
         data.horizontalAlignment = SWT.END;
         data.widthHint = 128;
 
-
-		IntegerFieldEditor tabWidth = fPrefUtils.makeNewIntegerField(
-			page, this, fPrefService,
-			"instance", "tabWidth", "Tabulator Width",
-			"Tells how many spaces the tab key will insert.",
-			parent,
-			true, true,
-			true, "4",
-			false);
-		fields.add(tabWidth);
 
 		BooleanFieldEditor spacesForTabs = fPrefUtils.makeNewBooleanField(
 			page, this, fPrefService,
@@ -93,27 +87,56 @@ public class FregeInstancePreferencesTab extends InstancePreferencesTab {
 				true, false,
 				false);
 		fields.add(enableComments);
-//
-//		Link spacesForTabsDetailsLink = fPrefUtils.createDetailsLink(parent, spacesForTabs, spacesForTabs.getChangeControl().getParent(), "Details ...");
-//
-//		spacesForTabsDetailsLink.setEnabled(true);
-//		fDetailsLinks.add(spacesForTabsDetailsLink);
-
-//		FileFieldEditor fregeLib = fPrefUtils.makeNewFileField(
-//				page, this, fPrefService,
-//				"instance", "fregeLib", "Frege library",
-//				"The location of the Frege Standard Library, the default is to use the one that comes with fregIDE.",
-//				parent,
-//				true, true,
-//				false, "",
-//				false);
-//			fields.add(fregeLib);
-//
-//			Link fregeLibDetailsLink = fPrefUtils.createDetailsLink(parent, fregeLib, fregeLib.getTextControl().getParent(), "Details ...");
-//
-//			fregeLibDetailsLink.setEnabled(false);
-//			fDetailsLinks.add(fregeLibDetailsLink);
 		
+		BooleanFieldEditor italicImports = fPrefUtils.makeNewBooleanField(
+				page, this, fPrefService,
+				"instance", "italicImports", "Show imported items in italics",
+				"Gives a visual clue about whether a name was imported.",
+				parent,
+				true, true,
+				true, false,
+				false);
+			fields.add(italicImports);
+			
+		BooleanFieldEditor boldNS = fPrefUtils.makeNewBooleanField(
+			page, this, fPrefService,
+			"instance", "boldNS", "Show name spaces in bold face",
+			"Gives a visual clue about whether a qualifier is not a type, but a namespace.",
+			parent,
+			true, true,
+			true, false,
+			false);
+		fields.add(boldNS);
+		
+		BooleanFieldEditor unicode = fPrefUtils.makeNewBooleanField(
+				page, this, fPrefService,
+				"instance", "useUnicode", "Use Unicode Symbols",
+				"Use ∀ and → instead of 'forall' and -> when showing types (not yet implemented)",
+				parent,
+				true, true,
+				true, false,
+				false);
+		fields.add(unicode);
+
+		BooleanFieldEditor greek = fPrefUtils.makeNewBooleanField(
+				page, this, fPrefService,
+				"instance", "useGreek", "Greek Type Variables",
+				"Construct type variable names from greek letters when showing types (not yet implemented)",
+				parent,
+				true, true,
+				true, false,
+				false);
+		fields.add(greek);
+		
+		BooleanFieldEditor fraktur = fPrefUtils.makeNewBooleanField(
+				page, this, fPrefService,
+				"instance", "useFraktur", "Fraktur Type Variables",
+				"Construct type variable names from fraktur letters when showing types (not yet implemented)",
+				parent,
+				true, true,
+				true, false,
+				false);
+		fields.add(fraktur);		
 		ColorFieldEditor docuColor = fPrefUtils.makeNewColorField(
 			page, this, fPrefService,
 			"instance", "docuColor", "Documentation",
@@ -215,36 +238,18 @@ public class FregeInstancePreferencesTab extends InstancePreferencesTab {
 		
         errorColor.getLabelControl(errorColor.getParent()).setLayoutData(data);
 		fields.add(errorColor);
+		
+//		RadioGroupFieldEditor tstyle = fPrefUtils.makeNewRadioGroupField(
+//		page, this, fPrefService, 
+//		"instance", "typeStyle", "Type Presentation Style", 
+//		"Decide how to show types",
+//		3, new String[] {"ascii", "greek", "fraktur"}, 
+//		// new String[]{"forall a.a->a", "∀α.α→α", "∀𝖆.𝖆→𝖆"}, 
+//		new String[]{"A", "G", "F"},
+//		parent, true, true, false);
+// 		fields.add(tstyle);
 
-		BooleanFieldEditor italicImports = fPrefUtils.makeNewBooleanField(
-			page, this, fPrefService,
-			"instance", "italicImports", "Show imported items in italics",
-			"Gives a visual clue about whether a name was imported.",
-			parent,
-			true, true,
-			true, false,
-			false);
-		fields.add(italicImports);
-		
-		BooleanFieldEditor boldNS = fPrefUtils.makeNewBooleanField(
-			page, this, fPrefService,
-			"instance", "boldNS", "Show name spaces in bold face",
-			"Gives a visual clue about whether a qualifier is not a type, but a namespace.",
-			parent,
-			true, true,
-			true, false,
-			false);
-		fields.add(boldNS);
-		
-		BooleanFieldEditor decoS = fPrefUtils.makeNewBooleanField(
-				page, this, fPrefService,
-				"instance", "decorateStrict", "Decorate strict local names",
-				"Gives a visual clue about whether a local name (such as a function argument) is strict. (not yet implemented)",
-				parent,
-				true, true,
-				true, false,
-				false);
-		fields.add(decoS);
+
 		
 		IntegerFieldEditor parseTimeout = fPrefUtils.makeNewIntegerField(
 			page, this, fPrefService,

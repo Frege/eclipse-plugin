@@ -20,7 +20,6 @@ public class FregePreferencesConstants {
 	public static final String P_COMMENTS = "enableComments";
 	public static final String P_PARSETIMEOUT = "parseTimeout";
 	public static final String P_PREFIX       = "prefix";
-	public static final String P_DECORATESTRICT = "decorateStrict";
 	public static final String P_ITALICIMPORTS = "italicImports";
 	public static final String P_BOLDNS        = "boldNS";
 	public static final String P_DOCUCOLOR = "docuColor";
@@ -31,8 +30,9 @@ public class FregePreferencesConstants {
 	public static final String P_IMPORTCOLOR = "importColor";
 	public static final String P_KEYWORDCOLOR = "keywordColor";
 	public static final String P_SPECIALCOLOR = "specialColor";
-	// public static final String P_OPCOLOR = "opColor";
 	public static final String P_LITERALCOLOR = "literalColor";
 	public static final String P_ERRORCOLOR = "errorColor";
-	// public static final String P_FREGELIB = "fregeLib";
+	public static final String P_USEUNICODE = "useUnicode";
+	public static final String P_USEGREEK   = "useGreek";
+	public static final String P_USEFRAKTUR = "useFraktur";
 }
