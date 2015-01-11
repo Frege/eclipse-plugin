@@ -550,13 +550,13 @@ public class FregeParseController extends ParseControllerBase implements
 		global = TGlobal.upd$options(global, TOptions.upd$path(
 				TGlobal.options(global),
 				frege.java.util.Regex.TRegex.splitted(
-						Delayed.<Pattern>forced(frege.compiler.Utilities.pathRE), 
+						Delayed.<Pattern>forced(CompilerOptions.pathRE), 
 						fp)));
 		System.err.println("SourcePath: " + sp);
 		global = TGlobal.upd$options(global, TOptions.upd$sourcePath(
 				TGlobal.options(global),
 				frege.java.util.Regex.TRegex.splitted(
-						Delayed.<Pattern>forced(frege.compiler.Utilities.pathRE), 
+						Delayed.<Pattern>forced(CompilerOptions.pathRE), 
 						sp)));
 		System.err.println("Destination: " + bp);
 		global = TGlobal.upd$options(global, TOptions.upd$dir(
@@ -723,7 +723,7 @@ public class FregeParseController extends ParseControllerBase implements
 				index++;
 				passes = pass.mem2.<TList>forced();
 				final TTuple2 adx = Delayed.<TTuple2>forced( pass.mem1 );
-				final Lazy action = index == 1 ? Main.lexPassIDE(contents) : Delayed.delayed(adx.mem1);
+				final Lazy action = index == 1 ? Utilities.lexPassIDE(contents) : Delayed.delayed(adx.mem1);
 				final String   desc   = Delayed.<String>forced(adx.mem2);
 				final TGlobal g = runSTIO(action, global);
 				te = System.nanoTime();

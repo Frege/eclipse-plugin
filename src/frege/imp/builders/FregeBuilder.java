@@ -11,7 +11,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-
 import org.eclipse.imp.builder.BuilderUtils;
 import org.eclipse.imp.builder.MarkerCreatorWithBatching;
 import org.eclipse.imp.builder.ProblemLimit.LimitExceededException;
@@ -19,12 +18,14 @@ import org.eclipse.imp.model.ISourceProject;
 import org.eclipse.imp.model.ModelFactory;
 import org.eclipse.imp.model.ModelFactory.ModelException;
 import org.eclipse.imp.runtime.PluginBase;
+
 import frege.FregePlugin;
 import frege.compiler.types.Global;
 import frege.compiler.types.Global.TGlobal;
 import frege.compiler.types.Global.TOptions;
 import frege.compiler.types.Positions.TPosition;
 import frege.compiler.types.Tokens.TToken;
+import frege.compiler.common.CompilerOptions;
 import frege.compiler.Main;
 import frege.ide.Utilities;
 import frege.imp.parser.FregeParseController;
@@ -32,6 +33,7 @@ import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TList.DCons;
 import frege.prelude.PreludeText;
 import frege.runtime.Delayed;
+import frege.runtime.Lambda;
 
 /**
  * A builder may be activated on a file containing frege code every time it
@@ -79,6 +81,21 @@ public class FregeBuilder extends FregeBuilderBase {
 		return INFO_MARKER_ID;
 	}
 
+	public TList getDeps(String content, String fromPath) {
+		TGlobal global = Delayed.<TGlobal> forced(frege.prelude.PreludeBase.TST
+				.performUnsafe(CompilerOptions.eclipseOptions
+						.<Lambda> forced()));
+		
+		// set source file into global (why?)
+		global = TGlobal.upd$options(global, TOptions.upd$source(
+				TGlobal.options(global), 
+				fromPath));
+		
+		return Delayed.<TList>forced(
+				FregeParseController.funSTG(
+						Utilities.getDependencies(content), 
+						global));
+	}
 	/**
 	 * Collects compilation-unit dependencies for the given file, and records
 	 * them via calls to <code>fDependency.addDependency()</code>.
@@ -96,8 +113,8 @@ public class FregeBuilder extends FregeBuilderBase {
 			
 			getPlugin().writeInfoMsg(
 					"Collecting dependencies from frege file: " + fromPath);
-			TList packs = frege.compiler.Scanner.dependencies(contents).<TList>forced();
-			packs = Utilities.correctDependenciesFor(packs, fromPath);
+			TList packs = getDeps(contents, fromPath);
+			// packs = Utilities.correctDependenciesFor(packs, fromPath);
 			
 			while (true) {
 				final DCons cons = packs._Cons();
@@ -244,7 +261,7 @@ public class FregeBuilder extends FregeBuilderBase {
 				getPlugin().writeInfoMsg("built: " + target);
 				// get the frege path and build path
 				final String bp = TOptions.dir( TGlobal.options(result) );
-				final TList ourPath = frege.compiler.Utilities.ourPath(TGlobal.options(result));
+				final TList ourPath = CompilerOptions.ourPath(TGlobal.options(result));
 				final String fp = Delayed.<String>forced(
 						PreludeText.joined(
 				                		  System.getProperty("path.separator"),
