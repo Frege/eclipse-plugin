@@ -802,6 +802,8 @@ public class FregeParseController extends ParseControllerBase implements
 		return goodglobal;
 	}
 	
+	private static String ourJar = null; 
+	
 	@Override
 	public TGlobal parse(String input, IProgressMonitor monitor) {
 		MarkerCreatorWithBatching mcwb = msgHandler instanceof MarkerCreatorWithBatching ?
@@ -814,6 +816,58 @@ public class FregeParseController extends ParseControllerBase implements
 		tokensIteratorDone = false;
 		TList msgs = PreludeList.reverse(TSubSt.messages(TGlobal.sub(g)));
 		int maxmsgs = 9;
+		
+		// emit an error here if we don't have the correct fregec.jar
+		if (ourJar == null) {
+			final String[] fp = fregeData.getFp().split(System.getProperty("path.separator"));
+			// final String correct = frege.FregePlugin.fregeLib;
+		
+			for (int i=0; i < fp.length;i++) {
+				if (fp[i].endsWith("fregec.jar")) { ourJar = fp[i]; break; }
+			}
+		}
+		
+		if (ourJar == null) {
+			if (mcwb != null) try {
+				mcwb.addMarker(IMarker.SEVERITY_ERROR,
+						"fregec.jar is missing in the build path."
+						+ "Please 'Enable Frege Builder' from the Project context menu.",
+						1, 0, 10);
+			} catch (LimitExceededException e) {
+				// leck mich
+			}
+			else msgHandler.handleSimpleMessage("fregec.jar is missing in the build path."
+						+ "Please 'Enable Frege Builder' from the Project context menu.",
+						0, 10, 0, 0, 0, 0);
+		}
+		else if (!ourJar.equals(frege.FregePlugin.fregeLib)) {
+			if (mcwb != null) try {
+				mcwb.addMarker(IMarker.SEVERITY_ERROR,
+						"Build Path references unexpected " + ourJar,
+						1, 0, 1);
+				mcwb.addMarker(IMarker.SEVERITY_ERROR, 
+						"It should be " + frege.FregePlugin.fregeLib, 
+						1, 1, 2);
+				mcwb.addMarker(IMarker.SEVERITY_ERROR, 
+						"1. Please remove " + ourJar + " from Build Path", 
+						1, 2, 3);
+				mcwb.addMarker(IMarker.SEVERITY_ERROR, 
+						"2. Please 'Enable Frege Builder' from the Project context menu.", 
+						1, 3, 4);
+			} catch (LimitExceededException e) {
+				// leck mich
+			}
+			else {
+				msgHandler.handleSimpleMessage("Build Path references unexpected " + ourJar,
+						0, 1, 0, 0, 0, 0);
+				msgHandler.handleSimpleMessage("It should be " + frege.FregePlugin.fregeLib,
+						1, 2, 0, 0, 0, 0);
+				msgHandler.handleSimpleMessage("1. Please remove " + ourJar + " from Build Path",
+						2, 3, 0, 0, 0, 0);
+				msgHandler.handleSimpleMessage("2. Please 'Enable Frege Builder' from the Project context menu.",
+						3, 4, 0, 0, 0, 0);
+			}
+		}
 		 
 		while (!monitor.isCanceled() && maxmsgs > 0) {
 			TList.DCons node = msgs._Cons();

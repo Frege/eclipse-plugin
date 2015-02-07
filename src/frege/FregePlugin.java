@@ -1,5 +1,6 @@
 package frege;
 
+import java.io.IOException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -11,7 +12,7 @@ public class FregePlugin extends PluginBase {
 
 	public static final String kPluginID = "frege.ide";
 	public static final String kLanguageID = "frege";
-	private static String fregeLib = null;
+	public static String fregeLib = null;
 
 	/**
 	 * The unique instance of this plugin class
@@ -27,6 +28,11 @@ public class FregePlugin extends PluginBase {
 	public FregePlugin() {
 		super();
 		sPlugin = this;
+		try {
+			fregeLib = getFregeLib();
+		} catch (Exception exc) {
+			fregeLib = "./lib/fregec.jar";
+		}
 	}
 
 	public void start(BundleContext context) throws Exception {
@@ -35,13 +41,15 @@ public class FregePlugin extends PluginBase {
 
 	/**
 	 * get the path name of the Frege Standard Library
+	 * @throws IOException 
 	 */
-	public String getFregeLib() {
+	public String getFregeLib() throws IOException {
 		if (fregeLib == null) {
 			final ProtectionDomain pd = this.getClass().getProtectionDomain();
 			final CodeSource cs = pd.getCodeSource();
 			URL xurl = cs.getLocation();
-			fregeLib = xurl.getPath() + "/lib/fregec.jar";
+			java.io.File it = new java.io.File (xurl.getPath());
+			fregeLib = it.getCanonicalPath() + "/lib/fregec.jar";
 			System.err.println(kPluginID + ": " + xurl);
 		}
 		return fregeLib;
