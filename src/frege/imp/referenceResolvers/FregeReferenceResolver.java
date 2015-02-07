@@ -84,13 +84,29 @@ public class FregeReferenceResolver implements IReferenceResolver {
 				tok = TToken.upd$tokid(tok, TTokenID.VARID);
 				tok = TToken.upd$value(tok, "it");
 			}
+			
+			// is this '-' ?
+			final boolean isMinus = tid == TTokenID.CHAR && "-".equals(TToken.value(tok));
+			
 			if (tid != TTokenID.VARID 
 					&& tid != TTokenID.CONID
 					&& tid != TTokenID.QUALIFIER
-					&& (tid < TTokenID.LOP0 ||  tid > TTokenID.SOMEOP)) return null;
-			final TMaybe mb = TGlobal.resolved(g, tok);
-			final DJust just = mb._Just();
-			if (just == null) return null;
+					&& tid != TTokenID.SOMEOP
+					&& !isMinus
+				) return null;
+			TMaybe mb = TGlobal.resolved(g, tok);
+			DJust just = mb._Just();
+			if (just == null) {
+				if (isMinus) {
+					TToken neg = TToken.upd$value(
+									TToken.upd$tokid(tok, TTokenID.VARID),
+									"negate");
+					mb = TGlobal.resolved(g, neg);
+					just = mb._Just();
+					if (just == null) return null;
+				}
+				else return null;
+			}
 			final TEither lr = Delayed.<TEither>forced( just.mem1 );
 			final DRight right = lr._Right();
 			if (right != null) {
