@@ -6,13 +6,11 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -49,8 +47,6 @@ import org.eclipse.imp.preferences.IPreferencesService;
 import org.eclipse.imp.services.IAnnotationTypeInfo;
 import org.eclipse.imp.services.ILanguageSyntaxProperties;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.source.LineRange;
-
 import frege.FregePlugin;
 import frege.runtime.Delayed;
 import frege.runtime.Fun1;
@@ -60,7 +56,6 @@ import frege.prelude.PreludeBase;
 import frege.prelude.PreludeBase.TList.DCons;
 import frege.prelude.PreludeBase.TTuple2;
 import frege.prelude.PreludeBase.TList;
-import frege.prelude.PreludeBase.TTuple3;
 import frege.control.monad.State.TState;
 import frege.control.monad.State.TStateT;
 import frege.prelude.PreludeList;
@@ -76,7 +71,6 @@ import frege.compiler.types.Global.TSubSt;
 import frege.compiler.types.Tokens.TToken;
 import frege.compiler.common.CompilerOptions;
 import frege.ide.Utilities;
-import frege.compiler.Main;
 import frege.imp.builders.FregeBuilder;
 import frege.imp.preferences.FregePreferencesConstants;
 import frege.data.Bits.TBitSet;
@@ -180,11 +174,29 @@ public class FregeParseController extends ParseControllerBase implements
 		private String sp = ".";
 		private String fp = ".";
 		private String bp = ".";
+		private String prefix = "";
 		private IPath  projectPath = null;
 		private IJavaProject javaProject = null;
 		private ISourceProject project = null;
 		public FregeData(ISourceProject sourceProject) {
 			project = sourceProject;
+			final String projName = sourceProject.getName();
+			
+			// find out if the preferences specify "project:pfx"
+			// and take pfx as prefix, if so
+			IPreferencesService service = FregePlugin.getInstance().getPreferencesService();
+			if (service != null) {
+				String option = service.getStringPreference(FregePreferencesConstants.P_PREFIX);
+				if (option != null 
+						&& projName != null
+						&& option.startsWith(projName)
+						&& option.length() >= 2+projName.length()
+						&& option.charAt(projName.length())==':') {
+					prefix = option.substring(1+projName.length());
+					System.err.println("sourceProject=" + project.getName()
+							+ ", prefix=" + prefix);
+				}
+			}
 			if (project != null) {
 				IProject rp = project.getRawProject();
 				
@@ -278,6 +290,12 @@ public class FregeParseController extends ParseControllerBase implements
 		 * @return the java project
 		 */
 		public IJavaProject getJp() { return javaProject; }
+		
+		/**
+		 * @return the prefix for this project
+		 */
+		public String getPrefix() { return prefix; }
+		
 		/**
 		 * get all frege source files in the work space
 		 */
@@ -652,7 +670,7 @@ public class FregeParseController extends ParseControllerBase implements
 								TFlag.USEFRAKTUR))
 					));
 			}
-			final String prefix = service.getStringPreference(FregePreferencesConstants.P_PREFIX); 
+			final String prefix = fregeData.getPrefix(); 
 			if (prefix != null && prefix.length() > 0) {
 				global = TGlobal.upd$options(global, TOptions.upd$prefix(
 							TGlobal.options(global), prefix));
@@ -1002,7 +1020,7 @@ public class FregeParseController extends ParseControllerBase implements
 		// final IProject rp = this.fProject.getRawProject();
 		final IJavaProject jp = getFD().getJp();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IPath wroot = workspace.getRoot().getLocation();
+		// IPath wroot = workspace.getRoot().getLocation();
 		
 		IFile newsrc = null;
 		IPath srcpath = null;

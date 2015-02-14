@@ -249,7 +249,16 @@ public class FregeInstancePreferencesTab extends InstancePreferencesTab {
 //		parent, true, true, false);
 // 		fields.add(tstyle);
 
-
+		StringFieldEditor prefix = fPrefUtils.makeNewStringField(
+				page, this, fPrefService, 
+				"instance", "prefix", "Prefix", 
+				"Used in compiler development", 
+				parent, 
+				true, true, 
+				true, "", 
+				false);
+		fields.add(prefix);
+		
 		
 		IntegerFieldEditor parseTimeout = fPrefUtils.makeNewIntegerField(
 			page, this, fPrefService,
@@ -261,15 +270,6 @@ public class FregeInstancePreferencesTab extends InstancePreferencesTab {
 			false);
 		fields.add(parseTimeout);
 		
-		StringFieldEditor prefix = fPrefUtils.makeNewStringField(
-				page, this, fPrefService, 
-				"instance", "prefix", "Prefix", 
-				"Used in compiler development", 
-				parent, 
-				true, true, 
-				true, "", 
-				false);
-		fields.add(prefix);
 		
 		return fields.toArray(new FieldEditor[fields.size()]);
 	}
