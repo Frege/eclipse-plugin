@@ -50,6 +50,7 @@ public class FregePlugin extends PluginBase {
 			URL xurl = cs.getLocation();
 			java.io.File it = new java.io.File (xurl.getPath());
 			fregeLib = it.getCanonicalPath() + "/lib/fregec.jar";
+			fregeLib = java.util.regex.Pattern.compile("\\\\").matcher(fregeLib).replaceAll("/");
 			System.err.println(kPluginID + ": " + xurl);
 		}
 		return fregeLib;

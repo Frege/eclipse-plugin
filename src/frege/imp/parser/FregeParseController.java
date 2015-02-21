@@ -841,7 +841,11 @@ public class FregeParseController extends ParseControllerBase implements
 			// final String correct = frege.FregePlugin.fregeLib;
 		
 			for (int i=0; i < fp.length;i++) {
-				if (fp[i].endsWith("fregec.jar")) { ourJar = fp[i]; break; }
+				if (fp[i].endsWith("fregec.jar")) { 
+					ourJar = fp[i];
+					ourJar = java.util.regex.Pattern.compile("\\\\").matcher(ourJar).replaceAll("/");
+					break; 
+				}
 			}
 		}
 		
