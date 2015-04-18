@@ -2,7 +2,7 @@ package frege.imp.tree;
 
 import org.eclipse.imp.services.base.TreeModelBuilderBase;
 
-import frege.data.TreeMap.TTree;
+import frege.data.TreeMap.TTreeMap;
 import frege.compiler.types.Expression.TExprT;
 import frege.compiler.types.Global.TGlobal;
 import frege.compiler.types.Positions.TPosition;
@@ -55,7 +55,7 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 	
 	public class FregeModelVisitor /* extends AbstractVisitor */ {		
 		
-		public boolean visit(TGlobal g, TTree env, boolean top) {
+		public boolean visit(TGlobal g, TTreeMap env, boolean top) {
 			final TList syms = Utilities.symbols(env).<TList>forced();
 			// do one category after the other according to the predefined order
 			for (int cat : order) {
@@ -136,7 +136,7 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 			
 			if  (! "".equals(pack)) 
 				return visit(g, 
-						Utilities.thisTab(g).<TTree>forced(), 
+						Utilities.thisTab(g), 
 						true);
 			return true;
 		}

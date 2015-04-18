@@ -74,7 +74,7 @@ import frege.ide.Utilities;
 import frege.imp.builders.FregeBuilder;
 import frege.imp.preferences.FregePreferencesConstants;
 import frege.data.Bits.TBitSet;
-import frege.data.TreeMap.TTree;
+import frege.data.TreeMap.TTreeMap;
 
 
 /**
@@ -684,7 +684,7 @@ public class FregeParseController extends ParseControllerBase implements
 		leng = 0;
 		hash = 0;
 		tokensIteratorDone = false;
-		global.mem$sub.mem$cache.put(TTree.DNil.it);
+		global.mem$sub.mem$cache.put(TTreeMap.DNil.it);
 		global = runSTIO(Utilities.refreshPackages, global);
 		System.err.println("packages cleared");
 	}

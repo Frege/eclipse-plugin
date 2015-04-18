@@ -4,7 +4,7 @@ package frege.imp.referenceResolvers;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.services.IReferenceResolver;
 
-import frege.data.TreeMap.TTree;
+import frege.data.TreeMap.TTreeMap;
 import frege.compiler.types.Tokens.IShow_Token;
 import frege.compiler.types.Tokens.TToken;
 import frege.compiler.enums.TokenID.TTokenID;
@@ -123,8 +123,8 @@ public class FregeReferenceResolver implements IReferenceResolver {
 			if (left != null) {
 				// this is a namespace
 				String ns = TToken.value(tok);
-				final TTree tree = TGlobal.namespaces(g);
-				final TMaybe mbpack = TTree.M.lookupS(tree, ns);
+				final TTreeMap tree = TGlobal.namespaces(g);
+				final TMaybe mbpack = TTreeMap.M.lookupS(tree, ns);
 				final DJust jpack = mbpack._Just();
 				if (jpack == null) return null;
 				String pack = Delayed.<java.lang.String>forced(jpack.mem1);

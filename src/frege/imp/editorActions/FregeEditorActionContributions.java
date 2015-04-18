@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.imp.editor.UniversalEditor;
 import org.eclipse.imp.model.ISourceProject;
-import org.eclipse.imp.model.ModelFactory;
 import org.eclipse.imp.parser.IParseController;
 import org.eclipse.imp.services.ILanguageActionsContributor;
 import org.eclipse.jface.action.Action;
@@ -25,7 +24,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 
 import frege.compiler.types.Global.TGlobal;
-import frege.data.TreeMap.TTree;
 import frege.imp.builders.FregeBuilder;
 import frege.imp.parser.FregeParseController;
 // import org.eclipse.ui.IFileEditorInput;
