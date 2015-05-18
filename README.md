@@ -6,6 +6,13 @@ What is fregIDE?
 You can install or upgrade *fregIDE* from the 
 installation/upgrade site at http://www.frege-lang.org/fregide/.
 
+**UPDATE** It has come to my attention that the link above seems to have problems at times, like 
+
+  - eclipse complains it is not an update site
+  - the download goes very slow and even times out (see also [Issue#10](https://github.com/Frege/eclipse-plugin/isuues/10)
+
+If you experience the same, use this [alternative URL](https://raw.githubusercontent.com/Frege/frege.github.com/master/fregide).
+
 Please also read [the tutorial](https://github.com/Frege/eclipse-plugin/wiki/fregIDE-Tutorial) that describes the installation in detail.
 
 
