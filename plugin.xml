@@ -141,5 +141,14 @@
             language="frege">
       </proposer>
    </extension>
+   <extension
+         id="eclipse-plugin.hoverHelper"
+         name="frege Hover Helper"
+         point="org.eclipse.imp.runtime.hoverHelper">
+      <hoverHelper
+            class="frege.imp.hoverHelper.FregeHoverHelper"
+            language="frege">
+      </hoverHelper>
+   </extension>
 
 </plugin>
