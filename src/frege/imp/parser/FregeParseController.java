@@ -684,7 +684,6 @@ public class FregeParseController extends ParseControllerBase implements
 		leng = 0;
 		hash = 0;
 		tokensIteratorDone = false;
-		global.mem$sub.mem$cache.put(TTreeMap.DNil.it);
 		global = runSTIO(Utilities.refreshPackages, global);
 		System.err.println("packages cleared");
 	}
