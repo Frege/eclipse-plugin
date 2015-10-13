@@ -6,6 +6,8 @@ What is fregIDE?
 You can install or upgrade *fregIDE* from the 
 installation/upgrade site at http://www.frege-lang.org/fregide/.
 
+**Important The plugin is supported only for Eclipse major releases INDIGO through LUNA. In particular, it won't work with MARS.1 ** 
+
 **UPDATE** It has come to my attention that the link above seems to have problems at times, like 
 
   - eclipse complains it is not an update site
