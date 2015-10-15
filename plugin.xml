@@ -5,7 +5,7 @@
    <extension
          id="frege.ide.parser"
          name="frege Parser"
-         point="org.eclipse.imp.runtime.parser">
+         point="impulse.parser">
       <parser
             class="frege.imp.parser.FregeParseController"
             language="frege">
@@ -13,14 +13,14 @@
    </extension>
    <extension
          id="frege.ide.tokenColorer"
-         point="org.eclipse.imp.runtime.tokenColorer">
+         point="impulse.tokenColorer">
       <tokenColorer
             class="frege.imp.tokenColorer.FregeTokenColorer"
             language="frege">
       </tokenColorer>
    </extension>
    <extension
-         point="org.eclipse.imp.runtime.languageDescription">
+         point="impulse.languageDescription">
       <language
             url="http://code.google.com/p/frege"
             extensions="fr"
@@ -93,49 +93,49 @@
       </objectContribution>
    </extension>
    <extension
-         point="org.eclipse.imp.runtime.modelTreeBuilder">
+         point="impulse.modelTreeBuilder">
       <treeBuilder
             class="frege.imp.tree.FregeTreeModelBuilder"
             language="frege">
       </treeBuilder>
    </extension>
    <extension
-         point="org.eclipse.imp.runtime.labelProvider">
+         point="impulse.labelProvider">
       <labelProvider
             class="frege.imp.tree.FregeLabelProvider"
             language="frege">
       </labelProvider>
    </extension>
    <extension
-         point="org.eclipse.imp.runtime.referenceResolvers">
+         point="impulse.referenceResolvers">
       <referenceResolver
             class="frege.imp.referenceResolvers.FregeReferenceResolver"
             language="frege">
       </referenceResolver>
    </extension>
    <extension
-         point="org.eclipse.imp.runtime.documentationProvider">
+         point="impulse.documentationProvider">
       <docProvider
             class="frege.imp.documentation.FregeDocumentationProvider"
             language="frege">
       </docProvider>
    </extension>
    <extension
-         point="org.eclipse.imp.runtime.editorActionContributions">
+         point="impulse.editorActionContributions">
       <editorActionContributor
             class="frege.imp.editorActions.FregeEditorActionContributions"
             language="frege">
       </editorActionContributor>
    </extension>
    <extension
-         point="org.eclipse.imp.runtime.autoEditStrategy">
+         point="impulse.autoEditStrategy">
       <autoEditStrategy
             class="frege.imp.AutoEditStrategy"
             language="frege">
       </autoEditStrategy>
    </extension>
    <extension
-         point="org.eclipse.imp.runtime.contentProposer">
+         point="impulse.contentProposer">
       <proposer
             class="frege.imp.contentProposer.ContentProposer"
             language="frege">
@@ -144,7 +144,7 @@
    <extension
          id="eclipse-plugin.hoverHelper"
          name="frege Hover Helper"
-         point="org.eclipse.imp.runtime.hoverHelper">
+         point="impulse.hoverHelper">
       <hoverHelper
             class="frege.imp.hoverHelper.FregeHoverHelper"
             language="frege">

@@ -1,7 +1,7 @@
 package frege.imp.documentation;
 
-import org.eclipse.imp.parser.IParseController;
-import org.eclipse.imp.services.IDocumentationProvider;
+import io.usethesource.impulse.parser.IParseController;
+import io.usethesource.impulse.services.IDocumentationProvider;
 
 import frege.ide.Utilities;
 import frege.compiler.types.Tokens;

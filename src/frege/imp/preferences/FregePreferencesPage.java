@@ -4,10 +4,10 @@
 package frege.imp.preferences;
 
 import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.imp.preferences.IPreferencesService;
-import org.eclipse.imp.preferences.PreferencesInitializer;
-import org.eclipse.imp.preferences.PreferencesTab;
-import org.eclipse.imp.preferences.TabbedPreferencesPage;
+import io.usethesource.impulse.preferences.IPreferencesService;
+import io.usethesource.impulse.preferences.PreferencesInitializer;
+import io.usethesource.impulse.preferences.PreferencesTab;
+import io.usethesource.impulse.preferences.TabbedPreferencesPage;
 import frege.FregePlugin;
 
 /**

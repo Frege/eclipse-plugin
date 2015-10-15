@@ -3,8 +3,8 @@ package frege.imp.parser;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
-import org.eclipse.imp.editor.ModelTreeNode;
-import org.eclipse.imp.parser.ISourcePositionLocator;
+import io.usethesource.impulse.editor.ModelTreeNode;
+import io.usethesource.impulse.parser.ISourcePositionLocator;
 
 import frege.compiler.types.Tokens.IShow_Token;
 import frege.compiler.types.Global;

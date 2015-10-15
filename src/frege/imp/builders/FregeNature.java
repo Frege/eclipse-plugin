@@ -1,7 +1,7 @@
 package frege.imp.builders;
 
-import org.eclipse.imp.builder.ProjectNatureBase;
-import org.eclipse.imp.runtime.IPluginLog;
+import io.usethesource.impulse.builder.ProjectNatureBase;
+import io.usethesource.impulse.runtime.IPluginLog;
 
 import frege.FregePlugin;
 

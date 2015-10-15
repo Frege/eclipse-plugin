@@ -2,10 +2,10 @@ package frege.imp.tokenColorer;
 
 import java.util.regex.Pattern;
 
-import org.eclipse.imp.parser.IParseController;
-import org.eclipse.imp.preferences.IPreferencesService;
-import org.eclipse.imp.services.ITokenColorer;
-import org.eclipse.imp.services.base.TokenColorerBase;
+import io.usethesource.impulse.parser.IParseController;
+import io.usethesource.impulse.preferences.IPreferencesService;
+import io.usethesource.impulse.services.ITokenColorer;
+import io.usethesource.impulse.services.base.TokenColorerBase;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextAttribute;

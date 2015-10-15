@@ -1,6 +1,6 @@
 
 /**
- * This is a rewrite of org.eclipse.imp.builder.BuilderBase
+ * This is a rewrite of io.usethesource.impulse.builder.BuilderBase
  * with clutter removed not needed for Frege and a dependency
  * management that fits our needs.
  * 
@@ -33,10 +33,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.imp.builder.BuilderBase;
-import org.eclipse.imp.language.Language;
-import org.eclipse.imp.language.LanguageRegistry;
-import org.eclipse.imp.preferences.IPreferencesService;
+import io.usethesource.impulse.builder.BuilderBase;
+import io.usethesource.impulse.language.Language;
+import io.usethesource.impulse.language.LanguageRegistry;
+import io.usethesource.impulse.preferences.IPreferencesService;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
