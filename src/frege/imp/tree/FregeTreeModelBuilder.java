@@ -1,6 +1,6 @@
 package frege.imp.tree;
 
-import org.eclipse.imp.services.base.TreeModelBuilderBase;
+import io.usethesource.impulse.services.base.TreeModelBuilderBase;
 
 import frege.data.TreeMap.TTreeMap;
 import frege.compiler.types.Expression.TExprT;

@@ -3,7 +3,7 @@
 /******************************************/
 package frege.imp.preferences;
 
-import org.eclipse.imp.preferences.PreferenceConstants;
+import io.usethesource.impulse.preferences.PreferenceConstants;
 
 /**
  * Constant definitions for preferences.

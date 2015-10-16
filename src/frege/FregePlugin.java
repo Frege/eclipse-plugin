@@ -5,7 +5,7 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 
-import org.eclipse.imp.runtime.PluginBase;
+import io.usethesource.impulse.runtime.PluginBase;
 import org.osgi.framework.BundleContext;
 
 public class FregePlugin extends PluginBase {

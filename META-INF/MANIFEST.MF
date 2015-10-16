@@ -5,7 +5,7 @@ Bundle-SymbolicName: frege.ide;singleton:=true
 Bundle-Version: 3.23.313.a
 Bundle-Vendor: Ingo Wechsung
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.eclipse.imp.runtime,
+Require-Bundle: impulse;bundle-version="0.1.0",
  org.eclipse.core.runtime,
  org.eclipse.ui,
  org.eclipse.jface.text,

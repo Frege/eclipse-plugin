@@ -7,17 +7,17 @@ import java.util.List;
 
 
 
-import org.eclipse.imp.editor.AnnotationHoverBase;
-// import org.eclipse.imp.language.ServiceFactory;
-import org.eclipse.imp.parser.IParseController;
-import org.eclipse.imp.parser.ISourcePositionLocator;
-// import org.eclipse.imp.parser.SimpleLPGParseController;
-import org.eclipse.imp.services.IDocumentationProvider;
-import org.eclipse.imp.services.IHoverHelper;
-import org.eclipse.imp.services.IReferenceResolver;
-import org.eclipse.imp.services.base.HoverHelperBase;
-// import org.eclipse.imp.utils.ExtensionException;
-// import org.eclipse.imp.utils.ExtensionFactory;
+import io.usethesource.impulse.editor.AnnotationHoverBase;
+// import io.usethesource.impulse.language.ServiceFactory;
+import io.usethesource.impulse.parser.IParseController;
+import io.usethesource.impulse.parser.ISourcePositionLocator;
+// import io.usethesource.impulse.parser.SimpleLPGParseController;
+import io.usethesource.impulse.services.IDocumentationProvider;
+import io.usethesource.impulse.services.IHoverHelper;
+import io.usethesource.impulse.services.IReferenceResolver;
+import io.usethesource.impulse.services.base.HoverHelperBase;
+// import io.usethesource.impulse.utils.ExtensionException;
+// import io.usethesource.impulse.utils.ExtensionFactory;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;

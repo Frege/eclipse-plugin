@@ -3,8 +3,8 @@
 /******************************************/
 package frege.imp.preferences;
 
-import org.eclipse.imp.preferences.PreferencesInitializer;
-import org.eclipse.imp.preferences.IPreferencesService;
+import io.usethesource.impulse.preferences.PreferencesInitializer;
+import io.usethesource.impulse.preferences.IPreferencesService;
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.graphics.RGB;
 

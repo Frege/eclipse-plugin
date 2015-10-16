@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.imp.preferences.*;
-import org.eclipse.imp.preferences.fields.*;
+import io.usethesource.impulse.preferences.*;
+import io.usethesource.impulse.preferences.fields.*;
 
 
 /**

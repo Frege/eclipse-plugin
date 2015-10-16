@@ -22,11 +22,11 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
-import org.eclipse.imp.services.IContentProposer;
-import org.eclipse.imp.editor.ErrorProposal;
-import org.eclipse.imp.editor.SourceProposal;
-import org.eclipse.imp.parser.IParseController;
-import org.eclipse.imp.parser.ISourcePositionLocator;
+import io.usethesource.impulse.services.IContentProposer;
+import io.usethesource.impulse.editor.ErrorProposal;
+import io.usethesource.impulse.editor.SourceProposal;
+import io.usethesource.impulse.parser.IParseController;
+import io.usethesource.impulse.parser.ISourcePositionLocator;
 
 public class ContentProposer implements IContentProposer {
 	/**

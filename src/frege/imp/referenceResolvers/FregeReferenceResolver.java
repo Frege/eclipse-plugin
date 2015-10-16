@@ -1,8 +1,8 @@
 package frege.imp.referenceResolvers;
 
 
-import org.eclipse.imp.parser.IParseController;
-import org.eclipse.imp.services.IReferenceResolver;
+import io.usethesource.impulse.parser.IParseController;
+import io.usethesource.impulse.services.IReferenceResolver;
 
 import frege.data.TreeMap.TTreeMap;
 import frege.compiler.types.Tokens.IShow_Token;
