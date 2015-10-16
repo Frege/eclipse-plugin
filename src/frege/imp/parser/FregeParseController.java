@@ -34,19 +34,23 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+
 import io.usethesource.impulse.builder.MarkerCreatorWithBatching;
 import io.usethesource.impulse.builder.ProblemLimit.LimitExceededException;
 import io.usethesource.impulse.model.ISourceProject;
 import io.usethesource.impulse.parser.IMessageHandler;
 import io.usethesource.impulse.parser.IParseController;
-import io.usethesource.impulse.parser.IParser;
+// import io.usethesource.impulse.parser.IParser;
 import io.usethesource.impulse.parser.ISourcePositionLocator;
 import io.usethesource.impulse.parser.ParseControllerBase;
 import io.usethesource.impulse.parser.SimpleAnnotationTypeInfo;
 import io.usethesource.impulse.preferences.IPreferencesService;
 import io.usethesource.impulse.services.IAnnotationTypeInfo;
 import io.usethesource.impulse.services.ILanguageSyntaxProperties;
+
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.swt.graphics.Region;
+
 import frege.FregePlugin;
 import frege.runtime.Delayed;
 import frege.runtime.Fun1;
@@ -102,7 +106,7 @@ import frege.data.TreeMap.TTreeMap;
 public class FregeParseController extends ParseControllerBase implements
 		IParseController {
 
-	public static class TokensIterator implements Iterator<TToken> {
+	public static class TokensIterator implements Iterator<Object> {
 		/** current token array */
 		final private TToken[] toks;
 		private IRegion region;
@@ -528,7 +532,7 @@ public class FregeParseController extends ParseControllerBase implements
 		msgHandler = handler;
 	}
 
-	public IParser getParser() {
+	public FregeParseController getParser() {
 		new Exception("getParser: called").printStackTrace(System.out);
 		return null; // parser;
 	}
@@ -930,7 +934,7 @@ public class FregeParseController extends ParseControllerBase implements
 	}
 	
 	@Override
-	synchronized public Iterator<TToken> getTokenIterator(IRegion region) {
+	synchronized public Iterator<Object> getTokenIterator(IRegion region) {
 		System.err.print("getTokenIterator(): " + 
 				(global != null ? TGlobal.thisPack(global) : "???"));
 		if (!tokensIteratorDone) {
@@ -998,6 +1002,29 @@ public class FregeParseController extends ParseControllerBase implements
 				public String getBlockCommentContinuation() {
 					return null;
 				}
+
+				@Override
+				public boolean isIdentifierStart(char ch) {
+					return Character.isJavaIdentifierStart(ch);
+				}
+
+				@Override
+				public boolean isIdentifierPart(char ch) {
+					return Character.isJavaIdentifierPart(ch);
+				}
+
+				@Override
+				public boolean isWhitespace(char ch) {
+					return Character.isSpaceChar(ch);
+				}
+
+				@Override
+				public IRegion getDoubleClickRegion(int offset,
+						IParseController pc) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
 			};
 		}
 		return lsp;

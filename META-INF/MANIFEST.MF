@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FregIDE
 Bundle-SymbolicName: frege.ide;singleton:=true
-Bundle-Version: 3.23.313.a
+Bundle-Version: 3.23.356.a
 Bundle-Vendor: Ingo Wechsung
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: impulse;bundle-version="0.1.0",
@@ -15,7 +15,7 @@ Require-Bundle: impulse;bundle-version="0.1.0",
  org.eclipse.ui.workbench.texteditor
 Bundle-Activator: frege.FregePlugin
 Bundle-ActivationPolicy: lazy
-Export-Package: frege;uses:="org.eclipse.imp.runtime,org.osgi.framework"
+Export-Package: frege;uses:="impulse,org.osgi.framework"
 Eclipse-LazyStart: true
 Bundle-ClassPath: bin/,
  lib/fregec.jar,
