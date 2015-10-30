@@ -16,7 +16,7 @@ If you experience the same, try this [alternative URL](https://raw.githubusercon
 Please also read [the tutorial](https://github.com/Frege/eclipse-plugin/wiki/fregIDE-Tutorial) that describes the installation in detail.
 
 
-How does it look like?
+What does it look like?
 =======================
 
 ![Here is a Screenshot](https://github.com/Frege/frege/wiki/FregIDE-Snapshot.png)
