@@ -49,8 +49,6 @@ import io.usethesource.impulse.services.IAnnotationTypeInfo;
 import io.usethesource.impulse.services.ILanguageSyntaxProperties;
 
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.swt.graphics.Region;
-
 import frege.FregePlugin;
 import frege.runtime.Delayed;
 import frege.runtime.Fun1;
@@ -63,7 +61,7 @@ import frege.prelude.PreludeBase.TList;
 import frege.control.monad.State.TState;
 import frege.control.monad.State.TStateT;
 import frege.prelude.PreludeList;
-import frege.prelude.PreludeList.IListView__lbrack_rbrack;
+import frege.prelude.PreludeList.IListView_$lbrack$rbrack;
 import frege.compiler.enums.Flags.TFlag;
 import frege.compiler.enums.Flags.IEnum_Flag;
 import frege.compiler.types.Global.TGlobal;
@@ -78,7 +76,6 @@ import frege.ide.Utilities;
 import frege.imp.builders.FregeBuilder;
 import frege.imp.preferences.FregePreferencesConstants;
 import frege.data.Bits.TBitSet;
-import frege.data.TreeMap.TTreeMap;
 
 
 /**
@@ -732,7 +729,7 @@ public class FregeParseController extends ParseControllerBase implements
 			passes = frege.compiler.Main.passes.<TList>forced();
 			
 			monitor.beginTask(this.getClass().getName() + " parsing", 
-					1 + IListView__lbrack_rbrack.length(passes));
+					1 + IListView_$lbrack$rbrack.length(passes));
 
 			index = 0;
 
