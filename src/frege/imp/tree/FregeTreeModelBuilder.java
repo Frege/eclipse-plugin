@@ -70,8 +70,8 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 				while (elem != null) {
 					final TSymbolT sym = Delayed.<TSymbolT>forced( elem.mem1 );
 					elem = (elem.mem2.<TList>forced())._Cons();
-					if (sym._constructor() != cat) continue;
-					if (sym._constructor() == link && TGlobal.our(g, TSymbolT.M.alias(sym))) continue;
+					if (sym.constructor() != cat) continue;
+					if (sym.constructor() == link && TGlobal.our(g, TSymbolT.M.alias(sym))) continue;
 					if (top) {            // category labels at the top only before first item
 						if (!found) {
 							pushSubItem(new CategoryItem(categories[cat], TSymbolT.M.pos(sym)));
