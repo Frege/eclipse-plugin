@@ -6,6 +6,7 @@ import io.usethesource.impulse.parser.IParseController;
 import io.usethesource.impulse.preferences.IPreferencesService;
 import io.usethesource.impulse.services.ITokenColorer;
 import io.usethesource.impulse.services.base.TokenColorerBase;
+
 import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextAttribute;
@@ -24,7 +25,8 @@ import frege.imp.preferences.FregePreferencesConstants;
 import frege.prelude.PreludeBase.TEither;
 import frege.prelude.PreludeBase.TEither.DRight;
 import frege.prelude.PreludeBase.TMaybe;
-import frege.runtime.Delayed;
+import frege.prelude.PreludeBase.TMaybe.DJust;
+
 
 
 
@@ -99,22 +101,22 @@ public class FregeTokenColorer extends TokenColorerBase implements ITokenColorer
 	
 	public TextAttribute getKind(FregeParseController controller, TToken tok, TextAttribute normalAttribute) {
 		TGlobal g = controller.getCurrentAst();
-		final TMaybe mb = TGlobal.resolved(g, tok);
-		final TMaybe.DJust just = mb._Just();
+		final TMaybe<TEither<Short, TQName>> mb = TGlobal.resolved(g, tok);
+		final DJust<TEither<Short, TQName>> just = mb.isJust();
 		if (just == null) return normalAttribute;
-		final TEither et = Delayed.<TEither>forced( just.mem1 );
-		final DRight right = et._Right();
+		final TEither<Short, TQName> et = just.mem1.call();
+		final DRight<Short, TQName> right = et.isRight();
 		if (right == null) return nsAttribute;			// since it is Left ()
-		final TQName qname = Delayed.<TQName>forced( right.mem1 );
-		final DLocal local = qname._Local();
+		final TQName qname = right.mem1.call();
+		final DLocal local = qname.isLocal();
 		if (local != null) return normalAttribute;		// local var
 		final boolean our = TGlobal.our(g, qname);
-		final TQName.DTName tname = qname._TName();
+		final TQName.DTName tname = qname.isTName();
 		if (tname != null) return our? typeAttribute : itypeAttribute;
-		final TQName.DMName mname = qname._MName();
+		final TQName.DMName mname = qname.isMName();
 		if (mname != null && TToken.tokid(tok) == TTokenID.CONID)
 			return our ? conAttribute : iconAttribute;
-		final String b = TQName.M.base(qname);
+		final String b = TQName.base(qname);
 		final boolean op = pattern.matcher(b).find();
 		return our ? identAttribute : (op ? iopAttribute : impAttribute);
 	}

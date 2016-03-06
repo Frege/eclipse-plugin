@@ -1,7 +1,6 @@
 package frege.imp.tree;
 
 import io.usethesource.impulse.services.base.TreeModelBuilderBase;
-
 import frege.data.TreeMap.TTreeMap;
 import frege.compiler.types.Expression.TExprT;
 import frege.compiler.types.Global.TGlobal;
@@ -9,14 +8,14 @@ import frege.compiler.types.Positions.TPosition;
 import frege.compiler.types.Global.TSubSt;
 import frege.compiler.types.Symbols.TSymbolT;
 import frege.control.monad.State;
+import frege.control.monad.State.TState;
 import frege.ide.Utilities;
 import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TList.DCons;
 import frege.prelude.PreludeBase.TMaybe;
+import frege.prelude.PreludeBase.TMaybe.DJust;
 import frege.prelude.PreludeBase.TTuple3;
-import frege.runtime.Delayed;
-import frege.runtime.Lambda;
 
 public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 	private TGlobal prev = null;
@@ -55,8 +54,8 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 	
 	public class FregeModelVisitor /* extends AbstractVisitor */ {		
 		
-		public boolean visit(TGlobal g, TTreeMap env, boolean top) {
-			final TList syms = Utilities.symbols(env).<TList>forced();
+		public boolean visit(TGlobal g, TTreeMap<String, TSymbolT<TGlobal>> env, boolean top) {
+			final TList<TSymbolT<TGlobal>> syms = Utilities.symbols(env);
 			// do one category after the other according to the predefined order
 			for (int cat : order) {
 				if (!top) { // avoid unneeded list traversals
@@ -65,16 +64,16 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 				else if (cat == dcon) continue;
 				
 				// go through the list of symbols and do the ones that equal the current category
-				TList.DCons elem = syms._Cons();
+				DCons<TSymbolT<TGlobal>> elem = syms.isCons();
 				boolean found = false;
 				while (elem != null) {
-					final TSymbolT sym = Delayed.<TSymbolT>forced( elem.mem1 );
-					elem = (elem.mem2.<TList>forced())._Cons();
+					final TSymbolT<TGlobal> sym = elem.mem1.call();
+					elem = (elem.mem2.call()).isCons();
 					if (sym.constructor() != cat) continue;
-					if (sym.constructor() == link && TGlobal.our(g, TSymbolT.M.alias(sym))) continue;
+					if (sym.constructor() == link && TGlobal.our(g, TSymbolT.alias(sym))) continue;
 					if (top) {            // category labels at the top only before first item
 						if (!found) {
-							pushSubItem(new CategoryItem(categories[cat], TSymbolT.M.pos(sym)));
+							pushSubItem(new CategoryItem(categories[cat], TSymbolT.pos(sym)));
 							found = true;
 						}
 					}
@@ -86,15 +85,15 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 			return true;
 		}
 		
-		public boolean visit(TGlobal g, TSymbolT sym) {
+		public boolean visit(TGlobal g, TSymbolT<TGlobal> sym) {
 			pushSubItem(new SymbolItem(g, sym));
-			if (TSymbolT.M.has$env(sym))  visit(g, TSymbolT.M.env(sym), false);
-			else if (TSymbolT.M.has$expr(sym)) {
-				final TMaybe mbex       = TSymbolT.M.expr(sym);
-				final TMaybe.DJust just = mbex._Just();
+			if (TSymbolT.has$env(sym))  visit(g, TSymbolT.env(sym), false);
+			else if (TSymbolT.has$expr(sym)) {
+				final TMaybe<TState<TGlobal, TExprT>> mbex       = TSymbolT.expr(sym);
+				final DJust<TState<TGlobal, TExprT>> just = mbex.isJust();
 				if (just != null) {
-					Lambda lam = Delayed.<Lambda>forced(just.mem1);
-					final TExprT expr = Delayed.<TExprT>forced(State.evalState(lam, g));
+					TState<TGlobal, TExprT> lam = just.mem1.call();
+					final TExprT expr = State.evalState(lam, g);
 					visit(g, expr);
 				}
 			}
@@ -104,13 +103,13 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 		
 		public boolean visit(TGlobal g, TExprT expr) {
 			// System.err.println("visiting: " + g.toString() + ", " + expr.toString());
-			TList symbols = (TList) FregeParseController.funSTG(
+			TList<TSymbolT<TGlobal>> symbols = FregeParseController.funSTG(
 					Utilities.exprSymbols(expr), g);
-			TList.DCons node = symbols._Cons();
+			DCons<TSymbolT<TGlobal>> node = symbols.isCons();
 			while (node != null) {
-				TSymbolT sym = Delayed.<TSymbolT>forced( node.mem1);
+				TSymbolT<TGlobal> sym =  node.mem1.call();
 				visit(g, sym);
-				node = (node.mem2.<TList>forced())._Cons();
+				node = node.mem2.call().isCons();
 			}
 			return true;
 		}
@@ -121,14 +120,14 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 			
 			pushSubItem(new PackageItem(pack, TSubSt.thisPos(sub)));
 			if  (! "".equals(pack)) {
-				final TList pnps =  Utilities.imports(g).<TList>forced();
-				DCons elem = pnps._Cons();
+				final TList<TTuple3<TPosition, String, String>> pnps =  Utilities.imports(g);
+				DCons<TTuple3<TPosition, String, String>> elem = pnps.isCons();
 				while (elem != null) {
-					final TTuple3 tuple = Delayed.<TTuple3>forced( elem.mem1 );
-					elem = (elem.mem2.<TList>forced())._Cons();
-					final TPosition pos = Delayed.<TPosition>forced(tuple.mem1);
-					final String ns     = Delayed.<String>forced(tuple.mem2);
-					final String p      = Delayed.<String>forced(tuple.mem3);
+					final TTuple3<TPosition, String, String> tuple = elem.mem1.call();
+					elem = elem.mem2.call().isCons();
+					final TPosition pos = tuple.mem1.call();
+					final String ns     = tuple.mem2.call();
+					final String p      = tuple.mem3.call();
 					createSubItem(new ImportItem(pos, ns, p));
 				}
 			}

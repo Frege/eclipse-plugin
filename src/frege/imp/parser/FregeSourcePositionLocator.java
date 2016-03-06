@@ -156,15 +156,15 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		if (node != null && node instanceof FregeReferenceResolver.Namespace) {
 			final FregeReferenceResolver.Namespace nmsp = (FregeReferenceResolver.Namespace) node;
 			if (nmsp.pack.equals(TGlobal.thisPack(nmsp.g)))
-				return TToken.offset(TPosition.first(Global.packageStart(nmsp.g).<TPosition>forced()));
+				return TToken.offset(TPosition.first(Global.packageStart(nmsp.g).call()));
 			return -1;	// different package
 		}
 		
 		if (node != null && node instanceof FregeReferenceResolver.Symbol) {
 			final FregeReferenceResolver.Symbol sym = (FregeReferenceResolver.Symbol) node;
-			final TQName  qname = TSymbolT.M.name(sym.sym);
+			final TQName  qname = TSymbolT.name(sym.sym);
 			final boolean our = TGlobal.our(sym.g, qname);
-			final int off = getStartOffset(TSymbolT.M.pos(sym.sym)); 
+			final int off = getStartOffset(TSymbolT.pos(sym.sym)); 
 			System.err.println("getStartOffSet( " + QNames.IShow_QName.show(qname) 
 					+ " ), our=" + our
 					+ " ), off=" + off);
@@ -199,7 +199,7 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 			final FregeReferenceResolver.Symbol sym = (FregeReferenceResolver.Symbol) node;
 			// final TQName  qname = TSymbol.M.name(sym.sym);
 			// final boolean our = TQName.M.our(qname, sym.g);
-			return getLength(TSymbolT.M.pos(sym.sym));
+			return getLength(TSymbolT.pos(sym.sym));
 			// return -1;	// different package
 		}
 		
@@ -218,9 +218,9 @@ public class FregeSourcePositionLocator implements ISourcePositionLocator {
 		}
 		if (node != null && node instanceof FregeReferenceResolver.Symbol) {
 			final FregeReferenceResolver.Symbol sym = (FregeReferenceResolver.Symbol) node;
-			final TQName  qname = TSymbolT.M.name(sym.sym);
+			final TQName  qname = TSymbolT.name(sym.sym);
 			final boolean our = TGlobal.our(sym.g, qname);
-			final String  pack  = our ? TGlobal.thisPack(sym.g) : TQName.M.getpack(qname);
+			final String  pack  = our ? TGlobal.thisPack(sym.g) : TQName.getpack(qname);
 			IPath p = parser.getSource(pack);
 			System.err.println("getPath( " + QNames.IShow_QName.show(qname) 
 					+ " ), our=" + our + ", pack=" + pack + ", path=" + p);

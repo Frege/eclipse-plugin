@@ -3,7 +3,7 @@
 /******************************************/
 package frege.imp.preferences;
 
-import io.usethesource.impulse.preferences.PreferenceConstants;
+// import io.usethesource.impulse.preferences.PreferenceConstants;
 
 /**
  * Constant definitions for preferences.

@@ -3,7 +3,6 @@ package frege.imp.referenceResolvers;
 
 import io.usethesource.impulse.parser.IParseController;
 import io.usethesource.impulse.services.IReferenceResolver;
-
 import frege.data.TreeMap.TTreeMap;
 import frege.compiler.types.Tokens.IShow_Token;
 import frege.compiler.types.Tokens.TToken;
@@ -19,18 +18,19 @@ import frege.prelude.PreludeBase.TEither.DLeft;
 import frege.prelude.PreludeBase.TEither.DRight;
 import frege.prelude.PreludeBase.TMaybe;
 import frege.prelude.PreludeBase.TMaybe.DJust;
-import frege.runtime.Delayed;
+import frege.run7.Thunk;
+
 
 
 public class FregeReferenceResolver implements IReferenceResolver {
 
 	public static class Symbol {
 		public final TGlobal g;
-		public final TSymbolT sym;
-		public Symbol(TGlobal g, TSymbolT sym) { this.g = g; this.sym = sym; }
+		public final TSymbolT<TGlobal> sym;
+		public Symbol(TGlobal g, TSymbolT<TGlobal> sym) { this.g = g; this.sym = sym; }
 		public String toString() {
-			String s = Delayed.<String> forced(FregeParseController.funSTIO(
-					Utilities.symbolDocumentation(sym), g));
+			String s = FregeParseController.funSTIO(
+						Utilities.symbolDocumentation(sym), g);
 			return s; // Data.INice_QName.nicer(TSymbol.M.name(sym), g);
 		}
 	}
@@ -45,8 +45,8 @@ public class FregeReferenceResolver implements IReferenceResolver {
 			this.pack = p;
 		}
 		public String toString() {
-			String s = Delayed.<String>forced(FregeParseController.funSTIO(
-						Utilities.packDocumentation(pack), g));
+			String s = FregeParseController.funSTIO(
+						Utilities.packDocumentation(Thunk.lazy(pack)), g);
 			return s;
 		}
 	}
@@ -94,40 +94,40 @@ public class FregeReferenceResolver implements IReferenceResolver {
 					&& tid != TTokenID.SOMEOP
 					&& !isMinus
 				) return null;
-			TMaybe mb = TGlobal.resolved(g, tok);
-			DJust just = mb._Just();
+			TMaybe<TEither<Short, TQName>> mb = TGlobal.resolved(g, tok);
+			DJust<TEither<Short, TQName>> just = mb.isJust();
 			if (just == null) {
 				if (isMinus) {
 					TToken neg = TToken.upd$value(
 									TToken.upd$tokid(tok, TTokenID.VARID),
 									"negate");
 					mb = TGlobal.resolved(g, neg);
-					just = mb._Just();
+					just = mb.isJust();
 					if (just == null) return null;
 				}
 				else return null;
 			}
-			final TEither lr = Delayed.<TEither>forced( just.mem1 );
-			final DRight right = lr._Right();
+			final TEither<Short, TQName> lr =  just.mem1.call();
+			final DRight<Short, TQName> right = lr.isRight();
 			if (right != null) {
 				// this is a QName
-				TQName q = Delayed.<TQName>forced( right.mem1 );
-				final TMaybe mbsym = TGlobal.findit(g, q).<TMaybe>forced();
-				final DJust  jsym  = mbsym._Just();
+				TQName q = right.mem1.call();
+				final TMaybe<TSymbolT<TGlobal>> mbsym = TGlobal.findit(g, q).call();
+				final DJust<TSymbolT<TGlobal>>  jsym  = mbsym.isJust();
 				if (jsym == null)	return null; 	// not found?
-				final TSymbolT sym = Delayed.<TSymbolT>forced( jsym.mem1 );
+				final TSymbolT<TGlobal> sym = jsym.mem1.call();
 				System.err.println("getLinkTarget: " + QNames.IShow_QName.show(q));
 				return new Symbol(g, sym);
 			}
-			final DLeft  left = lr._Left();
+			final DLeft<Short, TQName>  left = lr.isLeft();
 			if (left != null) {
 				// this is a namespace
 				String ns = TToken.value(tok);
-				final TTreeMap tree = TGlobal.namespaces(g);
-				final TMaybe mbpack = TTreeMap.M.lookupS(tree, ns);
-				final DJust jpack = mbpack._Just();
+				final TTreeMap<String, String> tree = TGlobal.namespaces(g);
+				final TMaybe<String> mbpack = TTreeMap.lookupS(tree, ns);
+				final DJust<String> jpack = mbpack.isJust();
 				if (jpack == null) return null;
-				String pack = Delayed.<java.lang.String>forced(jpack.mem1);
+				String pack = jpack.mem1.call();
 				return new Namespace(g, ns, pack);
 			}
 		}

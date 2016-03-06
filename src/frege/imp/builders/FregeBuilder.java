@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+
 import io.usethesource.impulse.builder.BuilderUtils;
 import io.usethesource.impulse.builder.MarkerCreatorWithBatching;
 import io.usethesource.impulse.builder.ProblemLimit.LimitExceededException;
@@ -18,7 +19,6 @@ import io.usethesource.impulse.model.ISourceProject;
 import io.usethesource.impulse.model.ModelFactory;
 import io.usethesource.impulse.model.ModelFactory.ModelException;
 import io.usethesource.impulse.runtime.PluginBase;
-
 import frege.FregePlugin;
 import frege.compiler.types.Global;
 import frege.compiler.types.Global.TGlobal;
@@ -32,8 +32,8 @@ import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TList.DCons;
 import frege.prelude.PreludeText;
-import frege.runtime.Delayed;
-import frege.runtime.Lambda;
+import frege.run7.Thunk;
+
 
 /**
  * A builder may be activated on a file containing frege code every time it
@@ -81,20 +81,19 @@ public class FregeBuilder extends FregeBuilderBase {
 		return INFO_MARKER_ID;
 	}
 
-	public TList getDeps(String content, String fromPath) {
-		TGlobal global = Delayed.<TGlobal> forced(frege.prelude.PreludeBase.TST
-				.performUnsafe(CompilerOptions.eclipseOptions
-						.<Lambda> forced()));
+	public TList<String> getDeps(String content, String fromPath) {
+		TGlobal global = frege.prelude.PreludeBase.TST
+				.performUnsafe(CompilerOptions.eclipseOptions.call())
+				.call();
 		
 		// set source file into global (why?)
 		global = TGlobal.upd$options(global, TOptions.upd$source(
 				TGlobal.options(global), 
 				fromPath));
 		
-		return Delayed.<TList>forced(
-				FregeParseController.funSTG(
+		return FregeParseController.funSTG(
 						Utilities.getDependencies(content), 
-						global));
+						global);
 	}
 	/**
 	 * Collects compilation-unit dependencies for the given file, and records
@@ -113,14 +112,14 @@ public class FregeBuilder extends FregeBuilderBase {
 			
 			getPlugin().writeInfoMsg(
 					"Collecting dependencies from frege file: " + fromPath);
-			TList packs = getDeps(contents, fromPath);
+			TList<String> packs = getDeps(contents, fromPath);
 			// packs = Utilities.correctDependenciesFor(packs, fromPath);
 			
 			while (true) {
-				final DCons cons = packs._Cons();
+				final DCons<String> cons = packs.isCons();
 				if (cons == null) break;
-				packs = cons.mem2.<TList>forced();
-				final String pack = Delayed.<String>forced(cons.mem1);
+				packs = cons.mem2.call();
+				final String pack = cons.mem1.call();
 				final IFile known = fPackages.get(pack);
 				if (known != null) {
 					this.addDependency(file, known);
@@ -261,18 +260,16 @@ public class FregeBuilder extends FregeBuilderBase {
 				getPlugin().writeInfoMsg("built: " + target);
 				// get the frege path and build path
 				final String bp = TOptions.dir( TGlobal.options(result) );
-				final TList ourPath = CompilerOptions.ourPath(TGlobal.options(result));
-				final String fp = Delayed.<String>forced(
-						PreludeText.joined(
-				                		  System.getProperty("path.separator"),
+				final TList<String> ourPath = CompilerOptions.ourPath(TGlobal.options(result));
+				final String fp = PreludeText.joined(
+				                		  Thunk.lazy(System.getProperty("path.separator")),
 				                		  ourPath
-								));
-				final TList srcPath = TOptions.sourcePath(TGlobal.options(result));
-				final String sp = Delayed.<String>forced(
-						PreludeText.joined(
-		                		  System.getProperty("path.separator"),
+								);
+				final TList<String> srcPath = TOptions.sourcePath(TGlobal.options(result));
+				final String sp = PreludeText.joined(
+		                		  Thunk.lazy(System.getProperty("path.separator")),
 		                		  srcPath
-						));
+						);
 				// construct the commandline
 				final String cmdline = "-cp " + "\"" + fp + "\"" 
 						+ " -d " + "\"" + bp + "\""
@@ -299,7 +296,7 @@ public class FregeBuilder extends FregeBuilderBase {
 				*/
 				
 				if (!success) {
-					TPosition pos = Global.packageStart(result).<TPosition>forced();
+					TPosition pos = Global.packageStart(result).call();
 					TToken module = TPosition.first(pos);
 					int line = TToken.line(module);
 					int chStart = TToken.offset(module);

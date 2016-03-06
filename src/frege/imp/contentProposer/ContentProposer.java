@@ -9,24 +9,21 @@ import frege.ide.Utilities.TProposal;
 import frege.compiler.enums.TokenID;
 import frege.imp.parser.*;
 import frege.prelude.PreludeBase.TList;
-import frege.runtime.Delayed;
-import frege.runtime.Lambda;
+import frege.run7.Thunk;
+import frege.run7.Func;
+import frege.runtime.Phantom.RealWorld;
 
 import java.util.*;
 
-import org.eclipse.jface.text.contentassist.ContentAssistant;
-import org.eclipse.jface.text.contentassist.ICompletionProposal;
-import org.eclipse.jface.text.contentassist.ICompletionProposalExtension5;
-import org.eclipse.jface.text.source.ContentAssistantFacade;
-import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.contentassist.ICompletionProposal;
+
 import io.usethesource.impulse.services.IContentProposer;
 import io.usethesource.impulse.editor.ErrorProposal;
 import io.usethesource.impulse.editor.SourceProposal;
 import io.usethesource.impulse.parser.IParseController;
-import io.usethesource.impulse.parser.ISourcePositionLocator;
+
 
 public class ContentProposer implements IContentProposer {
 	/**
@@ -34,10 +31,10 @@ public class ContentProposer implements IContentProposer {
 	 * lazily.
 	 */
 	static class Proposal extends SourceProposal {
-		Lambda additional;	// IO String!
+		Func.U<RealWorld, String> additional;	// IO String!
 		String info;
 		public Proposal(String proposal, String newText, String prefix, int offset, int length, 
-				int cursor, Lambda additional) {
+				int cursor, Func.U<RealWorld, String> additional) {
 			super(proposal, newText, prefix, new Region(offset, length), cursor);
 			this.additional = additional;
 			info = null;
@@ -45,7 +42,7 @@ public class ContentProposer implements IContentProposer {
 		
 		public String getAdditionalProposalInfo() {
 			if (info == null) {
-				info = Delayed.<String>forced(additional.apply(42).result());
+				info = additional.apply(Thunk.lazyWorld).call();
 			}
 			return info;
 		}
@@ -60,7 +57,7 @@ public class ContentProposer implements IContentProposer {
 					off,
 					TProposal.len(p),
 					TProposal.cursor(p)+off+newT.length(),
-					p.mem$additional.<Lambda>forced()
+					p.mem$additional.call()
 					);
 		}
 	}
@@ -138,7 +135,7 @@ public class ContentProposer implements IContentProposer {
 						+ ", direct=" + direct
 						+ ", inside=" + inside);
 				
-			TList ps = null; 
+			TList<TProposal> ps = null; 
 			boolean first = true;
 			/*
 			if (token != null && (TToken.tokid(token) == TTokenID.IMPORT
@@ -156,16 +153,16 @@ public class ContentProposer implements IContentProposer {
 			else */ {
 				ps = Utilities.proposeContent(g, parser.ourRoot(), offset, tokens, inx);
 				while (true) {
-					final TList.DCons node = ps._Cons();
+					final TList.DCons<TProposal> node = ps.isCons();
 					if (node == null) break;
-					TProposal p = Delayed.<TProposal>forced(node.mem1);
+					TProposal p = node.mem1.call();
 					if (first) {
 						first = false;
 						pref = TProposal.prefix(p);
 						System.err.println("getContentProposal: " + IShow_Proposal.show(p));
 					}
 					result.add(Proposal.convert(p));
-					ps = Delayed.<TList>forced(node.mem2);
+					ps = node.mem2.call();
 				}
 			}
 			

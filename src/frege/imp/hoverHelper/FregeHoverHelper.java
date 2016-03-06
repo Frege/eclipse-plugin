@@ -21,8 +21,6 @@ import io.usethesource.impulse.services.base.HoverHelperBase;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.graphics.Point;
 
 // import frege.FregePlugin;
 // import frege.imp.parser.FregeParseController;
