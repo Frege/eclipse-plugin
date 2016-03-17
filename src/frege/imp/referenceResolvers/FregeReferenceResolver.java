@@ -95,37 +95,37 @@ public class FregeReferenceResolver implements IReferenceResolver {
 					&& !isMinus
 				) return null;
 			TMaybe<TEither<Short, TQName>> mb = TGlobal.resolved(g, tok);
-			DJust<TEither<Short, TQName>> just = mb.isJust();
+			DJust<TEither<Short, TQName>> just = mb.asJust();
 			if (just == null) {
 				if (isMinus) {
 					TToken neg = TToken.upd$value(
 									TToken.upd$tokid(tok, TTokenID.VARID),
 									"negate");
 					mb = TGlobal.resolved(g, neg);
-					just = mb.isJust();
+					just = mb.asJust();
 					if (just == null) return null;
 				}
 				else return null;
 			}
 			final TEither<Short, TQName> lr =  just.mem1.call();
-			final DRight<Short, TQName> right = lr.isRight();
+			final DRight<Short, TQName> right = lr.asRight();
 			if (right != null) {
 				// this is a QName
 				TQName q = right.mem1.call();
 				final TMaybe<TSymbolT<TGlobal>> mbsym = TGlobal.findit(g, q).call();
-				final DJust<TSymbolT<TGlobal>>  jsym  = mbsym.isJust();
+				final DJust<TSymbolT<TGlobal>>  jsym  = mbsym.asJust();
 				if (jsym == null)	return null; 	// not found?
 				final TSymbolT<TGlobal> sym = jsym.mem1.call();
 				System.err.println("getLinkTarget: " + QNames.IShow_QName.show(q));
 				return new Symbol(g, sym);
 			}
-			final DLeft<Short, TQName>  left = lr.isLeft();
+			final DLeft<Short, TQName>  left = lr.asLeft();
 			if (left != null) {
 				// this is a namespace
 				String ns = TToken.value(tok);
 				final TTreeMap<String, String> tree = TGlobal.namespaces(g);
 				final TMaybe<String> mbpack = TTreeMap.lookupS(tree, ns);
-				final DJust<String> jpack = mbpack.isJust();
+				final DJust<String> jpack = mbpack.asJust();
 				if (jpack == null) return null;
 				String pack = jpack.mem1.call();
 				return new Namespace(g, ns, pack);

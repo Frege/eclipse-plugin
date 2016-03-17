@@ -64,11 +64,11 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 				else if (cat == dcon) continue;
 				
 				// go through the list of symbols and do the ones that equal the current category
-				DCons<TSymbolT<TGlobal>> elem = syms.isCons();
+				DCons<TSymbolT<TGlobal>> elem = syms.asCons();
 				boolean found = false;
 				while (elem != null) {
 					final TSymbolT<TGlobal> sym = elem.mem1.call();
-					elem = (elem.mem2.call()).isCons();
+					elem = (elem.mem2.call()).asCons();
 					if (sym.constructor() != cat) continue;
 					if (sym.constructor() == link && TGlobal.our(g, TSymbolT.alias(sym))) continue;
 					if (top) {            // category labels at the top only before first item
@@ -90,7 +90,7 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 			if (TSymbolT.has$env(sym))  visit(g, TSymbolT.env(sym), false);
 			else if (TSymbolT.has$expr(sym)) {
 				final TMaybe<TState<TGlobal, TExprT>> mbex       = TSymbolT.expr(sym);
-				final DJust<TState<TGlobal, TExprT>> just = mbex.isJust();
+				final DJust<TState<TGlobal, TExprT>> just = mbex.asJust();
 				if (just != null) {
 					TState<TGlobal, TExprT> lam = just.mem1.call();
 					final TExprT expr = State.evalState(lam, g);
@@ -105,11 +105,11 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 			// System.err.println("visiting: " + g.toString() + ", " + expr.toString());
 			TList<TSymbolT<TGlobal>> symbols = FregeParseController.funSTG(
 					Utilities.exprSymbols(expr), g);
-			DCons<TSymbolT<TGlobal>> node = symbols.isCons();
+			DCons<TSymbolT<TGlobal>> node = symbols.asCons();
 			while (node != null) {
 				TSymbolT<TGlobal> sym =  node.mem1.call();
 				visit(g, sym);
-				node = node.mem2.call().isCons();
+				node = node.mem2.call().asCons();
 			}
 			return true;
 		}
@@ -121,10 +121,10 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 			pushSubItem(new PackageItem(pack, TSubSt.thisPos(sub)));
 			if  (! "".equals(pack)) {
 				final TList<TTuple3<TPosition, String, String>> pnps =  Utilities.imports(g);
-				DCons<TTuple3<TPosition, String, String>> elem = pnps.isCons();
+				DCons<TTuple3<TPosition, String, String>> elem = pnps.asCons();
 				while (elem != null) {
 					final TTuple3<TPosition, String, String> tuple = elem.mem1.call();
-					elem = elem.mem2.call().isCons();
+					elem = elem.mem2.call().asCons();
 					final TPosition pos = tuple.mem1.call();
 					final String ns     = tuple.mem2.call();
 					final String p      = tuple.mem3.call();

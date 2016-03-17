@@ -725,7 +725,7 @@ public class FregeParseController extends ParseControllerBase implements
 			index = 0;
 
 			while (!monitor.isCanceled()
-					&& (pass = passes.isCons()) != null
+					&& (pass = passes.asCons()) != null
 					&& errors(global) == 0
 					&& index < 2) {		// do lexer and parser synchronized
 				t1 = System.nanoTime();
@@ -774,7 +774,7 @@ public class FregeParseController extends ParseControllerBase implements
 		
 		while (!monitor.isCanceled()
 					&& errors(global) == 0
-					&& (pass = passes.isCons()) != null) {			// do the rest unsynchronized
+					&& (pass = passes.asCons()) != null) {			// do the rest unsynchronized
 				t1 = System.nanoTime();
 				passes = pass.mem2.call();
 				index++;
@@ -901,7 +901,7 @@ public class FregeParseController extends ParseControllerBase implements
 		}
 		 
 		while (!monitor.isCanceled() && maxmsgs > 0) {
-			DCons<TMessage> node = msgs.isCons();
+			DCons<TMessage> node = msgs.asCons();
 			if (node == null) break;
 			msgs = node.mem2.call();
 			TMessage msg = node.mem1.call();

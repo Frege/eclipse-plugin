@@ -153,7 +153,7 @@ public class ContentProposer implements IContentProposer {
 			else */ {
 				ps = Utilities.proposeContent(g, parser.ourRoot(), offset, tokens, inx);
 				while (true) {
-					final TList.DCons<TProposal> node = ps.isCons();
+					final TList.DCons<TProposal> node = ps.asCons();
 					if (node == null) break;
 					TProposal p = node.mem1.call();
 					if (first) {

@@ -116,7 +116,7 @@ public class FregeBuilder extends FregeBuilderBase {
 			// packs = Utilities.correctDependenciesFor(packs, fromPath);
 			
 			while (true) {
-				final DCons<String> cons = packs.isCons();
+				final DCons<String> cons = packs.asCons();
 				if (cons == null) break;
 				packs = cons.mem2.call();
 				final String pack = cons.mem1.call();

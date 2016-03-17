@@ -102,18 +102,18 @@ public class FregeTokenColorer extends TokenColorerBase implements ITokenColorer
 	public TextAttribute getKind(FregeParseController controller, TToken tok, TextAttribute normalAttribute) {
 		TGlobal g = controller.getCurrentAst();
 		final TMaybe<TEither<Short, TQName>> mb = TGlobal.resolved(g, tok);
-		final DJust<TEither<Short, TQName>> just = mb.isJust();
+		final DJust<TEither<Short, TQName>> just = mb.asJust();
 		if (just == null) return normalAttribute;
 		final TEither<Short, TQName> et = just.mem1.call();
-		final DRight<Short, TQName> right = et.isRight();
+		final DRight<Short, TQName> right = et.asRight();
 		if (right == null) return nsAttribute;			// since it is Left ()
 		final TQName qname = right.mem1.call();
-		final DLocal local = qname.isLocal();
+		final DLocal local = qname.asLocal();
 		if (local != null) return normalAttribute;		// local var
 		final boolean our = TGlobal.our(g, qname);
-		final TQName.DTName tname = qname.isTName();
+		final TQName.DTName tname = qname.asTName();
 		if (tname != null) return our? typeAttribute : itypeAttribute;
-		final TQName.DMName mname = qname.isMName();
+		final TQName.DMName mname = qname.asMName();
 		if (mname != null && TToken.tokid(tok) == TTokenID.CONID)
 			return our ? conAttribute : iconAttribute;
 		final String b = TQName.base(qname);
