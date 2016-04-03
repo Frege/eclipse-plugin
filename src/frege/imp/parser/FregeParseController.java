@@ -423,7 +423,10 @@ public class FregeParseController extends ParseControllerBase implements
 			TY<TRTree<?>> x = ourRoot();
 			TY<TRTree<?>> y = PreludeBase.TST
 								.performUnsafe(
-										Utilities.justCompiled(global, x))
+										Utilities.justCompiled(
+												TGlobal.unpack(global, TGlobal.thisPack(global)),
+												TSubSt.loader(TGlobal.sub(global)),
+												x))
 								.call();
 			packs.put(fregeData.getBp(), y);
 		}
@@ -737,21 +740,33 @@ public class FregeParseController extends ParseControllerBase implements
 							Func.U<RealWorld, ?>, 
 							TTuple2<String, Integer>>, 
 						String> adx = pass.mem1.call();
-				final TStateT<
+				if (index == 1) {
+					final TState<TGlobal, TTuple2<String, Integer>> action = Utilities.lexPassIDE(contents);
+					final TGlobal g = runSTG(action, global);
+					final String  desc   = adx.mem2.call();
+					te = System.nanoTime();
+					System.err.println(desc + " took " 
+							+ (te-t1)/1000000 + "ms, cumulative "
+							+ (te-t0)/1000000 + "ms");
+				
+					monitor.worked(1);
+					global = runSTG(Utilities.passDone.call(), g);
+				}
+				else {
+					final TStateT<
 						TGlobal, 
 						Func.U<RealWorld, ?>, 
-						TTuple2<String, Integer>> action = index == 1 ? 
-									Utilities.lexPassIDE(contents) : 
-									adx.mem1.call();
-				final String  desc   = adx.mem2.call();
-				final TGlobal g = runSTIO(action, global);
-				te = System.nanoTime();
-				System.err.println(desc + " took " 
-					+ (te-t1)/1000000 + "ms, cumulative "
-					+ (te-t0)/1000000 + "ms");
+						TTuple2<String, Integer>> action = 	adx.mem1.call();
+					final String  desc   = adx.mem2.call();
+					final TGlobal g = runSTIO(action, global);
+					te = System.nanoTime();
+					System.err.println(desc + " took " 
+							+ (te-t1)/1000000 + "ms, cumulative "
+							+ (te-t0)/1000000 + "ms");
 				
-				monitor.worked(1);
-				global = runSTG(Utilities.passDone.call(), g);
+					monitor.worked(1);
+					global = runSTG(Utilities.passDone.call(), g);
+				}
 			}
 			if (achievement(global) >= achievement(goodglobal))
 				goodglobal = global;			// when opening a file with errors
