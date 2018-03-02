@@ -9,8 +9,8 @@ import frege.ide.Utilities.TProposal;
 import frege.compiler.enums.TokenID;
 import frege.imp.parser.*;
 import frege.prelude.PreludeBase.TList;
-import frege.run7.Thunk;
-import frege.run7.Func;
+import frege.run8.Thunk;
+import frege.run8.Func;
 import frege.runtime.Phantom.RealWorld;
 
 import java.util.*;

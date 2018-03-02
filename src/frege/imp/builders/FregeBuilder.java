@@ -32,7 +32,7 @@ import frege.imp.parser.FregeParseController;
 import frege.prelude.PreludeBase.TList;
 import frege.prelude.PreludeBase.TList.DCons;
 import frege.prelude.PreludeText;
-import frege.run7.Thunk;
+import frege.run8.Thunk;
 
 
 /**

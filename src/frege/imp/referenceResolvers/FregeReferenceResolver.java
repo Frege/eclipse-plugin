@@ -18,7 +18,7 @@ import frege.prelude.PreludeBase.TEither.DLeft;
 import frege.prelude.PreludeBase.TEither.DRight;
 import frege.prelude.PreludeBase.TMaybe;
 import frege.prelude.PreludeBase.TMaybe.DJust;
-import frege.run7.Thunk;
+import frege.run8.Thunk;
 
 
 

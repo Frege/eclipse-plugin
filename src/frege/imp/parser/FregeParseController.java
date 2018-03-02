@@ -51,9 +51,9 @@ import io.usethesource.impulse.services.ILanguageSyntaxProperties;
 import org.eclipse.jface.text.IRegion;
 
 import frege.FregePlugin;
-import frege.run7.Lazy;
-import frege.run7.Func;
-import frege.run7.Thunk;
+import frege.run8.Lazy;
+import frege.run8.Func;
+import frege.run8.Thunk;
 import frege.run.Kind;
 import frege.runtime.Phantom.RealWorld;
 import frege.prelude.PreludeBase;
@@ -708,11 +708,18 @@ public class FregeParseController extends ParseControllerBase implements
 			msgHandler.clearMessages();
 		
 			final IProgressMonitor myMonitor = monitor;
-			Func.U<RealWorld, Boolean> cancel = new Func.U.D<RealWorld, Boolean>() {			
+			// Func.U<?,?> cancelobj = ((final RealWorld x) -> myMonitor.isCanceled() ? Thunk.lazyTrue : Thunk.lazyFalse);
+			Func.U<RealWorld, Boolean> cancel = new Func.U<RealWorld, Boolean>() {
 				public Lazy<Boolean> apply(Lazy<RealWorld> realworld) {
 					return myMonitor.isCanceled() ? Thunk.lazyTrue : Thunk.lazyFalse;	
 				}
 			};
+			/*
+			Func.U<RealWorld, Boolean> cancel = new Func.U.D<RealWorld, Boolean>() {			
+				public Lazy<Boolean> apply(Lazy<RealWorld> realworld) {
+					return myMonitor.isCanceled() ? Thunk.lazyTrue : Thunk.lazyFalse;	
+				}
+			};*/
 		
 			global = TGlobal.upd$sub(global,  TSubSt.upd$cancelled(
 				TGlobal.sub(global), 
