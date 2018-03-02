@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FregIDE
 Bundle-SymbolicName: frege.ide;singleton:=true
-Bundle-Version: 3.24.48
+Bundle-Version: 3.24.93
 Bundle-Vendor: Ingo Wechsung
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: impulse;bundle-version="0.1.0",
