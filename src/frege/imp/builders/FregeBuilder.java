@@ -274,7 +274,7 @@ public class FregeBuilder extends FregeBuilderBase {
 				final String cmdline = "-cp " + "\"" + fp + "\"" 
 						+ " -d " + "\"" + bp + "\""
 						+ " -sourcepath " + "\"" + sp + "\""
-						+ " -Xemacs -1.7 -encoding UTF-8 "
+						+ " -Xemacs -1.8 -encoding UTF-8 "
 						+ "\"" + target + "\"";
 				getPlugin().writeInfoMsg("batch-compile " + cmdline);
 				final StringWriter errs = new StringWriter();

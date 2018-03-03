@@ -708,12 +708,14 @@ public class FregeParseController extends ParseControllerBase implements
 			msgHandler.clearMessages();
 		
 			final IProgressMonitor myMonitor = monitor;
-			// Func.U<?,?> cancelobj = ((final RealWorld x) -> myMonitor.isCanceled() ? Thunk.lazyTrue : Thunk.lazyFalse);
+			Func.U<RealWorld,Boolean> cancel = ((final Lazy<RealWorld> x) -> myMonitor.isCanceled() ? Thunk.lazyTrue : Thunk.lazyFalse);
+			/*
 			Func.U<RealWorld, Boolean> cancel = new Func.U<RealWorld, Boolean>() {
 				public Lazy<Boolean> apply(Lazy<RealWorld> realworld) {
 					return myMonitor.isCanceled() ? Thunk.lazyTrue : Thunk.lazyFalse;	
 				}
 			};
+			*/
 			/*
 			Func.U<RealWorld, Boolean> cancel = new Func.U.D<RealWorld, Boolean>() {			
 				public Lazy<Boolean> apply(Lazy<RealWorld> realworld) {
