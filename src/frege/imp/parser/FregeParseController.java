@@ -167,24 +167,26 @@ public class FregeParseController extends ParseControllerBase implements
 		private ISourceProject project = null;
 		public FregeData(ISourceProject sourceProject) {
 			project = sourceProject;
-			final String projName = sourceProject.getName();
-			
-			// find out if the preferences specify "project:pfx"
-			// and take pfx as prefix, if so
-			IPreferencesService service = FregePlugin.getInstance().getPreferencesService();
-			if (service != null) {
-				String option = service.getStringPreference(FregePreferencesConstants.P_PREFIX);
-				if (option != null 
-						&& projName != null
-						&& option.startsWith(projName)
-						&& option.length() >= 2+projName.length()
-						&& option.charAt(projName.length())==':') {
-					prefix = option.substring(1+projName.length());
-					System.err.println("sourceProject=" + project.getName()
-							+ ", prefix=" + prefix);
-				}
-			}
+
 			if (project != null) {
+				final String projName = sourceProject.getName();
+				
+				// find out if the preferences specify "project:pfx"
+				// and take pfx as prefix, if so
+				IPreferencesService service = FregePlugin.getInstance().getPreferencesService();
+				if (service != null) {
+					String option = service.getStringPreference(FregePreferencesConstants.P_PREFIX);
+					if (option != null 
+							&& projName != null
+							&& option.startsWith(projName)
+							&& option.length() >= 2+projName.length()
+							&& option.charAt(projName.length())==':') {
+						prefix = option.substring(1+projName.length());
+						System.err.println("sourceProject=" + project.getName()
+								+ ", prefix=" + prefix);
+					}
+				}
+				
 				IProject rp = project.getRawProject();
 				
 				// System.out.println("The raw project has type: " + jp.getClass());
@@ -852,9 +854,7 @@ public class FregeParseController extends ParseControllerBase implements
 		// System.err.println("delivered goodglobal");
 		return goodglobal;
 	}
-	
-	private static String ourJar = null; 
-	
+		
 	@Override
 	public TGlobal parse(String input, IProgressMonitor monitor) {
 		MarkerCreatorWithBatching mcwb = msgHandler instanceof MarkerCreatorWithBatching ?
@@ -868,59 +868,62 @@ public class FregeParseController extends ParseControllerBase implements
 		TList<TMessage> msgs = PreludeList.reverse(TSubSt.messages(TGlobal.sub(g)));
 		int maxmsgs = 9;
 		
-		// emit an error here if we don't have the correct fregec.jar
-		if (ourJar == null) {
+		// Check we are opening file in project first
+		if (getProject() != null) {
+			String fregecJar = null;
+			
 			final String[] fp = fregeData.getFp().split(System.getProperty("path.separator"));
 			// final String correct = frege.FregePlugin.fregeLib;
 		
 			for (int i=0; i < fp.length;i++) {
 				if (fp[i].endsWith("fregec.jar")) { 
-					ourJar = fp[i];
-					ourJar = java.util.regex.Pattern.compile("\\\\").matcher(ourJar).replaceAll("/");
+					fregecJar = fp[i];
+					fregecJar = java.util.regex.Pattern.compile("\\\\").matcher(fregecJar).replaceAll("/");
 					break; 
 				}
 			}
-		}
-		
-		if (ourJar == null) {
-			if (mcwb != null) try {
-				mcwb.addMarker(IMarker.SEVERITY_ERROR,
-						"fregec.jar is missing in the build path."
-						+ "Please 'Enable Frege Builder' from the Project context menu.",
-						1, 0, 10);
-			} catch (LimitExceededException e) {
-				// leck mich
+			
+			// emit an error here if we don't have the correct fregec.jar
+			if (fregecJar == null) {
+				if (mcwb != null) try {
+					mcwb.addMarker(IMarker.SEVERITY_ERROR,
+							"fregec.jar is missing in the build path."
+							+ "Please 'Enable Frege Builder' from the Project context menu.",
+							1, 0, 10);
+				} catch (LimitExceededException e) {
+					// leck mich
+				}
+				else msgHandler.handleSimpleMessage("fregec.jar is missing in the build path."
+							+ "Please 'Enable Frege Builder' from the Project context menu.",
+							0, 10, 0, 0, 0, 0);
 			}
-			else msgHandler.handleSimpleMessage("fregec.jar is missing in the build path."
-						+ "Please 'Enable Frege Builder' from the Project context menu.",
-						0, 10, 0, 0, 0, 0);
-		}
-		else if (!ourJar.equals(frege.FregePlugin.fregeLib)) {
-			if (mcwb != null) try {
-				mcwb.addMarker(IMarker.SEVERITY_ERROR,
-						"Build Path references unexpected " + ourJar,
-						1, 0, 1);
-				mcwb.addMarker(IMarker.SEVERITY_ERROR, 
-						"It should be " + frege.FregePlugin.fregeLib, 
-						1, 1, 2);
-				mcwb.addMarker(IMarker.SEVERITY_ERROR, 
-						"1. Please remove " + ourJar + " from Build Path", 
-						1, 2, 3);
-				mcwb.addMarker(IMarker.SEVERITY_ERROR, 
-						"2. Please 'Enable Frege Builder' from the Project context menu.", 
-						1, 3, 4);
-			} catch (LimitExceededException e) {
-				// leck mich
-			}
-			else {
-				msgHandler.handleSimpleMessage("Build Path references unexpected " + ourJar,
-						0, 1, 0, 0, 0, 0);
-				msgHandler.handleSimpleMessage("It should be " + frege.FregePlugin.fregeLib,
-						1, 2, 0, 0, 0, 0);
-				msgHandler.handleSimpleMessage("1. Please remove " + ourJar + " from Build Path",
-						2, 3, 0, 0, 0, 0);
-				msgHandler.handleSimpleMessage("2. Please 'Enable Frege Builder' from the Project context menu.",
-						3, 4, 0, 0, 0, 0);
+			else if (!fregecJar.equals(frege.FregePlugin.fregeLib)) {
+				if (mcwb != null) try {
+					mcwb.addMarker(IMarker.SEVERITY_ERROR,
+							"Build Path references unexpected " + fregecJar,
+							1, 0, 1);
+					mcwb.addMarker(IMarker.SEVERITY_ERROR, 
+							"It should be " + frege.FregePlugin.fregeLib, 
+							1, 1, 2);
+					mcwb.addMarker(IMarker.SEVERITY_ERROR, 
+							"1. Please remove " + fregecJar + " from Build Path", 
+							1, 2, 3);
+					mcwb.addMarker(IMarker.SEVERITY_ERROR, 
+							"2. Please 'Enable Frege Builder' from the Project context menu.", 
+							1, 3, 4);
+				} catch (LimitExceededException e) {
+					// leck mich
+				}
+				else {
+					msgHandler.handleSimpleMessage("Build Path references unexpected " + fregecJar,
+							0, 1, 0, 0, 0, 0);
+					msgHandler.handleSimpleMessage("It should be " + frege.FregePlugin.fregeLib,
+							1, 2, 0, 0, 0, 0);
+					msgHandler.handleSimpleMessage("1. Please remove " + fregecJar + " from Build Path",
+							2, 3, 0, 0, 0, 0);
+					msgHandler.handleSimpleMessage("2. Please 'Enable Frege Builder' from the Project context menu.",
+							3, 4, 0, 0, 0, 0);
+				}
 			}
 		}
 		 
