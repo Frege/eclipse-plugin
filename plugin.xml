@@ -43,6 +43,19 @@
       </page>
    </extension>
    <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="frege.imp.wizards"
+            class="frege.imp.wizards.FregeProjectWizard"
+            id="frege.imp.wizards.newProject"
+            name="Frege Project">
+      </wizard>
+      <category
+            id="frege.imp.wizards"
+            name="Frege">
+      </category>
+   </extension>
+   <extension
          id="frege.builder"
          name="Frege builder"
          point="org.eclipse.core.resources.builders">
