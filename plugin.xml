@@ -47,12 +47,14 @@
       <wizard
             category="frege.imp.wizards"
             class="frege.imp.wizards.FregeProjectWizard"
+            icon="icons/frege_file.gif"
             id="frege.imp.wizards.newProject"
             name="Frege Project">
       </wizard>
       <wizard
             category="frege.imp.wizards"
             class="frege.imp.wizards.FregeModuleWizard"
+            icon="icons/package.png"
             id="frege.imp.wizards.newModule"
             name="Frege Module">
       </wizard>

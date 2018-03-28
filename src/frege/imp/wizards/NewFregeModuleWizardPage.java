@@ -185,7 +185,8 @@ public class NewFregeModuleWizardPage extends WizardPage {
 							else
 								return filePath;
 						}).findFirst().orElse(Path.EMPTY);
-					setModuleName(makeModuleName(moduleNamePath) + ".");
+					String moduleName = makeModuleName(moduleNamePath);
+					setModuleName(moduleName.isEmpty() ? "" : moduleName + ".");
 				}
 			}
 		}
