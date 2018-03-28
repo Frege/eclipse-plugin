@@ -50,6 +50,12 @@
             id="frege.imp.wizards.newProject"
             name="Frege Project">
       </wizard>
+      <wizard
+            category="frege.imp.wizards"
+            class="frege.imp.wizards.FregeModuleWizard"
+            id="frege.imp.wizards.newModule"
+            name="Frege Module">
+      </wizard>
       <category
             id="frege.imp.wizards"
             name="Frege">

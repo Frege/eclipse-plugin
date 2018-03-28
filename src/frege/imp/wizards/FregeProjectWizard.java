@@ -1,5 +1,7 @@
 package frege.imp.wizards;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
@@ -9,6 +11,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
+
+import frege.FregePlugin;
 
 public class FregeProjectWizard extends BasicNewResourceWizard {
 	private NewFregeProjectWizardPageOne firstPage;
@@ -45,6 +49,15 @@ public class FregeProjectWizard extends BasicNewResourceWizard {
 
 	@Override
 	public boolean performFinish() {
+		try {
+			secondPage.performFinish(new NullProgressMonitor());
+		} catch (CoreException e) {
+			FregePlugin.getInstance().logException(e.getMessage(), e);
+			return false;
+		} catch (InterruptedException e) {
+			return false;
+		}
+
 		final IJavaElement newElement = secondPage.getJavaProject();
 
 		IWorkingSet[] workingSets = firstPage.getWorkingSets();
