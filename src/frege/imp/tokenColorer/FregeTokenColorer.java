@@ -134,7 +134,7 @@ public class FregeTokenColorer extends TokenColorerBase implements ITokenColorer
 		if (tid >= TTokenID.PACKAGE && tid <= TTokenID.INFIXR) 	return keywordAttribute;
 		if (tid == TTokenID.DOCUMENTATION)						return docuAttribute;
 		if (tid == TTokenID.COMMENT)							return commentAttribute;
-		if (tid == TTokenID.VARID && token.value(token).equals("_"))
+		if (tid == TTokenID.VARID && TToken.value(token).equals("_"))
 			return specialAttribute;
 		if (tid == TTokenID.CONID 
 				|| tid == TTokenID.QUALIFIER
