@@ -264,12 +264,12 @@ public class FregeBuilder extends FregeBuilderBase {
 				final String fp = PreludeText.joined(
 				                		  Thunk.lazy(System.getProperty("path.separator")),
 				                		  ourPath
-								);
+								).call();
 				final TList<String> srcPath = TOptions.sourcePath(TGlobal.options(result));
 				final String sp = PreludeText.joined(
 		                		  Thunk.lazy(System.getProperty("path.separator")),
 		                		  srcPath
-						);
+						).call();
 				// construct the commandline
 				final String cmdline = "-cp " + "\"" + fp + "\"" 
 						+ " -d " + "\"" + bp + "\""

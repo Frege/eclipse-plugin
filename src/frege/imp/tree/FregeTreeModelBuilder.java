@@ -120,7 +120,7 @@ public class FregeTreeModelBuilder extends TreeModelBuilderBase {
 			
 			pushSubItem(new PackageItem(pack, TSubSt.thisPos(sub)));
 			if  (! "".equals(pack)) {
-				final TList<TTuple3<TPosition, String, String>> pnps =  Utilities.imports(g);
+				final TList<TTuple3<TPosition, String, String>> pnps =  Utilities.imports(g).call();
 				DCons<TTuple3<TPosition, String, String>> elem = pnps.asCons();
 				while (elem != null) {
 					final TTuple3<TPosition, String, String> tuple = elem.mem1.call();
